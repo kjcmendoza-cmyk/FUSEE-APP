@@ -68,9 +68,6 @@
 
                 const studentUrl = document.getElementById('sys1-display-student-url');
                 if (studentUrl && data.sys1.studentUrl) studentUrl.href = data.sys1.studentUrl;
-
-                const adminUrl = document.getElementById('sys1-display-admin-url');
-                if (adminUrl && data.sys1.adminUrl) adminUrl.href = data.sys1.adminUrl;
             }
 
             // 4. System 02 Data Sync
@@ -101,6 +98,11 @@
 
                 const url = document.getElementById('sys3-display-url');
                 if (url && data.sys3.url) url.href = data.sys3.url;
+            }
+
+            // Trigger dynamic hours calculation after data update
+            if (typeof window.refreshAllSystemStatuses === 'function') {
+                window.refreshAllSystemStatuses();
             }
 
             // 6. Banner Data Sync
@@ -423,16 +425,13 @@
                             <span id="sys1-display-location">D204 EE Hardware Lab</span>
                         </div>
                         <div class="flex items-center space-x-1.5 justify-end">
-                            <span class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                            <span id="sys1-status-badge" class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OPEN NOW
                             </span>
                         </div>
-                        <div class="flex items-center space-x-1.5 text-slate-400">
+                        <div class="flex items-center space-x-1.5 text-slate-400 col-span-2">
                             <i class="fa-regular fa-clock text-slate-400"></i>
                             <span id="sys1-display-hours">8:00 AM - 6:00 PM</span>
-                        </div>
-                        <div class="text-right text-slate-400">
-                            <span class="text-fusee-yellow font-medium">3-Day Borrowing Limit</span>
                         </div>
                     </div>
 
@@ -445,17 +444,10 @@
                             <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
                         </a>
 
-                        <div class="grid grid-cols-2 gap-2">
-                            <a id="sys1-display-admin-url" href="https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/login.html" target="_blank" rel="noopener noreferrer" 
-                               class="py-2 px-3 rounded-xl glass-panel hover:bg-slate-800 text-slate-200 text-[11px] font-semibold flex items-center justify-center space-x-1.5 border border-slate-700 transition">
-                                <i class="fa-solid fa-lock text-fusee-yellow text-xs"></i>
-                                <span>Staff / Admin Login</span>
-                            </a>
-                            <button onclick="openModal('tool-guidelines-modal')" class="py-2 px-3 rounded-xl glass-panel hover:bg-slate-800 text-slate-300 text-[11px] font-medium flex items-center justify-center space-x-1 border border-slate-800 transition">
-                                <i class="fa-solid fa-circle-info text-fusee-cyan"></i>
-                                <span>Tool Guidelines</span>
-                            </button>
-                        </div>
+                        <button onclick="openModal('tool-guidelines-modal')" class="w-full py-2 px-3 rounded-xl glass-panel hover:bg-slate-800 text-slate-300 text-[11px] font-medium flex items-center justify-center space-x-1 border border-slate-800 transition">
+                            <i class="fa-solid fa-circle-info text-fusee-cyan"></i>
+                            <span>Tool Guidelines</span>
+                        </button>
                     </div>
                 </article>
 
@@ -486,7 +478,7 @@
                             <span id="sys2-display-location">D202 Computer Lab</span>
                         </div>
                         <div class="flex items-center space-x-1.5 justify-end">
-                            <span class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                            <span id="sys2-status-badge" class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OPEN NOW
                             </span>
                         </div>
@@ -542,7 +534,7 @@
                             <span id="sys3-display-location">D205 Electronics Lab</span>
                         </div>
                         <div class="flex items-center space-x-1.5 justify-end">
-                            <span class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                            <span id="sys3-status-badge" class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OPEN NOW
                             </span>
                         </div>
@@ -916,6 +908,56 @@
     </div>
 
     <script>
+        // Automatic Operating Hours to OPEN/CLOSED Status Calculator
+        function parseTimeStringToMinutes(timeStr) {
+            if (!timeStr) return null;
+            const match = timeStr.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+            if (!match) return null;
+            let [_, hours, minutes, period] = match;
+            hours = parseInt(hours, 10);
+            minutes = parseInt(minutes, 10);
+            if (period.toUpperCase() === 'PM' && hours < 12) hours += 12;
+            if (period.toUpperCase() === 'AM' && hours === 12) hours = 0;
+            return hours * 60 + minutes;
+        }
+
+        function updateBadgeFromHours(hoursStr, badgeId) {
+            const badgeEl = document.getElementById(badgeId);
+            if (!badgeEl || !hoursStr) return;
+
+            const parts = hoursStr.split('-');
+            if (parts.length !== 2) return;
+
+            const startMins = parseTimeStringToMinutes(parts[0]);
+            const endMins = parseTimeStringToMinutes(parts[1]);
+
+            if (startMins === null || endMins === null) return;
+
+            const now = new Date();
+            const currentMins = now.getHours() * 60 + now.getMinutes();
+
+            if (currentMins >= startMins && currentMins < endMins) {
+                badgeEl.className = 'status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1';
+                badgeEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OPEN NOW';
+            } else {
+                badgeEl.className = 'status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center gap-1';
+                badgeEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> CLOSED';
+            }
+        }
+
+        window.refreshAllSystemStatuses = function() {
+            const sys1Hours = document.getElementById('sys1-display-hours')?.textContent;
+            const sys2Hours = document.getElementById('sys2-display-hours')?.textContent;
+            const sys3Hours = document.getElementById('sys3-display-hours')?.textContent;
+
+            if (sys1Hours) updateBadgeFromHours(sys1Hours, 'sys1-status-badge');
+            if (sys2Hours) updateBadgeFromHours(sys2Hours, 'sys2-status-badge');
+            if (sys3Hours) updateBadgeFromHours(sys3Hours, 'sys3-status-badge');
+        };
+
+        setInterval(() => window.refreshAllSystemStatuses(), 60000);
+        document.addEventListener('DOMContentLoaded', () => window.refreshAllSystemStatuses());
+
         // Real-Time Clock & Dynamic Greeting Script
         function updateClockAndGreeting() {
             const now = new Date();
@@ -994,7 +1036,6 @@
         window.setGlobalStatusUI = function(status) {
             const simIndicator = document.getElementById('sim-indicator');
             const simText = document.getElementById('sim-text');
-            const statusBadges = document.querySelectorAll('.status-badge');
 
             if (status === 'ALL OPEN') {
                 if (simIndicator) simIndicator.className = 'w-2 h-2 rounded-full bg-fusee-lime animate-ping';
@@ -1002,31 +1043,21 @@
                     simText.className = 'font-semibold text-fusee-lime';
                     simText.textContent = 'ALL OPEN';
                 }
-                statusBadges.forEach(badge => {
-                    badge.className = 'status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1';
-                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OPEN NOW';
-                });
+                window.refreshAllSystemStatuses();
             } else if (status === 'LIMITED') {
                 if (simIndicator) simIndicator.className = 'w-2 h-2 rounded-full bg-fusee-yellow animate-ping';
                 if (simText) {
                     simText.className = 'font-semibold text-fusee-yellow';
                     simText.textContent = 'LIMITED';
                 }
-                statusBadges.forEach((badge, idx) => {
-                    if (idx === 0) {
-                        badge.className = 'status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1';
-                        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> LIMITED / QUEUE';
-                    } else {
-                        badge.className = 'status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1';
-                        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OPEN NOW';
-                    }
-                });
+                window.refreshAllSystemStatuses();
             } else {
                 if (simIndicator) simIndicator.className = 'w-2 h-2 rounded-full bg-fusee-magenta animate-ping';
                 if (simText) {
                     simText.className = 'font-semibold text-fusee-magenta';
                     simText.textContent = 'CLOSED';
                 }
+                const statusBadges = document.querySelectorAll('.status-badge');
                 statusBadges.forEach(badge => {
                     badge.className = 'status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center gap-1';
                     badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> CLOSED';
