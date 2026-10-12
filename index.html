@@ -100,13 +100,12 @@
                 if (url && data.sys3.url) url.href = data.sys3.url;
             }
 // 5b. Live Occupancy Dynamic Calculator
-            const comlabActive = (data.comlabActiveCount !== undefined) ? data.comlabActiveCount : (data.sys2ActiveCount || 0);
-            const freePCs = Math.max(0, 24 - comlabActive);
-            document.getElementById('comlab-occupancy').textContent = `${freePCs} / 24 Free`;
+const comlabActive = data.totalOccupants ?? data.activeOccupants ?? data.comlabActiveCount ?? data.sys2ActiveCount ?? data.occupants ?? 0;
+const freePCs = Math.max(0, 24 - comlabActive);
+document.getElementById('comlab-occupancy').textContent = `${freePCs} / 24 Free`;
 
-            const hardwareActive = (data.hardwareActiveCount !== undefined) ? data.hardwareActiveCount : (data.sys3ActiveCount || 0);
-            document.getElementById('hardware-occupancy').textContent = `${hardwareActive} Active Sessions`;
-            // Trigger dynamic hours calculation after data update
+const hardwareActive = data.hardwareActiveCount ?? data.sys3ActiveCount ?? data.hardwareOccupants ?? 0;
+document.getElementById('hardware-occupancy').textContent = `${hardwareActive} Active Sessions`;
             if (typeof window.refreshAllSystemStatuses === 'function') {
                 window.refreshAllSystemStatuses();
             }
