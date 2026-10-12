@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUSEE Hub | Admin Management Portal</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        fusee: {
+                            dark: '#0B081E',
+                            card: '#130e2e',
+                            border: '#281c50',
+                            cyan: '#00F0FF',
+                            magenta: '#FF007A',
+                            purple: '#8B5CF6',
+                            yellow: '#FFD600',
+                            lime: '#10B981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0B081E;
+            color: #E2E8F0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(19, 14, 46, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12 antialiased">
+
+    <!-- Header Bar -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-white/10 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-fusee-cyan via-fusee-magenta to-fusee-yellow p-[2px]">
+                <div class="w-full h-full bg-[#0B081E] rounded-[10px] flex items-center justify-center font-display font-black text-xs text-fusee-cyan">
+                    ADM
+                </div>
+            </div>
+            <div>
+                <h1 class="text-lg font-black font-display text-white tracking-tight flex items-center gap-2">
+                    FUSEE HUB <span class="px-2 py-0.5 text-[10px] bg-fusee-cyan/20 text-fusee-cyan rounded border border-fusee-cyan/30">ADMIN PORTAL</span>
+                </h1>
+                <p class="text-xs text-slate-400">Manage real-time dynamic content across FUSEE Hub</p>
+            </div>
+        </div>
+
+        <button id="save-all-btn" onclick="saveDataToFirebase()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-fusee-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs flex items-center gap-2 transition shadow-lg shadow-cyan-500/20 active:scale-95">
+            <i class="fa-solid fa-floppy-disk text-sm"></i>
+            <span>Publish Changes</span>
+        </button>
+    </header>
+
+    <!-- Save Notification Toast -->
+    <div id="toast-msg" class="fixed top-20 right-6 z-50 hidden px-4 py-3 rounded-xl bg-emerald-500/90 text-slate-950 font-bold text-xs flex items-center gap-2 shadow-xl backdrop-blur-md">
+        <i class="fa-solid fa-circle-check text-sm"></i>
+        <span id="toast-text">Changes published to Firebase successfully!</span>
+    </div>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 pt-6 space-y-6">
+
+        <!-- SECTION 1: Notice Ticker & Lab Status -->
+        <section class="glass-panel p-6 rounded-2xl space-y-4 border border-fusee-cyan/20">
+            <div class="flex items-center space-x-2 border-b border-white/10 pb-3">
+                <i class="fa-solid fa-bullhorn text-fusee-cyan"></i>
+                <h2 class="font-display font-bold text-sm text-white uppercase tracking-wider">1. Notice Ticker & Global Lab Status</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="md:col-span-2 space-y-1">
+                    <label class="text-xs font-semibold text-slate-300">Live Marquee Notice Text</label>
+                    <textarea id="ticker-text" rows="2" class="w-full p-3 rounded-xl bg-slate-900/90 border border-slate-700 text-xs text-white focus:outline-none focus:border-fusee-cyan transition" placeholder="Enter announcement ticker content..."></textarea>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-300">Overall Status Toggle</label>
+                    <select id="global-status-select" class="w-full p-3 rounded-xl bg-slate-900/90 border border-slate-700 text-xs text-white focus:outline-none focus:border-fusee-cyan transition">
+                        <option value="ALL OPEN">🟢 ALL OPEN</option>
+                        <option value="LIMITED">🟡 LIMITED / QUEUE</option>
+                        <option value="CLOSED">🔴 ALL CLOSED</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: System Cards (Equipment, ComLab, Hardware) -->
+        <section class="glass-panel p-6 rounded-2xl space-y-6 border border-fusee-magenta/20">
+            <div class="flex items-center space-x-2 border-b border-white/10 pb-3">
+                <i class="fa-solid fa-layer-group text-fusee-magenta"></i>
+                <h2 class="font-display font-bold text-sm text-white uppercase tracking-wider">2. System Cards Configuration</h2>
+            </div>
+
+            <!-- Card 1 Config -->
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+                <h3 class="text-xs font-extrabold text-fusee-cyan uppercase">System 01 • EE Tool Management System</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Location</label>
+                        <input type="text" id="sys1-location" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Operating Hours</label>
+                        <input type="text" id="sys1-hours" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-slate-400 mb-1">Student Portal Link URL</label>
+                        <input type="text" id="sys1-student-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-slate-400 mb-1">Staff / Admin Login Link URL</label>
+                        <input type="text" id="sys1-admin-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 Config -->
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+                <h3 class="text-xs font-extrabold text-fusee-magenta uppercase">System 02 • Computer Lab Logbook</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Location</label>
+                        <input type="text" id="sys2-location" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Operating Hours</label>
+                        <input type="text" id="sys2-hours" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-slate-400 mb-1">Digital Logbook Portal URL</label>
+                        <input type="text" id="sys2-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 Config -->
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+                <h3 class="text-xs font-extrabold text-fusee-yellow uppercase">System 03 • Hardware Lab Logbook</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Location</label>
+                        <input type="text" id="sys3-location" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Operating Hours</label>
+                        <input type="text" id="sys3-hours" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-slate-400 mb-1">Hardware Logbook Portal URL</label>
+                        <input type="text" id="sys3-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: FAQ Management -->
+        <section class="glass-panel p-6 rounded-2xl space-y-4 border border-fusee-yellow/20">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-circle-question text-fusee-yellow"></i>
+                    <h2 class="font-display font-bold text-sm text-white uppercase tracking-wider">3. Frequently Asked Questions (FAQs)</h2>
+                </div>
+            </div>
+
+            <div id="faq-container" class="space-y-3">
+                <!-- Dynamic FAQ Rows -->
+            </div>
+
+            <button type="button" onclick="addFaqRow()" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-plus text-fusee-yellow"></i> Add New FAQ Item
+            </button>
+        </section>
+
+        <!-- SECTION 4: Officers Directory -->
+        <section class="glass-panel p-6 rounded-2xl space-y-4 border border-fusee-purple/20">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-id-card text-fusee-purple"></i>
+                    <h2 class="font-display font-bold text-sm text-white uppercase tracking-wider">4. FUSEE Officers Contact Directory</h2>
+                </div>
+            </div>
+
+            <div id="officers-container" class="space-y-3">
+                <!-- Dynamic Officer Rows -->
+            </div>
+
+            <button type="button" onclick="addOfficerRow()" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-plus text-fusee-purple"></i> Add Officer Contact
+            </button>
+        </section>
+
+        <!-- SECTION 5: Inspirational Banner Text -->
+        <section class="glass-panel p-6 rounded-2xl space-y-4 border border-fusee-cyan/20">
+            <div class="flex items-center space-x-2 border-b border-white/10 pb-3">
+                <i class="fa-solid fa-quote-left text-fusee-cyan"></i>
+                <h2 class="font-display font-bold text-sm text-white uppercase tracking-wider">5. Inspirational Quote Banner</h2>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">Quote Headline</label>
+                    <input type="text" id="banner-title" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Quote Body Text</label>
+                    <textarea id="banner-body" rows="2" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white"></textarea>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Firebase SDK Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+
+        // Firebase Configuration (Matching index.html)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoydIWpV6ujbc9q-COWxFr9SyAyU7I7D0",
+            authDomain: "fusee-app.firebaseapp.com",
+            projectId: "fusee-app",
+            storageBucket: "fusee-app.firebasestorage.app",
+            messagingSenderId: "1027948046459",
+            appId: "1:1027948046459:web:549cc5e4d6e47dd7e89ade",
+            measurementId: "G-MN7CMTLDZ2"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const docRef = doc(db, "fusee_hub", "landing_content");
+
+        // Prepopulate default state
+        const defaultData = {
+            tickerText: "⚡ EE Hardware Lab: Equipment checkouts close early at 4:30 PM on Fridays • 💻 Computer Lab PC Maintenance scheduled this Saturday • 📢 Always bring your ADDU Student ID for verification",
+            globalStatus: "ALL OPEN",
+            sys1: {
+                location: "D204 EE Hardware Lab",
+                hours: "8:00 AM - 6:00 PM",
+                studentUrl: "https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/student.html",
+                adminUrl: "https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/login.html"
+            },
+            sys2: {
+                location: "D202 Computer Lab",
+                hours: "7:30 AM - 7:00 PM",
+                url: "https://kjcmendoza-cmyk.github.io/Digital-Logbook/"
+            },
+            sys3: {
+                location: "D205 Electronics Lab",
+                hours: "8:00 AM - 6:00 PM",
+                url: "https://kjcmendoza-cmyk.github.io/EE-Laboratory-Digital-Logbook/login.html"
+            },
+            faqs: [
+                {
+                    q: "How do I borrow tools for home/overnight thesis use?",
+                    a: "Submit a request via the Tool Management System student link, then present your validated AdDU ID to the lab custodian in D204 along with your course instructor's approval slip."
+                },
+                {
+                    q: "What if I forget to log out of the computer lab?",
+                    a: "Sessions auto-close at 7:00 PM daily. However, failing to manually log out creates active duration flags on your account."
+                }
+            ],
+            officers: [
+                { title: "FUSEE President", dept: "Executive Office", email: "fusee.president@addu.edu.ph", badge: "PRES" },
+                { title: "EE Lab Manager / Officer", dept: "Tool & Equipment Overseer", email: "fusee.lab@addu.edu.ph", badge: "LAB" },
+                { title: "EE Department Chair", dept: "SEA Faculty Office", email: "ee.department@addu.edu.ph", badge: "SEA" }
+            ],
+            banner: {
+                title: "TO INFINITEE AND BEEYOND",
+                body: "Like wires that weave strength through every circuit and create connections across every bridge, electrical engineering transforms ideas into systems that power progress."
+            }
+        };
+
+        // Load existing data from Firebase on startup
+        async function loadContent() {
+            try {
+                const docSnap = await getDoc(docRef);
+                const data = docSnap.exists() ? docSnap.data() : defaultData;
+
+                document.getElementById('ticker-text').value = data.tickerText || defaultData.tickerText;
+                document.getElementById('global-status-select').value = data.globalStatus || "ALL OPEN";
+
+                // Sys 1
+                document.getElementById('sys1-location').value = data.sys1?.location || defaultData.sys1.location;
+                document.getElementById('sys1-hours').value = data.sys1?.hours || defaultData.sys1.hours;
+                document.getElementById('sys1-student-url').value = data.sys1?.studentUrl || defaultData.sys1.studentUrl;
+                document.getElementById('sys1-admin-url').value = data.sys1?.adminUrl || defaultData.sys1.adminUrl;
+
+                // Sys 2
+                document.getElementById('sys2-location').value = data.sys2?.location || defaultData.sys2.location;
+                document.getElementById('sys2-hours').value = data.sys2?.hours || defaultData.sys2.hours;
+                document.getElementById('sys2-url').value = data.sys2?.url || defaultData.sys2.url;
+
+                // Sys 3
+                document.getElementById('sys3-location').value = data.sys3?.location || defaultData.sys3.location;
+                document.getElementById('sys3-hours').value = data.sys3?.hours || defaultData.sys3.hours;
+                document.getElementById('sys3-url').value = data.sys3?.url || defaultData.sys3.url;
+
+                // Banner
+                document.getElementById('banner-title').value = data.banner?.title || defaultData.banner.title;
+                document.getElementById('banner-body').value = data.banner?.body || defaultData.banner.body;
+
+                // FAQs
+                renderFaqs(data.faqs || defaultData.faqs);
+
+                // Officers
+                renderOfficers(data.officers || defaultData.officers);
+
+            } catch (err) {
+                console.error("Error fetching Firestore data:", err);
+                renderFaqs(defaultData.faqs);
+                renderOfficers(defaultData.officers);
+            }
+        }
+
+        // Global save method
+        window.saveDataToFirebase = async function() {
+            const saveBtn = document.getElementById('save-all-btn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
+
+            const faqs = [];
+            document.querySelectorAll('.faq-item-row').forEach(row => {
+                const q = row.querySelector('.faq-q-input').value.trim();
+                const a = row.querySelector('.faq-a-input').value.trim();
+                if (q && a) faqs.push({ q, a });
+            });
+
+            const officers = [];
+            document.querySelectorAll('.officer-item-row').forEach(row => {
+                const title = row.querySelector('.off-title-input').value.trim();
+                const dept = row.querySelector('.off-dept-input').value.trim();
+                const email = row.querySelector('.off-email-input').value.trim();
+                const badge = row.querySelector('.off-badge-input').value.trim() || 'EE';
+                if (title && email) officers.push({ title, dept, email, badge });
+            });
+
+            const updatedData = {
+                tickerText: document.getElementById('ticker-text').value.trim(),
+                globalStatus: document.getElementById('global-status-select').value,
+                sys1: {
+                    location: document.getElementById('sys1-location').value.trim(),
+                    hours: document.getElementById('sys1-hours').value.trim(),
+                    studentUrl: document.getElementById('sys1-student-url').value.trim(),
+                    adminUrl: document.getElementById('sys1-admin-url').value.trim()
+                },
+                sys2: {
+                    location: document.getElementById('sys2-location').value.trim(),
+                    hours: document.getElementById('sys2-hours').value.trim(),
+                    url: document.getElementById('sys2-url').value.trim()
+                },
+                sys3: {
+                    location: document.getElementById('sys3-location').value.trim(),
+                    hours: document.getElementById('sys3-hours').value.trim(),
+                    url: document.getElementById('sys3-url').value.trim()
+                },
+                faqs,
+                officers,
+                banner: {
+                    title: document.getElementById('banner-title').value.trim(),
+                    body: document.getElementById('banner-body').value.trim()
+                },
+                updatedAt: new Date().toISOString()
+            };
+
+            try {
+                await setDoc(docRef, updatedData);
+                showToast("All changes published to FUSEE Hub live!");
+            } catch (err) {
+                console.error("Save error:", err);
+                showToast("Failed to save changes. Check Firebase permissions.", true);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk text-sm"></i> <span>Publish Changes</span>';
+            }
+        };
+
+        function renderFaqs(list) {
+            const container = document.getElementById('faq-container');
+            container.innerHTML = '';
+            list.forEach(item => window.addFaqRow(item.q, item.a));
+        }
+
+        window.addFaqRow = function(q = '', a = '') {
+            const container = document.getElementById('faq-container');
+            const div = document.createElement('div');
+            div.className = 'faq-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative';
+            div.innerHTML = `
+                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                <input type="text" class="faq-q-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Question" value="${q.replace(/"/g, '&quot;')}">
+                <textarea class="faq-a-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="2" placeholder="Answer">${a}</textarea>
+            `;
+            container.appendChild(div);
+        };
+
+        function renderOfficers(list) {
+            const container = document.getElementById('officers-container');
+            container.innerHTML = '';
+            list.forEach(item => window.addOfficerRow(item.title, item.dept, item.email, item.badge));
+        }
+
+        window.addOfficerRow = function(title = '', dept = '', email = '', badge = 'PRES') {
+            const container = document.getElementById('officers-container');
+            const div = document.createElement('div');
+            div.className = 'officer-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 grid grid-cols-1 md:grid-cols-4 gap-2 relative';
+            div.innerHTML = `
+                <button type="button" onclick="this.parentElement.remove()" class="md:col-span-4 text-right text-rose-400 text-xs">
+                    <i class="fa-solid fa-trash"></i> Remove
+                </button>
+                <input type="text" class="off-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Badge (e.g. PRES)" value="${badge}">
+                <input type="text" class="off-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Title" value="${title}">
+                <input type="text" class="off-dept-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Department" value="${dept}">
+                <input type="email" class="off-email-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Email" value="${email}">
+            `;
+            container.appendChild(div);
+        };
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast-msg');
+            const toastText = document.getElementById('toast-text');
+            toastText.textContent = msg;
+            toast.className = `fixed top-20 right-6 z-50 px-4 py-3 rounded-xl ${isError ? 'bg-rose-500 text-white' : 'bg-emerald-400 text-slate-950'} font-bold text-xs flex items-center gap-2 shadow-xl`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3500);
+        }
+
+        loadContent();
+    </script>
+</body>
+</html>
