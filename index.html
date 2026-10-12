@@ -99,7 +99,14 @@
                 const url = document.getElementById('sys3-display-url');
                 if (url && data.sys3.url) url.href = data.sys3.url;
             }
-
+// 5b. Live Occupancy Dynamic Calculator
+            if (data.comlabActiveCount !== undefined) {
+                const freePCs = Math.max(0, 24 - (data.comlabActiveCount || 0));
+                document.getElementById('comlab-occupancy').textContent = `${freePCs} / 24 Free`;
+            }
+            if (data.hardwareActiveCount !== undefined) {
+                document.getElementById('hardware-occupancy').textContent = `${data.hardwareActiveCount || 0} Active Sessions`;
+            }
             // Trigger dynamic hours calculation after data update
             if (typeof window.refreshAllSystemStatuses === 'function') {
                 window.refreshAllSystemStatuses();
