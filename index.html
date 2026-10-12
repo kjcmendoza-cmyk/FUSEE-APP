@@ -16,13 +16,12 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Firebase Web SDK Integration -->
+    <!-- Firebase Web SDK Integration & Realtime Sync -->
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCoydIWpV6ujbc9q-COWxFr9SyAyU7I7D0",
             authDomain: "fusee-app.firebaseapp.com",
@@ -33,13 +32,128 @@
             measurementId: "G-MN7CMTLDZ2"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
+        const db = getFirestore(app);
 
-        // Make Firebase instances accessible globally
         window.firebaseApp = app;
         window.firebaseAnalytics = analytics;
+
+        // Real-Time Listener for Cloud Firestore Content Updates
+        onSnapshot(doc(db, "fusee_hub", "landing_content"), (docSnap) => {
+            if (!docSnap.exists()) return;
+            const data = docSnap.data();
+
+            // 1. Marquee Announcement Ticker
+            if (data.tickerText) {
+                const tickerEl = document.getElementById('announcement-text');
+                if (tickerEl) tickerEl.textContent = data.tickerText;
+            }
+
+            // 2. Global Status Sync
+            if (data.globalStatus && typeof window.setGlobalStatusUI === 'function') {
+                window.setGlobalStatusUI(data.globalStatus);
+            }
+
+            // 3. System 01 Data Sync
+            if (data.sys1) {
+                const loc = document.getElementById('sys1-display-location');
+                if (loc && data.sys1.location) loc.textContent = data.sys1.location;
+                
+                const hours = document.getElementById('sys1-display-hours');
+                if (hours && data.sys1.hours) hours.textContent = data.sys1.hours;
+
+                const modalHours = document.getElementById('sys1-modal-hours');
+                if (modalHours && data.sys1.hours) modalHours.textContent = data.sys1.hours;
+
+                const studentUrl = document.getElementById('sys1-display-student-url');
+                if (studentUrl && data.sys1.studentUrl) studentUrl.href = data.sys1.studentUrl;
+
+                const adminUrl = document.getElementById('sys1-display-admin-url');
+                if (adminUrl && data.sys1.adminUrl) adminUrl.href = data.sys1.adminUrl;
+            }
+
+            // 4. System 02 Data Sync
+            if (data.sys2) {
+                const loc = document.getElementById('sys2-display-location');
+                if (loc && data.sys2.location) loc.textContent = data.sys2.location;
+
+                const hours = document.getElementById('sys2-display-hours');
+                if (hours && data.sys2.hours) hours.textContent = data.sys2.hours;
+
+                const modalHours = document.getElementById('sys2-modal-hours');
+                if (modalHours && data.sys2.hours) modalHours.textContent = data.sys2.hours;
+
+                const url = document.getElementById('sys2-display-url');
+                if (url && data.sys2.url) url.href = data.sys2.url;
+            }
+
+            // 5. System 03 Data Sync
+            if (data.sys3) {
+                const loc = document.getElementById('sys3-display-location');
+                if (loc && data.sys3.location) loc.textContent = data.sys3.location;
+
+                const hours = document.getElementById('sys3-display-hours');
+                if (hours && data.sys3.hours) hours.textContent = data.sys3.hours;
+
+                const modalHours = document.getElementById('sys3-modal-hours');
+                if (modalHours && data.sys3.hours) modalHours.textContent = data.sys3.hours;
+
+                const url = document.getElementById('sys3-display-url');
+                if (url && data.sys3.url) url.href = data.sys3.url;
+            }
+
+            // 6. Banner Data Sync
+            if (data.banner) {
+                const title = document.getElementById('banner-display-title');
+                if (title && data.banner.title) title.textContent = data.banner.title;
+
+                const body = document.getElementById('banner-display-body');
+                if (body && data.banner.body) body.textContent = `"${data.banner.body}"`;
+            }
+
+            // 7. FAQs List Sync
+            if (data.faqs && Array.isArray(data.faqs)) {
+                const faqContainer = document.getElementById('faq-display-container');
+                if (faqContainer) {
+                    faqContainer.innerHTML = data.faqs.map(item => `
+                        <details class="group p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                            <summary class="font-semibold text-white cursor-pointer list-none flex justify-between items-center">
+                                <span>${item.q}</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-open:rotate-180 transition"></i>
+                            </summary>
+                            <p class="mt-2 text-[11px] text-slate-300 leading-relaxed border-t border-slate-800 pt-2">
+                                ${item.a}
+                            </p>
+                        </details>
+                    `).join('');
+                }
+            }
+
+            // 8. Officers List Sync
+            if (data.officers && Array.isArray(data.officers)) {
+                const offContainer = document.getElementById('officers-display-container');
+                if (offContainer) {
+                    const badgeStyles = [
+                        'from-fusee-cyan to-blue-600 text-slate-950',
+                        'from-fusee-magenta to-pink-600 text-white',
+                        'from-fusee-yellow to-amber-500 text-slate-950'
+                    ];
+                    offContainer.innerHTML = data.officers.map((off, idx) => `
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-tr ${badgeStyles[idx % badgeStyles.length]} flex items-center justify-center font-bold font-display text-xs">
+                                ${off.badge || 'EE'}
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-white text-xs">${off.title}</h4>
+                                <p class="text-[10px] text-fusee-cyan font-medium">${off.dept}</p>
+                                <p class="text-[10px] text-slate-400">${off.email}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        });
     </script>
 
     <script>
@@ -182,7 +296,7 @@
     <div class="fixed top-1/3 -right-20 w-80 h-80 glow-blob-2 rounded-full pointer-events-none z-0 blur-3xl animate-subtle-pulse" style="animation-delay: 1s;"></div>
     <div class="fixed -bottom-20 left-1/4 w-72 h-72 glow-blob-3 rounded-full pointer-events-none z-0 blur-3xl animate-subtle-pulse" style="animation-delay: 2s;"></div>
 
-    <!-- Main Mobile Container (Centered mockup container on desktop, full-width on mobile) -->
+    <!-- Main Mobile Container -->
     <div id="app-container" class="relative z-10 max-w-md mx-auto min-h-screen pb-24 shadow-2xl bg-[#0B081E]/80 border-x border-white/10 flex flex-col">
 
         <!-- Header Section -->
@@ -201,7 +315,7 @@
                     </div>
                 </div>
 
-                <!-- Simulation Mode Toggle Pill -->
+                <!-- Global Lab Status Pill -->
                 <button onclick="toggleLabStatusSimulation()" id="status-sim-btn" class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-[10px] text-slate-300 hover:border-fusee-cyan transition">
                     <span id="sim-indicator" class="w-2 h-2 rounded-full bg-fusee-lime animate-ping"></span>
                     <span id="sim-text" class="font-semibold text-fusee-lime">ALL OPEN</span>
@@ -253,7 +367,6 @@
 
             <!-- Search & Filter Controls -->
             <section class="space-y-2.5">
-                <!-- Search Input Bar -->
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                     <input type="text" id="search-input" onkeyup="filterSystems()" placeholder="Search lab systems, tools, logbooks..." 
@@ -285,7 +398,6 @@
 
                 <!-- CARD 1: EE Laboratory Tool Management System -->
                 <article class="system-card glass-card rounded-2xl p-4 relative overflow-hidden group border border-fusee-cyan/30" data-category="tool" data-name="electrical engineering laboratory tool management system borrowing equipment multimeters oscilloscope">
-                    <!-- Top Card Decorative Accent Beam -->
                     <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-fusee-cyan via-blue-500 to-fusee-purple"></div>
                     
                     <div class="flex items-start justify-between mb-2">
@@ -304,11 +416,11 @@
                         Borrow and manage hardware tools, oscilloscopes, digital multimeters, power supplies, and component kits for your laboratory sessions.
                     </p>
 
-                    <!-- Info Meta Grid -->
+                    <!-- Dynamic Meta Info -->
                     <div class="grid grid-cols-2 gap-2 mb-3 bg-slate-900/50 p-2.5 rounded-xl border border-slate-800 text-[11px]">
                         <div class="flex items-center space-x-1.5 text-slate-300">
                             <i class="fa-solid fa-location-dot text-fusee-cyan"></i>
-                            <span>D204 EE Hardware Lab</span>
+                            <span id="sys1-display-location">D204 EE Hardware Lab</span>
                         </div>
                         <div class="flex items-center space-x-1.5 justify-end">
                             <span class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
@@ -317,16 +429,16 @@
                         </div>
                         <div class="flex items-center space-x-1.5 text-slate-400">
                             <i class="fa-regular fa-clock text-slate-400"></i>
-                            <span>8:00 AM - 6:00 PM</span>
+                            <span id="sys1-display-hours">8:00 AM - 6:00 PM</span>
                         </div>
                         <div class="text-right text-slate-400">
                             <span class="text-fusee-yellow font-medium">3-Day Borrowing Limit</span>
                         </div>
                     </div>
 
-                    <!-- Action Buttons for System 1 -->
+                    <!-- Dynamic Buttons for System 1 -->
                     <div class="space-y-2">
-                        <a href="https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/student.html" target="_blank" rel="noopener noreferrer" 
+                        <a id="sys1-display-student-url" href="https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/student.html" target="_blank" rel="noopener noreferrer" 
                            class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-fusee-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-neon-cyan transition active:scale-[0.98]">
                             <i class="fa-solid fa-graduation-cap text-sm"></i>
                             <span>Access Student Portal</span>
@@ -334,7 +446,7 @@
                         </a>
 
                         <div class="grid grid-cols-2 gap-2">
-                            <a href="https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/login.html" target="_blank" rel="noopener noreferrer" 
+                            <a id="sys1-display-admin-url" href="https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/login.html" target="_blank" rel="noopener noreferrer" 
                                class="py-2 px-3 rounded-xl glass-panel hover:bg-slate-800 text-slate-200 text-[11px] font-semibold flex items-center justify-center space-x-1.5 border border-slate-700 transition">
                                 <i class="fa-solid fa-lock text-fusee-yellow text-xs"></i>
                                 <span>Staff / Admin Login</span>
@@ -349,7 +461,6 @@
 
                 <!-- CARD 2: EE Computer Laboratory Digital Logbook -->
                 <article class="system-card glass-card rounded-2xl p-4 relative overflow-hidden group border border-fusee-magenta/30" data-category="computer" data-name="electrical engineering computer laboratory digital logbook pc workstations simulation software digital logbook">
-                    <!-- Top Card Decorative Accent Beam -->
                     <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-fusee-magenta via-purple-500 to-fusee-pinkGlow"></div>
 
                     <div class="flex items-start justify-between mb-2">
@@ -368,11 +479,11 @@
                         Log in/out for EE Computer Lab workstation access, simulation software sessions (MATLAB, ETAP, AutoCAD, Proteus), and project coding.
                     </p>
 
-                    <!-- Info Meta Grid -->
+                    <!-- Dynamic Meta Info -->
                     <div class="grid grid-cols-2 gap-2 mb-3 bg-slate-900/50 p-2.5 rounded-xl border border-slate-800 text-[11px]">
                         <div class="flex items-center space-x-1.5 text-slate-300">
                             <i class="fa-solid fa-location-dot text-fusee-magenta"></i>
-                            <span>D202 Computer Lab</span>
+                            <span id="sys2-display-location">D202 Computer Lab</span>
                         </div>
                         <div class="flex items-center space-x-1.5 justify-end">
                             <span class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
@@ -381,16 +492,16 @@
                         </div>
                         <div class="flex items-center space-x-1.5 text-slate-400">
                             <i class="fa-regular fa-clock text-slate-400"></i>
-                            <span>7:30 AM - 7:00 PM</span>
+                            <span id="sys2-display-hours">7:30 AM - 7:00 PM</span>
                         </div>
                         <div class="text-right text-slate-400">
                             <span class="text-fusee-cyan font-medium">40 Active Workstations</span>
                         </div>
                     </div>
 
-                    <!-- Action Buttons for System 2 -->
+                    <!-- Dynamic Button for System 2 -->
                     <div class="space-y-2">
-                        <a href="https://kjcmendoza-cmyk.github.io/Digital-Logbook/" target="_blank" rel="noopener noreferrer" 
+                        <a id="sys2-display-url" href="https://kjcmendoza-cmyk.github.io/Digital-Logbook/" target="_blank" rel="noopener noreferrer" 
                            class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-fusee-magenta to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-neon-pink transition active:scale-[0.98]">
                             <i class="fa-solid fa-[right-to-bracket] text-sm"></i>
                             <span>Open Computer Lab Logbook</span>
@@ -406,7 +517,6 @@
 
                 <!-- CARD 3: Electrical Engineering Laboratory Digital Logbook (Hardware) -->
                 <article class="system-card glass-card rounded-2xl p-4 relative overflow-hidden group border border-fusee-yellow/30" data-category="hardware" data-name="electrical engineering laboratory digital logbook hardware circuits hardware lab bench experiments">
-                    <!-- Top Card Decorative Accent Beam -->
                     <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-fusee-yellow via-amber-500 to-orange-500"></div>
 
                     <div class="flex items-start justify-between mb-2">
@@ -425,11 +535,11 @@
                         Mandatory digital check-in logbook for all hands-on hardware lab classes, circuit testing, project bench work, and thesis experiments.
                     </p>
 
-                    <!-- Info Meta Grid -->
+                    <!-- Dynamic Meta Info -->
                     <div class="grid grid-cols-2 gap-2 mb-3 bg-slate-900/50 p-2.5 rounded-xl border border-slate-800 text-[11px]">
                         <div class="flex items-center space-x-1.5 text-slate-300">
                             <i class="fa-solid fa-location-dot text-fusee-yellow"></i>
-                            <span>D205 Electronics Lab</span>
+                            <span id="sys3-display-location">D205 Electronics Lab</span>
                         </div>
                         <div class="flex items-center space-x-1.5 justify-end">
                             <span class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
@@ -438,16 +548,16 @@
                         </div>
                         <div class="flex items-center space-x-1.5 text-slate-400">
                             <i class="fa-regular fa-clock text-slate-400"></i>
-                            <span>8:00 AM - 6:00 PM</span>
+                            <span id="sys3-display-hours">8:00 AM - 6:00 PM</span>
                         </div>
                         <div class="text-right text-slate-400">
                             <span class="text-emerald-400 font-medium">Mandatory Check-In</span>
                         </div>
                     </div>
 
-                    <!-- Action Buttons for System 3 -->
+                    <!-- Dynamic Button for System 3 -->
                     <div class="space-y-2">
-                        <a href="https://kjcmendoza-cmyk.github.io/EE-Laboratory-Digital-Logbook/login.html" target="_blank" rel="noopener noreferrer" 
+                        <a id="sys3-display-url" href="https://kjcmendoza-cmyk.github.io/EE-Laboratory-Digital-Logbook/login.html" target="_blank" rel="noopener noreferrer" 
                            class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-fusee-yellow via-amber-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-slate-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-neon-yellow transition active:scale-[0.98]">
                             <i class="fa-solid fa-bolt text-sm"></i>
                             <span>Access Hardware Lab Logbook</span>
@@ -512,10 +622,10 @@
                     <i class="fa-solid fa-rocket text-sm"></i>
                 </div>
 
-                <h3 class="font-display font-extrabold text-sm text-white mb-1 tracking-tight">
-                    TO INFINI<span class="text-fusee-cyan">TEE</span> AND <span class="text-fusee-magenta">BEEYOND</span>
+                <h3 id="banner-display-title" class="font-display font-extrabold text-sm text-white mb-1 tracking-tight">
+                    TO INFINITEE AND BEEYOND
                 </h3>
-                <p class="text-[11px] text-slate-300 italic leading-snug px-2">
+                <p id="banner-display-body" class="text-[11px] text-slate-300 italic leading-snug px-2">
                     "Like wires that weave strength through every circuit and create connections across every bridge, electrical engineering transforms ideas into systems that power progress."
                 </p>
                 <div class="mt-2.5 inline-block text-[10px] font-bold tracking-widest text-fusee-cyan uppercase border-t border-white/10 pt-1.5 px-4">
@@ -647,7 +757,7 @@
             </div>
         </div>
 
-        <!-- MODAL 3: FUSEE Officers Contact Directory -->
+        <!-- MODAL 3: Dynamic FUSEE Officers Directory -->
         <div id="officers-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#130e2e] border-t border-fusee-purple/40 rounded-t-3xl z-50 p-5 space-y-4 max-h-[85vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-white/10 pb-3">
                 <div class="flex items-center space-x-2">
@@ -664,44 +774,10 @@
                 </button>
             </div>
 
-            <div class="space-y-2.5 text-xs">
-                <!-- Officer Item -->
-                <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-fusee-cyan to-blue-600 flex items-center justify-center font-bold text-slate-950 font-display text-xs">
-                        PRES
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-white text-xs">FUSEE President</h4>
-                        <p class="text-[10px] text-fusee-cyan font-medium">Executive Office</p>
-                        <p class="text-[10px] text-slate-400">fusee.president@addu.edu.ph</p>
-                    </div>
-                </div>
-
-                <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-fusee-magenta to-pink-600 flex items-center justify-center font-bold text-white font-display text-xs">
-                        LAB
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-white text-xs">EE Lab Manager / Officer</h4>
-                        <p class="text-[10px] text-fusee-magenta font-medium">Tool & Equipment Overseer</p>
-                        <p class="text-[10px] text-slate-400">fusee.lab@addu.edu.ph</p>
-                    </div>
-                </div>
-
-                <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-fusee-yellow to-amber-500 flex items-center justify-center font-bold text-slate-950 font-display text-xs">
-                        SEA
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-white text-xs">EE Department Chair</h4>
-                        <p class="text-[10px] text-fusee-yellow font-medium">SEA Faculty Office</p>
-                        <p class="text-[10px] text-slate-400">ee.department@addu.edu.ph</p>
-                    </div>
-                </div>
-            </div>
+            <div id="officers-display-container" class="space-y-2.5 text-xs"></div>
         </div>
 
-        <!-- MODAL 4: Frequently Asked Questions (FAQs) -->
+        <!-- MODAL 4: Dynamic Frequently Asked Questions (FAQs) -->
         <div id="faq-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#130e2e] border-t border-fusee-yellow/40 rounded-t-3xl z-50 p-5 space-y-4 max-h-[85vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-white/10 pb-3">
                 <div class="flex items-center space-x-2">
@@ -718,40 +794,10 @@
                 </button>
             </div>
 
-            <div class="space-y-2 text-xs">
-                <details class="group p-3 rounded-xl bg-slate-900/80 border border-slate-800">
-                    <summary class="font-semibold text-white cursor-pointer list-none flex justify-between items-center">
-                        <span>How do I borrow tools for home/overnight thesis use?</span>
-                        <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-open:rotate-180 transition"></i>
-                    </summary>
-                    <p class="mt-2 text-[11px] text-slate-300 leading-relaxed border-t border-slate-800 pt-2">
-                        Submit a request via the Tool Management System student link, then present your validated AdDU ID to the lab custodian in D204 along with your course instructor's approval slip.
-                    </p>
-                </details>
-
-                <details class="group p-3 rounded-xl bg-slate-900/80 border border-slate-800">
-                    <summary class="font-semibold text-white cursor-pointer list-none flex justify-between items-center">
-                        <span>What if I forget to log out of the computer lab?</span>
-                        <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-open:rotate-180 transition"></i>
-                    </summary>
-                    <p class="mt-2 text-[11px] text-slate-300 leading-relaxed border-t border-slate-800 pt-2">
-                        Sessions auto-close at 7:00 PM daily. However, failing to manually log out creates active duration flags on your account. Always click "Log Out" on the digital logbook before leaving workstation.
-                    </p>
-                </details>
-
-                <details class="group p-3 rounded-xl bg-slate-900/80 border border-slate-800">
-                    <summary class="font-semibold text-white cursor-pointer list-none flex justify-between items-center">
-                        <span>Can non-EE engineering students use the hardware logbook?</span>
-                        <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-open:rotate-180 transition"></i>
-                    </summary>
-                    <p class="mt-2 text-[11px] text-slate-300 leading-relaxed border-t border-slate-800 pt-2">
-                        Yes, provided they are enrolled in an interdisciplinary circuit/electronics course (e.g., ECE, ME, ChE) and have registered their student number in the system.
-                    </p>
-                </details>
-            </div>
+            <div id="faq-display-container" class="space-y-2 text-xs"></div>
         </div>
 
-        <!-- MODAL 5: Operating Hours Modal -->
+        <!-- MODAL 5: Dynamic Operating Hours Modal -->
         <div id="hours-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#130e2e] border-t border-emerald-500/40 rounded-t-3xl z-50 p-5 space-y-4 max-h-[85vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-white/10 pb-3">
                 <div class="flex items-center space-x-2">
@@ -771,26 +817,26 @@
             <div class="space-y-2 text-xs">
                 <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex justify-between items-center">
                     <div>
-                        <h4 class="font-bold text-white">D204 Tool Borrowing Room</h4>
+                        <h4 class="font-bold text-white">System 01 Equipment Room</h4>
                         <p class="text-[10px] text-slate-400">Monday - Friday</p>
                     </div>
-                    <span class="px-2.5 py-1 rounded bg-fusee-cyan/10 text-fusee-cyan font-bold text-[11px]">8:00 AM - 6:00 PM</span>
+                    <span id="sys1-modal-hours" class="px-2.5 py-1 rounded bg-fusee-cyan/10 text-fusee-cyan font-bold text-[11px]">8:00 AM - 6:00 PM</span>
                 </div>
 
                 <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex justify-between items-center">
                     <div>
-                        <h4 class="font-bold text-white">D202 Computer Laboratory</h4>
+                        <h4 class="font-bold text-white">System 02 Computer Laboratory</h4>
                         <p class="text-[10px] text-slate-400">Monday - Saturday</p>
                     </div>
-                    <span class="px-2.5 py-1 rounded bg-fusee-magenta/10 text-fusee-magenta font-bold text-[11px]">7:30 AM - 7:00 PM</span>
+                    <span id="sys2-modal-hours" class="px-2.5 py-1 rounded bg-fusee-magenta/10 text-fusee-magenta font-bold text-[11px]">7:30 AM - 7:00 PM</span>
                 </div>
 
                 <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex justify-between items-center">
                     <div>
-                        <h4 class="font-bold text-white">D205 Hardware Circuits Lab</h4>
+                        <h4 class="font-bold text-white">System 03 Hardware Circuits Lab</h4>
                         <p class="text-[10px] text-slate-400">Monday - Friday</p>
                     </div>
-                    <span class="px-2.5 py-1 rounded bg-fusee-yellow/10 text-fusee-yellow font-bold text-[11px]">8:00 AM - 6:00 PM</span>
+                    <span id="sys3-modal-hours" class="px-2.5 py-1 rounded bg-fusee-yellow/10 text-fusee-yellow font-bold text-[11px]">8:00 AM - 6:00 PM</span>
                 </div>
             </div>
         </div>
@@ -944,28 +990,28 @@
             });
         }
 
-        // Lab Status Simulation Switcher (Open / Maintenance / Closed)
-        let simState = 0; // 0 = OPEN, 1 = LIMITED, 2 = CLOSED
-        function toggleLabStatusSimulation() {
-            simState = (simState + 1) % 3;
+        // Global Lab Status Setter (Invoked by Firestore & manual toggle)
+        window.setGlobalStatusUI = function(status) {
             const simIndicator = document.getElementById('sim-indicator');
             const simText = document.getElementById('sim-text');
             const statusBadges = document.querySelectorAll('.status-badge');
 
-            if (simState === 0) {
-                simIndicator.className = 'w-2 h-2 rounded-full bg-fusee-lime animate-ping';
-                simText.className = 'font-semibold text-fusee-lime';
-                simText.textContent = 'ALL OPEN';
-
+            if (status === 'ALL OPEN') {
+                if (simIndicator) simIndicator.className = 'w-2 h-2 rounded-full bg-fusee-lime animate-ping';
+                if (simText) {
+                    simText.className = 'font-semibold text-fusee-lime';
+                    simText.textContent = 'ALL OPEN';
+                }
                 statusBadges.forEach(badge => {
                     badge.className = 'status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1';
                     badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OPEN NOW';
                 });
-            } else if (simState === 1) {
-                simIndicator.className = 'w-2 h-2 rounded-full bg-fusee-yellow animate-ping';
-                simText.className = 'font-semibold text-fusee-yellow';
-                simText.textContent = 'LIMITED';
-
+            } else if (status === 'LIMITED') {
+                if (simIndicator) simIndicator.className = 'w-2 h-2 rounded-full bg-fusee-yellow animate-ping';
+                if (simText) {
+                    simText.className = 'font-semibold text-fusee-yellow';
+                    simText.textContent = 'LIMITED';
+                }
                 statusBadges.forEach((badge, idx) => {
                     if (idx === 0) {
                         badge.className = 'status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1';
@@ -976,15 +1022,24 @@
                     }
                 });
             } else {
-                simIndicator.className = 'w-2 h-2 rounded-full bg-fusee-magenta animate-ping';
-                simText.className = 'font-semibold text-fusee-magenta';
-                simText.textContent = 'CLOSED';
-
+                if (simIndicator) simIndicator.className = 'w-2 h-2 rounded-full bg-fusee-magenta animate-ping';
+                if (simText) {
+                    simText.className = 'font-semibold text-fusee-magenta';
+                    simText.textContent = 'CLOSED';
+                }
                 statusBadges.forEach(badge => {
                     badge.className = 'status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center gap-1';
                     badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> CLOSED';
                 });
             }
+        };
+
+        // Manual Lab Status Toggle Button Handler
+        let simState = 0; // 0 = OPEN, 1 = LIMITED, 2 = CLOSED
+        function toggleLabStatusSimulation() {
+            simState = (simState + 1) % 3;
+            const states = ['ALL OPEN', 'LIMITED', 'CLOSED'];
+            window.setGlobalStatusUI(states[simState]);
         }
 
         // Bottom Sheet & Modal Controls
@@ -995,7 +1050,6 @@
             if (backdrop && modal) {
                 backdrop.classList.remove('hidden');
                 setTimeout(() => backdrop.classList.add('opacity-100'), 10);
-                
                 modal.classList.remove('hidden-sheet');
             }
         }
