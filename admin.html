@@ -120,9 +120,27 @@
             </div>
 
             <!-- Card 1 Config -->
-            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
-                <h3 class="text-xs font-extrabold text-fusee-cyan uppercase">System 01 • EE Tool Management System</h3>
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h3 class="text-xs font-extrabold text-fusee-cyan uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-wrench"></i> System 01 Configuration
+                    </h3>
+                    <span class="text-[10px] text-slate-400 font-mono">EQUIPMENT & TOOL MANAGEMENT</span>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="block text-slate-400 mb-1">System Header Tag</label>
+                        <input type="text" id="sys1-tag" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="SYSTEM 01 • EQUIPMENT">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">System Title / Name</label>
+                        <input type="text" id="sys1-title" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="EE Laboratory Tool Management System">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-slate-400 mb-1">System Description</label>
+                        <textarea id="sys1-desc" rows="2" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="Description of System 01..."></textarea>
+                    </div>
                     <div>
                         <label class="block text-slate-400 mb-1">Location</label>
                         <input type="text" id="sys1-location" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
@@ -131,21 +149,68 @@
                         <label class="block text-slate-400 mb-1">Operating Hours</label>
                         <input type="text" id="sys1-hours" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
                     </div>
-                    <div class="md:col-span-2">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Student Portal Button Label</label>
+                        <input type="text" id="sys1-student-label" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="Access Student Portal">
+                    </div>
+                    <div>
                         <label class="block text-slate-400 mb-1">Student Portal Link URL</label>
                         <input type="text" id="sys1-student-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
                     </div>
-                    <div class="md:col-span-2">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Staff / Admin Button Label</label>
+                        <input type="text" id="sys1-admin-label" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="Staff / Admin Login">
+                    </div>
+                    <div>
                         <label class="block text-slate-400 mb-1">Staff / Admin Login Link URL</label>
                         <input type="text" id="sys1-admin-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    </div>
+                </div>
+
+                <!-- System 1 Tool Guidelines Editing -->
+                <div class="p-3 rounded-lg bg-slate-950/50 border border-fusee-cyan/30 space-y-3">
+                    <h4 class="text-xs font-bold text-fusee-cyan flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-info"></i> Tool Guidelines Configuration
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1">Guidelines Title / Button Text</label>
+                            <input type="text" id="sys1-guidelines-title" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="Tool Guidelines">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">External Link URL (Optional)</label>
+                            <input type="text" id="sys1-guidelines-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="https://... (or leave empty for popup content)">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-slate-400 mb-1">Tool Guidelines Text Content / Rules</label>
+                            <textarea id="sys1-guidelines-content" rows="3" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-sans" placeholder="Enter tool guidelines, borrowing rules, and safety conditions..."></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Card 2 Config -->
-            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
-                <h3 class="text-xs font-extrabold text-fusee-magenta uppercase">System 02 • Computer Lab Logbook</h3>
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h3 class="text-xs font-extrabold text-fusee-magenta uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-desktop"></i> System 02 Configuration
+                    </h3>
+                    <span class="text-[10px] text-slate-400 font-mono">WORKSTATIONS & COMPUTER LAB</span>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="block text-slate-400 mb-1">System Header Tag</label>
+                        <input type="text" id="sys2-tag" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="SYSTEM 02 • WORKSTATIONS">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">System Title / Name</label>
+                        <input type="text" id="sys2-title" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="EE Computer Lab Digital Logbook">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-slate-400 mb-1">System Description</label>
+                        <textarea id="sys2-desc" rows="2" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="Description of System 02..."></textarea>
+                    </div>
                     <div>
                         <label class="block text-slate-400 mb-1">Location</label>
                         <input type="text" id="sys2-location" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
@@ -154,17 +219,64 @@
                         <label class="block text-slate-400 mb-1">Operating Hours</label>
                         <input type="text" id="sys2-hours" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
                     </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Status Badge / Workstation Count Text</label>
+                        <input type="text" id="sys2-badge" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="40 Active Workstations">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Logbook Button Label</label>
+                        <input type="text" id="sys2-btn-label" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="Open Computer Lab Logbook">
+                    </div>
                     <div class="md:col-span-2">
-                        <label class="block text-slate-400 mb-1">Digital Logbook Portal URL</label>
+                        <label class="block text-slate-400 mb-1">Digital Logbook Portal Link URL</label>
                         <input type="text" id="sys2-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    </div>
+                </div>
+
+                <!-- System 2 Workstation Policies Editing -->
+                <div class="p-3 rounded-lg bg-slate-950/50 border border-fusee-magenta/30 space-y-3">
+                    <h4 class="text-xs font-bold text-fusee-magenta flex items-center gap-1.5">
+                        <i class="fa-solid fa-laptop-code"></i> Workstation Policies & PC Rules Configuration
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1">Policies Title / Button Text</label>
+                            <input type="text" id="sys2-policies-title" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="Workstation Policies & PC Rules">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">External Link URL (Optional)</label>
+                            <input type="text" id="sys2-policies-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="https://... (or leave empty for popup content)">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-slate-400 mb-1">Workstation Policies Content / PC Rules</label>
+                            <textarea id="sys2-policies-content" rows="3" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-sans" placeholder="Enter computer lab policies, software rules, and PC guidelines..."></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Card 3 Config -->
-            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
-                <h3 class="text-xs font-extrabold text-fusee-yellow uppercase">System 03 • Hardware Lab Logbook</h3>
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h3 class="text-xs font-extrabold text-fusee-yellow uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-microchip"></i> System 03 Configuration
+                    </h3>
+                    <span class="text-[10px] text-slate-400 font-mono">CIRCUITS & BENCHES</span>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="block text-slate-400 mb-1">System Header Tag</label>
+                        <input type="text" id="sys3-tag" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="SYSTEM 03 • CIRCUITS & BENCHES">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">System Title / Name</label>
+                        <input type="text" id="sys3-title" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="EE Laboratory Digital Logbook">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-slate-400 mb-1">System Description</label>
+                        <textarea id="sys3-desc" rows="2" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="Description of System 03..."></textarea>
+                    </div>
                     <div>
                         <label class="block text-slate-400 mb-1">Location</label>
                         <input type="text" id="sys3-location" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
@@ -173,9 +285,38 @@
                         <label class="block text-slate-400 mb-1">Operating Hours</label>
                         <input type="text" id="sys3-hours" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
                     </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Status Badge / Check-In Note Text</label>
+                        <input type="text" id="sys3-badge" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="Mandatory Check-In">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Hardware Logbook Button Label</label>
+                        <input type="text" id="sys3-btn-label" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="Access Hardware Lab Logbook">
+                    </div>
                     <div class="md:col-span-2">
-                        <label class="block text-slate-400 mb-1">Hardware Logbook Portal URL</label>
+                        <label class="block text-slate-400 mb-1">Hardware Logbook Portal Link URL</label>
                         <input type="text" id="sys3-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    </div>
+                </div>
+
+                <!-- System 3 Electrical Safety & Bench Guidelines Editing -->
+                <div class="p-3 rounded-lg bg-slate-950/50 border border-fusee-yellow/30 space-y-3">
+                    <h4 class="text-xs font-bold text-fusee-yellow flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved"></i> Electrical Safety & Bench Guidelines Configuration
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1">Guidelines Title / Button Text</label>
+                            <input type="text" id="sys3-guidelines-title" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="Electrical Safety & Bench Guidelines">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">External Link URL (Optional)</label>
+                            <input type="text" id="sys3-guidelines-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="https://... (or leave empty for popup content)">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-slate-400 mb-1">Safety & Bench Guidelines Content / Rules</label>
+                            <textarea id="sys3-guidelines-content" rows="3" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-sans" placeholder="Enter electrical safety rules, bench handling procedures, and lab protocols..."></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -265,29 +406,53 @@
             tickerText: "⚡ EE Hardware Lab: Equipment checkouts close early at 4:30 PM on Fridays • 💻 Computer Lab PC Maintenance scheduled this Saturday • 📢 Always bring your ADDU Student ID for verification",
             globalStatus: "ALL OPEN",
             sys1: {
-                location: "D204 EE Hardware Lab",
-                hours: "8:00 AM - 6:00 PM",
+                tag: "SYSTEM 01 • EQUIPMENT",
+                title: "EE Laboratory Tool Management System",
+                description: "Borrow and manage hardware tools, oscilloscopes, digital multimeters, power supplies, and component kits for your laboratory sessions.",
+                location: "R212B EE Laboratory",
+                hours: "7:30 AM – 6:00 PM",
+                studentLabel: "Access Student Portal",
                 studentUrl: "https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/student.html",
-                adminUrl: "https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/login.html"
+                adminLabel: "Staff / Admin Login",
+                adminUrl: "https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/login.html",
+                guidelinesTitle: "Tool Guidelines",
+                guidelinesContent: "1. Always present validated AdDU Student ID before borrowing tools.\n2. Inspect all equipment and component kits for damage before leaving the bench.\n3. Return all borrowed tools clean, intact, and on time before lab closing hours.",
+                guidelinesUrl: ""
             },
             sys2: {
-                location: "D202 Computer Lab",
-                hours: "7:30 AM - 7:00 PM",
-                url: "https://kjcmendoza-cmyk.github.io/Digital-Logbook/"
+                tag: "SYSTEM 02 • WORKSTATIONS",
+                title: "EE Computer Lab Digital Logbook",
+                description: "Log in/out for EE Computer Lab workstation access, simulation software sessions (MATLAB, ETAP, AutoCAD, Proteus), and project coding.",
+                location: "R202C EE Computer Laboratory",
+                hours: "7:30 AM – 9:00 PM",
+                badge: "40 Active Workstations",
+                btnLabel: "Open Computer Lab Logbook",
+                url: "https://kjcmendoza-cmyk.github.io/Digital-Logbook/",
+                policiesTitle: "Workstation Policies & PC Rules",
+                policiesContent: "1. Food and open drinks are strictly prohibited near workstation PCs.\n2. Always log out of your session when finished.\n3. Unsafe file downloads and unauthorized system changes are strictly monitored.",
+                policiesUrl: ""
             },
             sys3: {
-                location: "D205 Electronics Lab",
-                hours: "8:00 AM - 6:00 PM",
-                url: "https://kjcmendoza-cmyk.github.io/EE-Laboratory-Digital-Logbook/login.html"
+                tag: "SYSTEM 03 • CIRCUITS & BENCHES",
+                title: "EE Laboratory Digital Logbook",
+                description: "Mandatory digital check-in logbook for all hands-on hardware lab classes, circuit testing, project bench work, and thesis experiments.",
+                location: "R212B EE Laboratory",
+                hours: "7:30 AM – 6:00 PM",
+                badge: "Mandatory Check-In",
+                btnLabel: "Access Hardware Lab Logbook",
+                url: "https://kjcmendoza-cmyk.github.io/EE-Laboratory-Digital-Logbook/login.html",
+                guidelinesTitle: "Electrical Safety & Bench Guidelines",
+                guidelinesContent: "1. Power off all bench sources before wiring or modifying circuit breadboards.\n2. Wear protective equipment (safety glasses) during soldering or high-voltage tests.\n3. Report faulty electrical outlets, exposed conductors, or bench equipment immediately.",
+                guidelinesUrl: ""
             },
             faqs: [
                 {
                     q: "How do I borrow tools for home/overnight thesis use?",
-                    a: "Submit a request via the Tool Management System student link, then present your validated AdDU ID to the lab custodian in D204 along with your course instructor's approval slip."
+                    a: "Submit a request via the Tool Management System student link, then present your validated AdDU ID to the lab custodian in R212B along with your course instructor's approval slip."
                 },
                 {
                     q: "What if I forget to log out of the computer lab?",
-                    a: "Sessions auto-close at 7:00 PM daily. However, failing to manually log out creates active duration flags on your account."
+                    a: "Sessions auto-close at 9:00 PM daily. However, failing to manually log out creates active duration flags on your account."
                 }
             ],
             officers: [
@@ -305,18 +470,45 @@
             document.getElementById('ticker-text').value = data.tickerText || defaultData.tickerText;
             document.getElementById('global-status-select').value = data.globalStatus || "ALL OPEN";
 
+            // System 1
+            document.getElementById('sys1-tag').value = data.sys1?.tag || defaultData.sys1.tag;
+            document.getElementById('sys1-title').value = data.sys1?.title || defaultData.sys1.title;
+            document.getElementById('sys1-desc').value = data.sys1?.description || defaultData.sys1.description;
             document.getElementById('sys1-location').value = data.sys1?.location || defaultData.sys1.location;
             document.getElementById('sys1-hours').value = data.sys1?.hours || defaultData.sys1.hours;
+            document.getElementById('sys1-student-label').value = data.sys1?.studentLabel || defaultData.sys1.studentLabel;
             document.getElementById('sys1-student-url').value = data.sys1?.studentUrl || defaultData.sys1.studentUrl;
+            document.getElementById('sys1-admin-label').value = data.sys1?.adminLabel || defaultData.sys1.adminLabel;
             document.getElementById('sys1-admin-url').value = data.sys1?.adminUrl || defaultData.sys1.adminUrl;
+            document.getElementById('sys1-guidelines-title').value = data.sys1?.guidelinesTitle || defaultData.sys1.guidelinesTitle;
+            document.getElementById('sys1-guidelines-content').value = data.sys1?.guidelinesContent || defaultData.sys1.guidelinesContent;
+            document.getElementById('sys1-guidelines-url').value = data.sys1?.guidelinesUrl || defaultData.sys1.guidelinesUrl;
 
+            // System 2
+            document.getElementById('sys2-tag').value = data.sys2?.tag || defaultData.sys2.tag;
+            document.getElementById('sys2-title').value = data.sys2?.title || defaultData.sys2.title;
+            document.getElementById('sys2-desc').value = data.sys2?.description || defaultData.sys2.description;
             document.getElementById('sys2-location').value = data.sys2?.location || defaultData.sys2.location;
             document.getElementById('sys2-hours').value = data.sys2?.hours || defaultData.sys2.hours;
+            document.getElementById('sys2-badge').value = data.sys2?.badge || defaultData.sys2.badge;
+            document.getElementById('sys2-btn-label').value = data.sys2?.btnLabel || defaultData.sys2.btnLabel;
             document.getElementById('sys2-url').value = data.sys2?.url || defaultData.sys2.url;
+            document.getElementById('sys2-policies-title').value = data.sys2?.policiesTitle || defaultData.sys2.policiesTitle;
+            document.getElementById('sys2-policies-content').value = data.sys2?.policiesContent || defaultData.sys2.policiesContent;
+            document.getElementById('sys2-policies-url').value = data.sys2?.policiesUrl || defaultData.sys2.policiesUrl;
 
+            // System 3
+            document.getElementById('sys3-tag').value = data.sys3?.tag || defaultData.sys3.tag;
+            document.getElementById('sys3-title').value = data.sys3?.title || defaultData.sys3.title;
+            document.getElementById('sys3-desc').value = data.sys3?.description || defaultData.sys3.description;
             document.getElementById('sys3-location').value = data.sys3?.location || defaultData.sys3.location;
             document.getElementById('sys3-hours').value = data.sys3?.hours || defaultData.sys3.hours;
+            document.getElementById('sys3-badge').value = data.sys3?.badge || defaultData.sys3.badge;
+            document.getElementById('sys3-btn-label').value = data.sys3?.btnLabel || defaultData.sys3.btnLabel;
             document.getElementById('sys3-url').value = data.sys3?.url || defaultData.sys3.url;
+            document.getElementById('sys3-guidelines-title').value = data.sys3?.guidelinesTitle || defaultData.sys3.guidelinesTitle;
+            document.getElementById('sys3-guidelines-content').value = data.sys3?.guidelinesContent || defaultData.sys3.guidelinesContent;
+            document.getElementById('sys3-guidelines-url').value = data.sys3?.guidelinesUrl || defaultData.sys3.guidelinesUrl;
 
             document.getElementById('banner-title').value = data.banner?.title || defaultData.banner.title;
             document.getElementById('banner-body').value = data.banner?.body || defaultData.banner.body;
@@ -337,72 +529,96 @@
         }
 
         window.saveDataToFirebase = async function() {
-    const saveBtn = document.getElementById('save-all-btn');
-    if (!saveBtn) return;
+            const saveBtn = document.getElementById('save-all-btn');
+            if (!saveBtn) return;
 
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
 
-    try {
-        // Safe query for FAQs using optional chaining
-        const faqs = [];
-        document.querySelectorAll('.faq-item-row').forEach(row => {
-            const q = row.querySelector('.faq-q-input')?.value?.trim() || '';
-            const a = row.querySelector('.faq-a-input')?.value?.trim() || '';
-            if (q && a) faqs.push({ q, a });
-        });
+            try {
+                // Safe query for FAQs
+                const faqs = [];
+                document.querySelectorAll('.faq-item-row').forEach(row => {
+                    const q = row.querySelector('.faq-q-input')?.value?.trim() || '';
+                    const a = row.querySelector('.faq-a-input')?.value?.trim() || '';
+                    if (q && a) faqs.push({ q, a });
+                });
 
-        // Safe query for Officers
-        const officers = [];
-        document.querySelectorAll('.officer-item-row').forEach(row => {
-            const title = row.querySelector('.off-title-input')?.value?.trim() || '';
-            const dept = row.querySelector('.off-dept-input')?.value?.trim() || '';
-            const email = row.querySelector('.off-email-input')?.value?.trim() || '';
-            const badge = row.querySelector('.off-badge-input')?.value?.trim() || 'EE';
-            if (title && email) officers.push({ title, dept, email, badge });
-        });
+                // Safe query for Officers
+                const officers = [];
+                document.querySelectorAll('.officer-item-row').forEach(row => {
+                    const title = row.querySelector('.off-title-input')?.value?.trim() || '';
+                    const dept = row.querySelector('.off-dept-input')?.value?.trim() || '';
+                    const email = row.querySelector('.off-email-input')?.value?.trim() || '';
+                    const badge = row.querySelector('.off-badge-input')?.value?.trim() || 'EE';
+                    if (title && email) officers.push({ title, dept, email, badge });
+                });
 
-        // Build updated object safely
-        const updatedData = {
-            tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
-            globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
-            sys1: {
-                location: document.getElementById('sys1-location')?.value?.trim() || '',
-                hours: document.getElementById('sys1-hours')?.value?.trim() || '',
-                studentUrl: document.getElementById('sys1-student-url')?.value?.trim() || '',
-                adminUrl: document.getElementById('sys1-admin-url')?.value?.trim() || ''
-            },
-            sys2: {
-                location: document.getElementById('sys2-location')?.value?.trim() || '',
-                hours: document.getElementById('sys2-hours')?.value?.trim() || '',
-                url: document.getElementById('sys2-url')?.value?.trim() || ''
-            },
-            sys3: {
-                location: document.getElementById('sys3-location')?.value?.trim() || '',
-                hours: document.getElementById('sys3-hours')?.value?.trim() || '',
-                url: document.getElementById('sys3-url')?.value?.trim() || ''
-            },
-            faqs,
-            officers,
-            banner: {
-                title: document.getElementById('banner-title')?.value?.trim() || '',
-                body: document.getElementById('banner-body')?.value?.trim() || ''
-            },
-            updatedAt: new Date().toISOString()
+                // Build updated object safely
+                const updatedData = {
+                    tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
+                    globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
+                    sys1: {
+                        tag: document.getElementById('sys1-tag')?.value?.trim() || '',
+                        title: document.getElementById('sys1-title')?.value?.trim() || '',
+                        description: document.getElementById('sys1-desc')?.value?.trim() || '',
+                        location: document.getElementById('sys1-location')?.value?.trim() || '',
+                        hours: document.getElementById('sys1-hours')?.value?.trim() || '',
+                        studentLabel: document.getElementById('sys1-student-label')?.value?.trim() || '',
+                        studentUrl: document.getElementById('sys1-student-url')?.value?.trim() || '',
+                        adminLabel: document.getElementById('sys1-admin-label')?.value?.trim() || '',
+                        adminUrl: document.getElementById('sys1-admin-url')?.value?.trim() || '',
+                        guidelinesTitle: document.getElementById('sys1-guidelines-title')?.value?.trim() || '',
+                        guidelinesContent: document.getElementById('sys1-guidelines-content')?.value?.trim() || '',
+                        guidelinesUrl: document.getElementById('sys1-guidelines-url')?.value?.trim() || ''
+                    },
+                    sys2: {
+                        tag: document.getElementById('sys2-tag')?.value?.trim() || '',
+                        title: document.getElementById('sys2-title')?.value?.trim() || '',
+                        description: document.getElementById('sys2-desc')?.value?.trim() || '',
+                        location: document.getElementById('sys2-location')?.value?.trim() || '',
+                        hours: document.getElementById('sys2-hours')?.value?.trim() || '',
+                        badge: document.getElementById('sys2-badge')?.value?.trim() || '',
+                        btnLabel: document.getElementById('sys2-btn-label')?.value?.trim() || '',
+                        url: document.getElementById('sys2-url')?.value?.trim() || '',
+                        policiesTitle: document.getElementById('sys2-policies-title')?.value?.trim() || '',
+                        policiesContent: document.getElementById('sys2-policies-content')?.value?.trim() || '',
+                        policiesUrl: document.getElementById('sys2-policies-url')?.value?.trim() || ''
+                    },
+                    sys3: {
+                        tag: document.getElementById('sys3-tag')?.value?.trim() || '',
+                        title: document.getElementById('sys3-title')?.value?.trim() || '',
+                        description: document.getElementById('sys3-desc')?.value?.trim() || '',
+                        location: document.getElementById('sys3-location')?.value?.trim() || '',
+                        hours: document.getElementById('sys3-hours')?.value?.trim() || '',
+                        badge: document.getElementById('sys3-badge')?.value?.trim() || '',
+                        btnLabel: document.getElementById('sys3-btn-label')?.value?.trim() || '',
+                        url: document.getElementById('sys3-url')?.value?.trim() || '',
+                        guidelinesTitle: document.getElementById('sys3-guidelines-title')?.value?.trim() || '',
+                        guidelinesContent: document.getElementById('sys3-guidelines-content')?.value?.trim() || '',
+                        guidelinesUrl: document.getElementById('sys3-guidelines-url')?.value?.trim() || ''
+                    },
+                    faqs,
+                    officers,
+                    banner: {
+                        title: document.getElementById('banner-title')?.value?.trim() || '',
+                        body: document.getElementById('banner-body')?.value?.trim() || ''
+                    },
+                    updatedAt: new Date().toISOString()
+                };
+
+                // Write to Firestore with timeout fallback
+                await withTimeout(setDoc(docRef, updatedData), 8000);
+                showToast("All changes published to FUSEE Hub live!");
+            } catch (err) {
+                console.error("Save error:", err);
+                showToast(err.message || "Failed to save changes. Check Firebase Security Rules.", true);
+            } finally {
+                // Guaranteed button state recovery
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk text-sm"></i> <span>Publish Changes</span>';
+            }
         };
-
-        // Write to Firestore with timeout fallback
-        await withTimeout(setDoc(docRef, updatedData), 8000);
-        showToast("All changes published to FUSEE Hub live!");
-    } catch (err) {
-        console.error("Save error:", err);
-        showToast(err.message || "Failed to save changes. Check Firebase Security Rules.", true);
-    } finally {
-        // Guaranteed button state recovery
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk text-sm"></i> <span>Publish Changes</span>';
-    }
-};
 
         function renderFaqs(list) {
             const container = document.getElementById('faq-container');
