@@ -685,48 +685,26 @@
                 </div>
             </section>
 
-            <!-- Inspiration & Brand Showcase Card -->
-            <section class="glass-card rounded-2xl p-4 md:p-6 bg-gradient-to-br from-indigo-950/80 via-purple-950/60 to-slate-900/90 border border-fusee-cyan/30 relative overflow-hidden my-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                    <!-- Visual Art Cards with Fallback -->
-                    <div class="flex gap-2 justify-center md:justify-start">
-                        <div class="relative w-28 md:w-36 h-20 md:h-24 rounded-xl overflow-hidden border border-white/20 shadow-lg bg-slate-900 flex-shrink-0 flex items-center justify-center">
-                            <img src="EE BRANDING 2.png" alt="EE Vision" class="w-full h-full object-cover" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
-                            <div class="hidden w-full h-full bg-gradient-to-tr from-fusee-cyan/20 to-fusee-purple/30 flex flex-col items-center justify-center p-1 text-center">
-                                <i class="fa-solid fa-lightbulb text-fusee-cyan text-lg mb-1"></i>
-                                <span class="text-[9px] font-pixel text-fusee-cyan">EE VISION</span>
-                            </div>
-                        </div>
-                        <div class="relative w-28 md:w-36 h-20 md:h-24 rounded-xl overflow-hidden border border-white/20 shadow-lg bg-slate-900 flex-shrink-0 hidden sm:flex items-center justify-center">
-                            <img src="EE BRANDING 3.png" alt="To Infinitee and Beeyond" class="w-full h-full object-cover" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
-                            <div class="hidden w-full h-full bg-gradient-to-tr from-fusee-magenta/20 to-fusee-yellow/30 flex flex-col items-center justify-center p-1 text-center">
-                                <i class="fa-solid fa-atom text-fusee-magenta text-lg mb-1"></i>
-                                <span class="text-[9px] font-pixel text-fusee-yellow">BEEYOND</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Text Content -->
-                    <div class="md:col-span-2 text-center md:text-left space-y-2">
-                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-fusee-yellow/20 text-fusee-yellow text-[10px] font-pixel border border-fusee-yellow/30">
-                            <i class="fa-solid fa-rocket"></i>
-                            <span>THEME 2026</span>
-                        </div>
-                        
-                        <h3 id="banner-display-title" class="font-pixel text-xs md:text-sm text-white tracking-wider uppercase">
-                            TO INFINITEE AND BEEYOND
-                        </h3>
-                        
-                        <p id="banner-display-body" class="text-xs text-slate-300 italic leading-relaxed">
-                            "Like wires that weave strength through every circuit and create connections across every bridge, electrical engineering transforms ideas into systems that power progress."
-                        </p>
-                        
-                        <p class="font-techno text-[10px] font-bold tracking-widest text-fusee-cyan uppercase pt-1">
-                            Ateneo de Davao University • MAGIS 2026
-                        </p>
-                    </div>
+            <!-- Fused Brand Panorama Showcase (Full Vertical Display) -->
+        <section class="my-6">
+            <div class="relative rounded-2xl overflow-hidden border-2 border-fusee-cyan/40 shadow-neon-cyan grid grid-cols-2 gap-0 bg-[#0B081E] group">
+                
+                <!-- Left Artwork: EE BRANDING 3 -->
+                <div class="relative w-full overflow-hidden flex items-center justify-center">
+                    <img src="EE BRANDING 3.png" alt="EE Branding Left" 
+                         class="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-500 block"
+                         onerror="this.onerror=null; this.src='EE BRANDING 3.JPG';">
                 </div>
-            </section>
+
+                <!-- Right Artwork: EE BRANDING 2 -->
+                <div class="relative w-full overflow-hidden flex items-center justify-center">
+                    <img src="EE BRANDING 2.png" alt="EE Branding Right" 
+                         class="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-500 block"
+                         onerror="this.onerror=null; this.src='EE BRANDING 2.JPG';">
+                </div>
+
+            </div>
+        </section>
 
             <!-- Footer Meta -->
             <footer class="text-center pt-2 pb-6 space-y-1">
