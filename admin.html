@@ -8,10 +8,10 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Orbitron, Silkscreen, Space Grotesk & Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -35,7 +35,9 @@
                     },
                     fontFamily: {
                         sans: ['Plus Jakarta Sans', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif']
+                        display: ['Space Grotesk', 'sans-serif'],
+                        pixel: ['Silkscreen', 'monospace'],
+                        techno: ['Orbitron', 'sans-serif']
                     }
                 }
             }
@@ -47,33 +49,57 @@
             background-color: #0B081E;
             color: #E2E8F0;
             font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
         }
+
+        /* Stipple Grain Texture Overlay for Brand Authenticity */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.055;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
         .glass-panel {
-            background: rgba(19, 14, 46, 0.75);
+            background: rgba(19, 14, 46, 0.78);
             backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(28, 20, 64, 0.75) 0%, rgba(15, 10, 36, 0.88) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
     </style>
 </head>
-<body class="min-h-screen pb-12 antialiased">
+<body class="min-h-screen pb-12 antialiased relative">
 
     <!-- Header Bar -->
-    <header class="sticky top-0 z-50 glass-panel border-b border-white/10 px-6 py-4 flex items-center justify-between">
+    <header class="sticky top-0 z-50 glass-panel border-b border-white/10 px-4 md:px-8 py-4 flex items-center justify-between">
         <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-fusee-cyan via-fusee-magenta to-fusee-yellow p-[2px]">
-                <div class="w-full h-full bg-[#0B081E] rounded-[10px] flex items-center justify-center font-display font-black text-xs text-fusee-cyan">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-fusee-cyan via-fusee-magenta to-fusee-yellow p-[2px] shadow-lg shadow-cyan-500/20">
+                <div class="w-full h-full bg-[#0B081E] rounded-[10px] flex items-center justify-center font-pixel text-xs text-fusee-cyan">
                     ADM
                 </div>
             </div>
             <div>
-                <h1 class="text-lg font-black font-display text-white tracking-tight flex items-center gap-2">
-                    FUSEE HUB <span class="px-2 py-0.5 text-[10px] bg-fusee-cyan/20 text-fusee-cyan rounded border border-fusee-cyan/30">ADMIN PORTAL</span>
+                <h1 class="text-base md:text-lg font-black font-techno text-white tracking-wider flex items-center gap-2">
+                    FUSEE HUB <span class="px-2 py-0.5 text-[9px] font-pixel bg-fusee-cyan/20 text-fusee-cyan rounded border border-fusee-cyan/30">ADMIN PORTAL</span>
                 </h1>
-                <p class="text-xs text-slate-400">Manage real-time dynamic content across FUSEE Hub</p>
+                <p class="text-xs text-slate-400">Manage real-time dynamic content & system rules across FUSEE Hub</p>
             </div>
         </div>
 
-        <button id="save-all-btn" onclick="saveDataToFirebase()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-fusee-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs flex items-center gap-2 transition shadow-lg shadow-cyan-500/20 active:scale-95">
+        <button id="save-all-btn" onclick="saveDataToFirebase()" class="px-4 md:px-6 py-2.5 rounded-xl bg-gradient-to-r from-fusee-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs flex items-center gap-2 transition shadow-lg shadow-cyan-500/20 active:scale-95">
             <i class="fa-solid fa-floppy-disk text-sm"></i>
             <span>Publish Changes</span>
         </button>
@@ -85,14 +111,14 @@
         <span id="toast-text">Changes published to Firebase successfully!</span>
     </div>
 
-    <!-- Main Container -->
-    <main class="max-w-4xl mx-auto px-4 pt-6 space-y-6">
+    <!-- Main Responsive Workspace Container -->
+    <main class="max-w-5xl lg:max-w-6xl mx-auto px-4 md:px-6 pt-6 space-y-6 relative z-10">
 
         <!-- SECTION 1: Notice Ticker & Lab Status -->
-        <section class="glass-panel p-6 rounded-2xl space-y-4 border border-fusee-cyan/20">
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-cyan/30">
             <div class="flex items-center space-x-2 border-b border-white/10 pb-3">
                 <i class="fa-solid fa-bullhorn text-fusee-cyan"></i>
-                <h2 class="font-display font-bold text-sm text-white uppercase tracking-wider">1. Notice Ticker & Global Lab Status</h2>
+                <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">1. Notice Ticker & Global Lab Status</h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -113,19 +139,19 @@
         </section>
 
         <!-- SECTION 2: System Cards (Equipment, ComLab, Hardware) -->
-        <section class="glass-panel p-6 rounded-2xl space-y-6 border border-fusee-magenta/20">
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-6 border border-fusee-magenta/30">
             <div class="flex items-center space-x-2 border-b border-white/10 pb-3">
                 <i class="fa-solid fa-layer-group text-fusee-magenta"></i>
-                <h2 class="font-display font-bold text-sm text-white uppercase tracking-wider">2. System Cards Configuration</h2>
+                <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">2. System Cards Configuration</h2>
             </div>
 
             <!-- Card 1 Config -->
             <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                    <h3 class="text-xs font-extrabold text-fusee-cyan uppercase flex items-center gap-2">
+                    <h3 class="text-xs font-extrabold text-fusee-cyan uppercase flex items-center gap-2 font-techno">
                         <i class="fa-solid fa-wrench"></i> System 01 Configuration
                     </h3>
-                    <span class="text-[10px] text-slate-400 font-mono">EQUIPMENT & TOOL MANAGEMENT</span>
+                    <span class="text-[10px] text-slate-400 font-pixel">EQUIPMENT & TOOL MANAGEMENT</span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
@@ -168,8 +194,8 @@
                 </div>
 
                 <!-- System 1 Tool Guidelines Editing -->
-                <div class="p-3 rounded-lg bg-slate-950/50 border border-fusee-cyan/30 space-y-3">
-                    <h4 class="text-xs font-bold text-fusee-cyan flex items-center gap-1.5">
+                <div class="p-3.5 rounded-lg bg-slate-950/50 border border-fusee-cyan/30 space-y-3">
+                    <h4 class="text-xs font-bold text-fusee-cyan flex items-center gap-1.5 font-techno">
                         <i class="fa-solid fa-circle-info"></i> Tool Guidelines Configuration
                     </h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
@@ -192,10 +218,10 @@
             <!-- Card 2 Config -->
             <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                    <h3 class="text-xs font-extrabold text-fusee-magenta uppercase flex items-center gap-2">
+                    <h3 class="text-xs font-extrabold text-fusee-magenta uppercase flex items-center gap-2 font-techno">
                         <i class="fa-solid fa-desktop"></i> System 02 Configuration
                     </h3>
-                    <span class="text-[10px] text-slate-400 font-mono">WORKSTATIONS & COMPUTER LAB</span>
+                    <span class="text-[10px] text-slate-400 font-pixel">WORKSTATIONS & COMPUTER LAB</span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
@@ -234,8 +260,8 @@
                 </div>
 
                 <!-- System 2 Workstation Policies Editing -->
-                <div class="p-3 rounded-lg bg-slate-950/50 border border-fusee-magenta/30 space-y-3">
-                    <h4 class="text-xs font-bold text-fusee-magenta flex items-center gap-1.5">
+                <div class="p-3.5 rounded-lg bg-slate-950/50 border border-fusee-magenta/30 space-y-3">
+                    <h4 class="text-xs font-bold text-fusee-magenta flex items-center gap-1.5 font-techno">
                         <i class="fa-solid fa-laptop-code"></i> Workstation Policies & PC Rules Configuration
                     </h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
@@ -258,10 +284,10 @@
             <!-- Card 3 Config -->
             <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                    <h3 class="text-xs font-extrabold text-fusee-yellow uppercase flex items-center gap-2">
+                    <h3 class="text-xs font-extrabold text-fusee-yellow uppercase flex items-center gap-2 font-techno">
                         <i class="fa-solid fa-microchip"></i> System 03 Configuration
                     </h3>
-                    <span class="text-[10px] text-slate-400 font-mono">CIRCUITS & BENCHES</span>
+                    <span class="text-[10px] text-slate-400 font-pixel">CIRCUITS & BENCHES</span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
@@ -300,8 +326,8 @@
                 </div>
 
                 <!-- System 3 Electrical Safety & Bench Guidelines Editing -->
-                <div class="p-3 rounded-lg bg-slate-950/50 border border-fusee-yellow/30 space-y-3">
-                    <h4 class="text-xs font-bold text-fusee-yellow flex items-center gap-1.5">
+                <div class="p-3.5 rounded-lg bg-slate-950/50 border border-fusee-yellow/30 space-y-3">
+                    <h4 class="text-xs font-bold text-fusee-yellow flex items-center gap-1.5 font-techno">
                         <i class="fa-solid fa-shield-halved"></i> Electrical Safety & Bench Guidelines Configuration
                     </h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
@@ -323,42 +349,42 @@
         </section>
 
         <!-- SECTION 3: FAQ Management -->
-        <section class="glass-panel p-6 rounded-2xl space-y-4 border border-fusee-yellow/20">
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-yellow/30">
             <div class="flex items-center justify-between border-b border-white/10 pb-3">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-circle-question text-fusee-yellow"></i>
-                    <h2 class="font-display font-bold text-sm text-white uppercase tracking-wider">3. Frequently Asked Questions (FAQs)</h2>
+                    <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">3. Frequently Asked Questions (FAQs)</h2>
                 </div>
             </div>
 
             <div id="faq-container" class="space-y-3"></div>
 
-            <button type="button" onclick="addFaqRow()" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+            <button type="button" onclick="addFaqRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
                 <i class="fa-solid fa-plus text-fusee-yellow"></i> Add New FAQ Item
             </button>
         </section>
 
         <!-- SECTION 4: Officers Directory -->
-        <section class="glass-panel p-6 rounded-2xl space-y-4 border border-fusee-purple/20">
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-purple/30">
             <div class="flex items-center justify-between border-b border-white/10 pb-3">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-id-card text-fusee-purple"></i>
-                    <h2 class="font-display font-bold text-sm text-white uppercase tracking-wider">4. FUSEE Officers Contact Directory</h2>
+                    <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">4. FUSEE Officers Contact Directory</h2>
                 </div>
             </div>
 
             <div id="officers-container" class="space-y-3"></div>
 
-            <button type="button" onclick="addOfficerRow()" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+            <button type="button" onclick="addOfficerRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
                 <i class="fa-solid fa-plus text-fusee-purple"></i> Add Officer Contact
             </button>
         </section>
 
         <!-- SECTION 5: Inspirational Banner Text -->
-        <section class="glass-panel p-6 rounded-2xl space-y-4 border border-fusee-cyan/20">
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-cyan/30">
             <div class="flex items-center space-x-2 border-b border-white/10 pb-3">
                 <i class="fa-solid fa-quote-left text-fusee-cyan"></i>
-                <h2 class="font-display font-bold text-sm text-white uppercase tracking-wider">5. Inspirational Quote Banner</h2>
+                <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">5. Inspirational Quote Banner</h2>
             </div>
 
             <div class="space-y-3 text-xs">
@@ -631,7 +657,7 @@
             const div = document.createElement('div');
             div.className = 'faq-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative';
             div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1">
+                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete FAQ item">
                     <i class="fa-solid fa-trash"></i>
                 </button>
                 <input type="text" class="faq-q-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Question" value="${q.replace(/"/g, '&quot;')}">
@@ -652,9 +678,9 @@
             div.className = 'officer-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 grid grid-cols-1 md:grid-cols-4 gap-2 relative';
             div.innerHTML = `
                 <button type="button" onclick="this.parentElement.remove()" class="md:col-span-4 text-right text-rose-400 text-xs">
-                    <i class="fa-solid fa-trash"></i> Remove
+                    <i class="fa-solid fa-trash"></i> Remove Contact
                 </button>
-                <input type="text" class="off-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Badge" value="${badge}">
+                <input type="text" class="off-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 font-pixel text-[10px]" placeholder="Badge" value="${badge}">
                 <input type="text" class="off-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Title" value="${title}">
                 <input type="text" class="off-dept-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Department" value="${dept}">
                 <input type="email" class="off-email-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Email" value="${email}">
