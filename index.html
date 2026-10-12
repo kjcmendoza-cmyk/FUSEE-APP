@@ -116,8 +116,8 @@
 
             // 7. FAQs List Sync
             if (data.faqs && Array.isArray(data.faqs)) {
-                const faqContainer = document.getElementById('faq-display-container');
-                if (faqContainer) {
+                const faqContainers = document.querySelectorAll('#faq-display-container, .faq-display-container');
+                faqContainers.forEach(faqContainer => {
                     faqContainer.innerHTML = data.faqs.map(item => `
                         <details class="group p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
                             <summary class="font-semibold text-white cursor-pointer list-none flex justify-between items-center">
@@ -129,13 +129,13 @@
                             </p>
                         </details>
                     `).join('');
-                }
+                });
             }
 
             // 8. Officers List Sync
             if (data.officers && Array.isArray(data.officers)) {
-                const offContainer = document.getElementById('officers-display-container');
-                if (offContainer) {
+                const offContainers = document.querySelectorAll('#officers-display-container, .officers-display-container');
+                offContainers.forEach(offContainer => {
                     const badgeStyles = [
                         'from-fusee-cyan to-blue-600 text-slate-950',
                         'from-fusee-magenta to-pink-600 text-white',
@@ -153,7 +153,7 @@
                             </div>
                         </div>
                     `).join('');
-                }
+                });
             }
         });
     </script>
@@ -346,11 +346,11 @@
 
                 <div class="flex items-center space-x-3">
                     <!-- Desktop Header Navigation Links (Hidden on Mobile) -->
-                    <nav class="hidden md:flex items-center space-x-6 text-xs font-semibold text-slate-300">
-                        <button onclick="switchTab('home')" class="hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-house-laptop"></i> Home</button>
-                        <button onclick="switchTab('systems')" class="hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-layer-group"></i> Systems</button>
-                        <button onclick="openModal('announcements-modal')" class="hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-bell"></i> Notices</button>
-                        <button onclick="openModal('guidelines-modal')" class="hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-circle-info"></i> Rules</button>
+                    <nav class="hidden md:flex items-center space-x-6 text-xs font-semibold">
+                        <button id="desktop-tab-home" onclick="switchTab('home')" class="desktop-nav-tab text-fusee-cyan hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-house-laptop"></i> Home</button>
+                        <button id="desktop-tab-systems" onclick="switchTab('systems')" class="desktop-nav-tab text-slate-300 hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-layer-group"></i> Systems</button>
+                        <button id="desktop-tab-notices" onclick="switchTab('notices')" class="desktop-nav-tab text-slate-300 hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-bell"></i> Notices</button>
+                        <button id="desktop-tab-info" onclick="switchTab('info')" class="desktop-nav-tab text-slate-300 hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-circle-info"></i> Rules & Info</button>
                     </nav>
 
                     <!-- Global Lab Status Pill -->
@@ -392,322 +392,514 @@
                 <i class="fa-solid fa-bullhorn text-[9px] animate-bounce"></i> Notice
             </span>
             <div class="relative overflow-hidden w-full text-xs text-slate-200 font-medium h-5 flex items-center min-w-0">
-                <div id="announcement-text" class="animate-marquee whitespace-nowrap cursor-pointer" title="Hover to pause notice scroll">
+                <div id="announcement-text" class="animate-marquee whitespace-nowrap cursor-pointer" onclick="switchTab('notices')" title="Click to view all notices">
                     ⚡ EE Hardware Lab: Equipment checkouts close early at 4:30 PM on Fridays • 💻 Computer Lab PC Maintenance scheduled this Saturday • 📢 Always bring your ADDU Student ID for verification
                 </div>
             </div>
-            <button onclick="openModal('announcements-modal')" class="flex-shrink-0 text-slate-400 hover:text-white text-xs pl-1" title="View all notices">
+            <button onclick="switchTab('notices')" class="flex-shrink-0 text-slate-400 hover:text-white text-xs pl-1" title="View all notices">
                 <i class="fa-solid fa-chevron-right"></i>
             </button>
         </section>
 
-        <!-- Brand Visual Hero Banner -->
-        <section class="px-4 md:px-6 pt-4">
-            <div class="relative rounded-2xl overflow-hidden border border-fusee-cyan/30 shadow-neon-cyan group bg-slate-900/80 min-h-[128px]">
-                <img src="EE BRANDING 1.png" alt="FUSEE Banner Graphic"
-                     class="w-full h-32 md:h-48 object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                     onerror="this.style.display='none'; document.getElementById('hero-fallback-bg').classList.remove('hidden');">
-                
-                <!-- Fallback banner style when image is missing -->
-                <div id="hero-fallback-bg" class="hidden absolute inset-0 bg-gradient-to-r from-fusee-dark via-purple-950 to-indigo-950 flex items-center px-6">
-                    <div class="space-y-1">
-                        <i class="fa-solid fa-bolt text-fusee-cyan text-2xl"></i>
-                    </div>
-                </div>
+        <!-- Main Scrollable Content Area -->
+        <main class="flex-1 px-4 md:px-6 pt-4">
 
-                <div class="absolute inset-0 bg-gradient-to-t from-[#0B081E] via-transparent to-transparent opacity-80"></div>
-                <div class="absolute bottom-3 left-4 right-4 flex justify-between items-end">
-                    <div>
-                        <span class="px-2 py-0.5 text-[9px] font-pixel rounded bg-fusee-cyan/20 text-fusee-cyan border border-fusee-cyan/30">
-                            ADDU SEA • EE
-                        </span>
-                        <h2 class="text-sm md:text-lg font-bold text-white font-display mt-0.5">Electrical Engineering Portal</h2>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Main Scrollable Dashboard Content -->
-        <main class="flex-1 px-4 md:px-6 pt-4 space-y-5">
-
-            <!-- Search & Filter Controls -->
-            <section class="space-y-2.5">
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="search-input" onkeyup="filterSystems()" placeholder="Search lab systems, tools, oscilloscopes, logbooks..." 
-                           class="w-full pl-9 pr-8 py-2.5 md:py-3 rounded-xl glass-panel text-xs md:text-sm text-white placeholder-slate-400 border border-white/10 focus:outline-none focus:border-fusee-cyan focus:ring-1 focus:ring-fusee-cyan transition">
-                    <button id="clear-search" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-
-                <!-- Horizontal Filter Pills -->
-                <div class="flex items-center space-x-2 overflow-x-auto pb-2 pt-0.5 text-xs no-scrollbar pr-4">
-                    <button onclick="setFilter('all')" class="filter-pill active-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-fusee-cyan text-slate-950 transition shadow-neon-cyan" data-filter="all">
-                        ⚡ All Systems
-                    </button>
-                    <button onclick="setFilter('tool')" class="filter-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-fusee-cyan transition" data-filter="tool">
-                        🛠️ Tool Borrowing
-                    </button>
-                    <button onclick="setFilter('computer')" class="filter-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-fusee-cyan transition" data-filter="computer">
-                        💻 Computer Lab
-                    </button>
-                    <button onclick="setFilter('hardware')" class="filter-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-fusee-cyan transition" data-filter="hardware">
-                        🔬 Hardware Logbook
-                    </button>
-                </div>
-            </section>
-
-            <!-- Search "No Results" Fallback Box -->
-            <div id="no-results-msg" class="hidden text-center py-10 px-4 glass-card rounded-2xl border border-slate-800 space-y-2">
-                <i class="fa-solid fa-magnifying-glass text-3xl text-fusee-cyan/60"></i>
-                <h4 class="font-bold text-white text-sm font-display">No Matching Systems Found</h4>
-                <p class="text-xs text-slate-400 max-w-xs mx-auto">Try typing "multimeter", "D202", "computer lab", or clear your filter.</p>
-                <button onclick="clearSearch(); setFilter('all');" class="mt-2 px-3.5 py-1.5 bg-fusee-cyan/20 text-fusee-cyan text-xs font-bold rounded-lg border border-fusee-cyan/30 hover:bg-fusee-cyan/30 transition">
-                    Reset Search & Filters
-                </button>
-            </div>
-
-            <!-- System Cards Container (Responsive Grid: 1 Col Mobile, 2 Col Tablet, 3 Col Desktop) -->
-            <section id="system-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-                <!-- CARD 1: EE Laboratory Tool Management System -->
-                <article class="system-card glass-card rounded-2xl p-4 md:p-5 relative overflow-hidden group border border-fusee-cyan/30 flex flex-col justify-between" data-category="tool" data-name="electrical engineering laboratory tool management system borrowing equipment multimeters oscilloscope power supply">
-                    <div>
-                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-fusee-cyan via-blue-500 to-fusee-purple"></div>
+            <!-- TAB 1: HOME VIEW -->
+            <div id="view-home" class="tab-view space-y-5">
+                <!-- Brand Visual Hero Banner -->
+                <section>
+                    <div class="relative rounded-2xl overflow-hidden border border-fusee-cyan/30 shadow-neon-cyan group bg-slate-900/80 min-h-[128px]">
+                        <img src="EE BRANDING 1.png" alt="FUSEE Banner Graphic"
+                             class="w-full h-32 md:h-48 object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                             onerror="this.style.display='none'; document.getElementById('hero-fallback-bg').classList.remove('hidden');">
                         
-                        <div class="flex items-start justify-between mb-2">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-11 h-11 rounded-xl bg-fusee-cyan/10 border border-fusee-cyan/40 flex items-center justify-center text-fusee-cyan shadow-neon-cyan flex-shrink-0">
-                                    <i class="fa-solid fa-screwdriver-wrench text-lg"></i>
-                                </div>
-                                <div>
-                                    <span class="text-[10px] font-pixel uppercase tracking-widest text-fusee-cyan">System 01 • Equipment</span>
-                                    <h3 class="text-sm font-bold text-white font-display leading-snug">EE Laboratory Tool Management System</h3>
-                                </div>
+                        <!-- Fallback banner style when image is missing -->
+                        <div id="hero-fallback-bg" class="hidden absolute inset-0 bg-gradient-to-r from-fusee-dark via-purple-950 to-indigo-950 flex items-center px-6">
+                            <div class="space-y-1">
+                                <i class="fa-solid fa-bolt text-fusee-cyan text-2xl"></i>
                             </div>
                         </div>
 
-                        <p class="text-xs text-slate-300 mb-3 leading-relaxed">
-                            Borrow and manage hardware tools, oscilloscopes, digital multimeters, power supplies, and component kits for your laboratory sessions.
-                        </p>
-
-                        <!-- Dynamic Meta Info -->
-                        <div class="grid grid-cols-2 gap-2 mb-4 bg-slate-900/50 p-2.5 rounded-xl border border-slate-800 text-[11px]">
-                            <div class="flex items-center space-x-1.5 text-slate-300">
-                                <i class="fa-solid fa-location-dot text-fusee-cyan"></i>
-                                <span id="sys1-display-location">D204 EE Hardware Lab</span>
-                            </div>
-                            <div class="flex items-center space-x-1.5 justify-end">
-                                <span id="sys1-status-badge" class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OPEN NOW
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#0B081E] via-transparent to-transparent opacity-80"></div>
+                        <div class="absolute bottom-3 left-4 right-4 flex justify-between items-end">
+                            <div>
+                                <span class="px-2 py-0.5 text-[9px] font-pixel rounded bg-fusee-cyan/20 text-fusee-cyan border border-fusee-cyan/30">
+                                    ADDU SEA • EE
                                 </span>
-                            </div>
-                            <div class="flex items-center space-x-1.5 text-slate-400 col-span-2">
-                                <i class="fa-regular fa-clock text-slate-400"></i>
-                                <span id="sys1-display-hours">8:00 AM - 6:00 PM</span>
+                                <h2 class="text-sm md:text-lg font-bold text-white font-display mt-0.5">Electrical Engineering Portal</h2>
                             </div>
                         </div>
                     </div>
+                </section>
 
-                    <!-- Dynamic Buttons for System 1 -->
-                    <div class="space-y-2 mt-auto">
-                        <a id="sys1-display-student-url" href="https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/student.html" target="_blank" rel="noopener noreferrer" 
-                           class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-fusee-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-neon-cyan transition active:scale-[0.98]">
-                            <i class="fa-solid fa-graduation-cap text-sm"></i>
-                            <span>Access Student Portal</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
-                        </a>
+                <!-- Quick Hub Services Grid -->
+                <section class="pt-1">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5 font-techno">
+                        <i class="fa-solid fa-compass text-fusee-cyan"></i> Quick EE Navigation & Info
+                    </h2>
 
-                        <button onclick="openModal('tool-guidelines-modal')" class="w-full py-2 px-3 rounded-xl glass-panel hover:bg-slate-800 text-slate-300 text-[11px] font-medium flex items-center justify-center space-x-1 border border-slate-800 transition">
-                            <i class="fa-solid fa-circle-info text-fusee-cyan"></i>
-                            <span>Tool Guidelines</span>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+                        <button onclick="openModal('guidelines-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-fusee-cyan/10 text-fusee-cyan flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                                <i class="fa-solid fa-book-open text-fusee-cyan"></i>
+                            </div>
+                            <h4 class="text-xs font-bold text-white mb-0.5">Lab Policies</h4>
+                            <p class="text-[10px] text-slate-400">Safety, borrowing & log protocols</p>
+                        </button>
+
+                        <button onclick="openModal('officers-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-magenta/50 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-fusee-magenta/10 text-fusee-magenta flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                                <i class="fa-solid fa-users text-fusee-magenta"></i>
+                            </div>
+                            <h4 class="text-xs font-bold text-white mb-0.5">FUSEE Officers</h4>
+                            <p class="text-[10px] text-slate-400">Directory & contact support</p>
+                        </button>
+
+                        <button onclick="openModal('faq-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-yellow/50 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-fusee-yellow/10 text-fusee-yellow flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                                <i class="fa-solid fa-circle-question text-fusee-yellow"></i>
+                            </div>
+                            <h4 class="text-xs font-bold text-white mb-0.5">FAQs & Help</h4>
+                            <p class="text-[10px] text-slate-400">Common borrowing questions</p>
+                        </button>
+
+                        <button onclick="openModal('hours-modal')" class="glass-card p-3 rounded-xl text-left hover:border-emerald-400/50 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                                <i class="fa-solid fa-calendar-days text-emerald-400"></i>
+                            </div>
+                            <h4 class="text-xs font-bold text-white mb-0.5">Operating Hours</h4>
+                            <p class="text-[10px] text-slate-400">Schedules & faculty hours</p>
                         </button>
                     </div>
-                </article>
+                </section>
 
-                <!-- CARD 2: EE Computer Laboratory Digital Logbook -->
-                <article class="system-card glass-card rounded-2xl p-4 md:p-5 relative overflow-hidden group border border-fusee-magenta/30 flex flex-col justify-between" data-category="computer" data-name="electrical engineering computer laboratory digital logbook pc workstations simulation software digital logbook">
-                    <div>
-                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-fusee-magenta via-purple-500 to-fusee-pinkGlow"></div>
+                <!-- Featured Systems CTA Banner -->
+                <section class="glass-card rounded-2xl p-4 md:p-5 border border-fusee-cyan/30 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="space-y-1 text-center md:text-left">
+                        <span class="px-2.5 py-0.5 rounded text-[10px] font-pixel bg-fusee-cyan/20 text-fusee-cyan border border-fusee-cyan/30 font-bold uppercase">Centralized Systems</span>
+                        <h3 class="text-base md:text-lg font-bold text-white font-display">EE Lab Systems & Digital Logbooks</h3>
+                        <p class="text-xs text-slate-300 max-w-xl">Access Equipment Tool Borrowing (D204), Computer Workstations Logbook (D202), and Hardware Circuits Logbook (D205).</p>
+                    </div>
+                    <button onclick="switchTab('systems')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-fusee-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs flex items-center space-x-2 shadow-neon-cyan transition flex-shrink-0">
+                        <span>Open Systems Tab</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </section>
 
-                        <div class="flex items-start justify-between mb-2">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-11 h-11 rounded-xl bg-fusee-magenta/10 border border-fusee-magenta/40 flex items-center justify-center text-fusee-magenta shadow-neon-pink flex-shrink-0">
-                                    <i class="fa-solid fa-desktop text-lg"></i>
-                                </div>
-                                <div>
-                                    <span class="text-[10px] font-pixel uppercase tracking-widest text-fusee-magenta">System 02 • Workstations</span>
-                                    <h3 class="text-sm font-bold text-white font-display leading-snug">EE Computer Lab Digital Logbook</h3>
-                                </div>
-                            </div>
+                <!-- Fused Brand Panorama Showcase (Full Vertical Display) -->
+                <section class="my-6">
+                    <div class="relative rounded-2xl overflow-hidden border-2 border-fusee-cyan/40 shadow-neon-cyan grid grid-cols-2 gap-0 bg-[#0B081E] group">
+                        <!-- Left Artwork: EE BRANDING 3 -->
+                        <div class="relative w-full overflow-hidden flex items-center justify-center">
+                            <img src="EE BRANDING 3.png" alt="EE Branding Left" 
+                                 class="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-500 block"
+                                 onerror="this.onerror=null; this.src='EE BRANDING 3.JPG';">
                         </div>
 
-                        <p class="text-xs text-slate-300 mb-3 leading-relaxed">
-                            Log in/out for EE Computer Lab workstation access, simulation software sessions (MATLAB, ETAP, AutoCAD, Proteus), and project coding.
-                        </p>
-
-                        <!-- Dynamic Meta Info -->
-                        <div class="grid grid-cols-2 gap-2 mb-4 bg-slate-900/50 p-2.5 rounded-xl border border-slate-800 text-[11px]">
-                            <div class="flex items-center space-x-1.5 text-slate-300">
-                                <i class="fa-solid fa-location-dot text-fusee-magenta"></i>
-                                <span id="sys2-display-location">D202 Computer Lab</span>
-                            </div>
-                            <div class="flex items-center space-x-1.5 justify-end">
-                                <span id="sys2-status-badge" class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OPEN NOW
-                                </span>
-                            </div>
-                            <div class="flex items-center space-x-1.5 text-slate-400">
-                                <i class="fa-regular fa-clock text-slate-400"></i>
-                                <span id="sys2-display-hours">7:30 AM - 7:00 PM</span>
-                            </div>
-                            <div class="text-right text-slate-400">
-                                <span class="text-fusee-cyan font-medium">40 Active Workstations</span>
-                            </div>
+                        <!-- Right Artwork: EE BRANDING 2 -->
+                        <div class="relative w-full overflow-hidden flex items-center justify-center">
+                            <img src="EE BRANDING 2.png" alt="EE Branding Right" 
+                                 class="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-500 block"
+                                 onerror="this.onerror=null; this.src='EE BRANDING 2.JPG';">
                         </div>
                     </div>
-
-                    <!-- Dynamic Button for System 2 -->
-                    <div class="space-y-2 mt-auto">
-                        <a id="sys2-display-url" href="https://kjcmendoza-cmyk.github.io/Digital-Logbook/" target="_blank" rel="noopener noreferrer" 
-                           class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-fusee-magenta to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-neon-pink transition active:scale-[0.98]">
-                            <i class="fa-solid fa-right-to-bracket text-sm"></i>
-                            <span>Open Computer Lab Logbook</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
-                        </a>
-
-                        <button onclick="openModal('comlab-rules-modal')" class="w-full py-2 px-3 rounded-xl glass-panel hover:bg-slate-800 text-slate-300 text-[11px] font-medium flex items-center justify-center space-x-1 border border-slate-800 transition">
-                            <i class="fa-solid fa-laptop-code text-fusee-magenta"></i>
-                            <span>Workstation Policies & PC Rules</span>
-                        </button>
-                    </div>
-                </article>
-
-                <!-- CARD 3: Electrical Engineering Laboratory Digital Logbook (Hardware) -->
-                <article class="system-card glass-card rounded-2xl p-4 md:p-5 relative overflow-hidden group border border-fusee-yellow/30 flex flex-col justify-between" data-category="hardware" data-name="electrical engineering laboratory digital logbook hardware circuits hardware lab bench experiments">
-                    <div>
-                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-fusee-yellow via-amber-500 to-orange-500"></div>
-
-                        <div class="flex items-start justify-between mb-2">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-11 h-11 rounded-xl bg-fusee-yellow/10 border border-fusee-yellow/40 flex items-center justify-center text-fusee-yellow shadow-neon-yellow flex-shrink-0">
-                                    <i class="fa-solid fa-microchip text-lg"></i>
-                                </div>
-                                <div>
-                                    <span class="text-[10px] font-pixel uppercase tracking-widest text-fusee-yellow">System 03 • Circuits & Benches</span>
-                                    <h3 class="text-sm font-bold text-white font-display leading-snug">EE Laboratory Digital Logbook</h3>
-                                </div>
-                            </div>
-                        </div>
-
-                        <p class="text-xs text-slate-300 mb-3 leading-relaxed">
-                            Mandatory digital check-in logbook for all hands-on hardware lab classes, circuit testing, project bench work, and thesis experiments.
-                        </p>
-
-                        <!-- Dynamic Meta Info -->
-                        <div class="grid grid-cols-2 gap-2 mb-4 bg-slate-900/50 p-2.5 rounded-xl border border-slate-800 text-[11px]">
-                            <div class="flex items-center space-x-1.5 text-slate-300">
-                                <i class="fa-solid fa-location-dot text-fusee-yellow"></i>
-                                <span id="sys3-display-location">D205 Electronics Lab</span>
-                            </div>
-                            <div class="flex items-center space-x-1.5 justify-end">
-                                <span id="sys3-status-badge" class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OPEN NOW
-                                </span>
-                            </div>
-                            <div class="flex items-center space-x-1.5 text-slate-400">
-                                <i class="fa-regular fa-clock text-slate-400"></i>
-                                <span id="sys3-display-hours">8:00 AM - 6:00 PM</span>
-                            </div>
-                            <div class="text-right text-slate-400">
-                                <span class="text-emerald-400 font-medium">Mandatory Check-In</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Dynamic Button for System 3 -->
-                    <div class="space-y-2 mt-auto">
-                        <a id="sys3-display-url" href="https://kjcmendoza-cmyk.github.io/EE-Laboratory-Digital-Logbook/login.html" target="_blank" rel="noopener noreferrer" 
-                           class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-fusee-yellow via-amber-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-slate-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-neon-yellow transition active:scale-[0.98]">
-                            <i class="fa-solid fa-bolt text-sm"></i>
-                            <span>Access Hardware Lab Logbook</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
-                        </a>
-
-                        <button onclick="openModal('hardware-safety-modal')" class="w-full py-2 px-3 rounded-xl glass-panel hover:bg-slate-800 text-slate-300 text-[11px] font-medium flex items-center justify-center space-x-1 border border-slate-800 transition">
-                            <i class="fa-solid fa-shield-halved text-fusee-yellow"></i>
-                            <span>Electrical Safety & Bench Guidelines</span>
-                        </button>
-                    </div>
-                </article>
-
-            </section>
-
-            <!-- Quick Hub Services Grid -->
-            <section class="pt-2">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5 font-techno">
-                    <i class="fa-solid fa-compass text-fusee-cyan"></i> Quick EE Navigation & Info
-                </h2>
-
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-                    <button onclick="openModal('guidelines-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
-                        <div class="w-8 h-8 rounded-lg bg-fusee-cyan/10 text-fusee-cyan flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                            <i class="fa-solid fa-book-open text-fusee-cyan"></i>
-                        </div>
-                        <h4 class="text-xs font-bold text-white mb-0.5">Lab Policies</h4>
-                        <p class="text-[10px] text-slate-400">Safety, borrowing & log protocols</p>
-                    </button>
-
-                    <button onclick="openModal('officers-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-magenta/50 transition group">
-                        <div class="w-8 h-8 rounded-lg bg-fusee-magenta/10 text-fusee-magenta flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                            <i class="fa-solid fa-users text-fusee-magenta"></i>
-                        </div>
-                        <h4 class="text-xs font-bold text-white mb-0.5">FUSEE Officers</h4>
-                        <p class="text-[10px] text-slate-400">Directory & contact support</p>
-                    </button>
-
-                    <button onclick="openModal('faq-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-yellow/50 transition group">
-                        <div class="w-8 h-8 rounded-lg bg-fusee-yellow/10 text-fusee-yellow flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                            <i class="fa-solid fa-circle-question text-fusee-yellow"></i>
-                        </div>
-                        <h4 class="text-xs font-bold text-white mb-0.5">FAQs & Help</h4>
-                        <p class="text-[10px] text-slate-400">Common borrowing questions</p>
-                    </button>
-
-                    <button onclick="openModal('hours-modal')" class="glass-card p-3 rounded-xl text-left hover:border-emerald-400/50 transition group">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                            <i class="fa-solid fa-calendar-days text-emerald-400"></i>
-                        </div>
-                        <h4 class="text-xs font-bold text-white mb-0.5">Operating Hours</h4>
-                        <p class="text-[10px] text-slate-400">Schedules & faculty hours</p>
-                    </button>
-                </div>
-            </section>
-
-            <!-- Fused Brand Panorama Showcase (Full Vertical Display) -->
-        <section class="my-6">
-            <div class="relative rounded-2xl overflow-hidden border-2 border-fusee-cyan/40 shadow-neon-cyan grid grid-cols-2 gap-0 bg-[#0B081E] group">
-                
-                <!-- Left Artwork: EE BRANDING 3 -->
-                <div class="relative w-full overflow-hidden flex items-center justify-center">
-                    <img src="EE BRANDING 3.png" alt="EE Branding Left" 
-                         class="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-500 block"
-                         onerror="this.onerror=null; this.src='EE BRANDING 3.JPG';">
-                </div>
-
-                <!-- Right Artwork: EE BRANDING 2 -->
-                <div class="relative w-full overflow-hidden flex items-center justify-center">
-                    <img src="EE BRANDING 2.png" alt="EE Branding Right" 
-                         class="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-500 block"
-                         onerror="this.onerror=null; this.src='EE BRANDING 2.JPG';">
-                </div>
-
+                </section>
             </div>
-        </section>
+
+            <!-- TAB 2: SYSTEMS VIEW -->
+            <div id="view-systems" class="tab-view hidden space-y-5">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-base md:text-lg font-bold text-white font-display flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-fusee-cyan"></i> EE Laboratory Systems
+                        </h2>
+                        <p class="text-xs text-slate-400">Search and access digital tool borrowing and lab workstation portals.</p>
+                    </div>
+                </div>
+
+                <!-- Search & Filter Controls -->
+                <section class="space-y-2.5">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="search-input" onkeyup="filterSystems()" placeholder="Search lab systems, tools, oscilloscopes, logbooks..." 
+                               class="w-full pl-9 pr-8 py-2.5 md:py-3 rounded-xl glass-panel text-xs md:text-sm text-white placeholder-slate-400 border border-white/10 focus:outline-none focus:border-fusee-cyan focus:ring-1 focus:ring-fusee-cyan transition">
+                        <button id="clear-search" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Horizontal Filter Pills -->
+                    <div class="flex items-center space-x-2 overflow-x-auto pb-2 pt-0.5 text-xs no-scrollbar pr-4">
+                        <button onclick="setFilter('all')" class="filter-pill active-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-fusee-cyan text-slate-950 transition shadow-neon-cyan" data-filter="all">
+                            ⚡ All Systems
+                        </button>
+                        <button onclick="setFilter('tool')" class="filter-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-fusee-cyan transition" data-filter="tool">
+                            🛠️ Tool Borrowing
+                        </button>
+                        <button onclick="setFilter('computer')" class="filter-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-fusee-cyan transition" data-filter="computer">
+                            💻 Computer Lab
+                        </button>
+                        <button onclick="setFilter('hardware')" class="filter-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-fusee-cyan transition" data-filter="hardware">
+                            🔬 Hardware Logbook
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Search "No Results" Fallback Box -->
+                <div id="no-results-msg" class="hidden text-center py-10 px-4 glass-card rounded-2xl border border-slate-800 space-y-2">
+                    <i class="fa-solid fa-magnifying-glass text-3xl text-fusee-cyan/60"></i>
+                    <h4 class="font-bold text-white text-sm font-display">No Matching Systems Found</h4>
+                    <p class="text-xs text-slate-400 max-w-xs mx-auto">Try typing "multimeter", "D202", "computer lab", or clear your filter.</p>
+                    <button onclick="clearSearch(); setFilter('all');" class="mt-2 px-3.5 py-1.5 bg-fusee-cyan/20 text-fusee-cyan text-xs font-bold rounded-lg border border-fusee-cyan/30 hover:bg-fusee-cyan/30 transition">
+                        Reset Search & Filters
+                    </button>
+                </div>
+
+                <!-- System Cards Container (Responsive Grid: 1 Col Mobile, 2 Col Tablet, 3 Col Desktop) -->
+                <section id="system-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                    <!-- CARD 1: EE Laboratory Tool Management System -->
+                    <article class="system-card glass-card rounded-2xl p-4 md:p-5 relative overflow-hidden group border border-fusee-cyan/30 flex flex-col justify-between" data-category="tool" data-name="electrical engineering laboratory tool management system borrowing equipment multimeters oscilloscope power supply">
+                        <div>
+                            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-fusee-cyan via-blue-500 to-fusee-purple"></div>
+                            
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-11 h-11 rounded-xl bg-fusee-cyan/10 border border-fusee-cyan/40 flex items-center justify-center text-fusee-cyan shadow-neon-cyan flex-shrink-0">
+                                        <i class="fa-solid fa-screwdriver-wrench text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] font-pixel uppercase tracking-widest text-fusee-cyan">System 01 • Equipment</span>
+                                        <h3 class="text-sm font-bold text-white font-display leading-snug">EE Laboratory Tool Management System</h3>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="text-xs text-slate-300 mb-3 leading-relaxed">
+                                Borrow and manage hardware tools, oscilloscopes, digital multimeters, power supplies, and component kits for your laboratory sessions.
+                            </p>
+
+                            <!-- Dynamic Meta Info -->
+                            <div class="grid grid-cols-2 gap-2 mb-4 bg-slate-900/50 p-2.5 rounded-xl border border-slate-800 text-[11px]">
+                                <div class="flex items-center space-x-1.5 text-slate-300">
+                                    <i class="fa-solid fa-location-dot text-fusee-cyan"></i>
+                                    <span id="sys1-display-location">D204 EE Hardware Lab</span>
+                                </div>
+                                <div class="flex items-center space-x-1.5 justify-end">
+                                    <span id="sys1-status-badge" class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OPEN NOW
+                                    </span>
+                                </div>
+                                <div class="flex items-center space-x-1.5 text-slate-400 col-span-2">
+                                    <i class="fa-regular fa-clock text-slate-400"></i>
+                                    <span id="sys1-display-hours">8:00 AM - 6:00 PM</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Buttons for System 1 -->
+                        <div class="space-y-2 mt-auto">
+                            <a id="sys1-display-student-url" href="https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/student.html" target="_blank" rel="noopener noreferrer" 
+                               class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-fusee-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-neon-cyan transition active:scale-[0.98]">
+                                <i class="fa-solid fa-graduation-cap text-sm"></i>
+                                <span>Access Student Portal</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
+                            </a>
+
+                            <button onclick="openModal('tool-guidelines-modal')" class="w-full py-2 px-3 rounded-xl glass-panel hover:bg-slate-800 text-slate-300 text-[11px] font-medium flex items-center justify-center space-x-1 border border-slate-800 transition">
+                                <i class="fa-solid fa-circle-info text-fusee-cyan"></i>
+                                <span>Tool Guidelines</span>
+                            </button>
+                        </div>
+                    </article>
+
+                    <!-- CARD 2: EE Computer Laboratory Digital Logbook -->
+                    <article class="system-card glass-card rounded-2xl p-4 md:p-5 relative overflow-hidden group border border-fusee-magenta/30 flex flex-col justify-between" data-category="computer" data-name="electrical engineering computer laboratory digital logbook pc workstations simulation software digital logbook">
+                        <div>
+                            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-fusee-magenta via-purple-500 to-fusee-pinkGlow"></div>
+
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-11 h-11 rounded-xl bg-fusee-magenta/10 border border-fusee-magenta/40 flex items-center justify-center text-fusee-magenta shadow-neon-pink flex-shrink-0">
+                                        <i class="fa-solid fa-desktop text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] font-pixel uppercase tracking-widest text-fusee-magenta">System 02 • Workstations</span>
+                                        <h3 class="text-sm font-bold text-white font-display leading-snug">EE Computer Lab Digital Logbook</h3>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="text-xs text-slate-300 mb-3 leading-relaxed">
+                                Log in/out for EE Computer Lab workstation access, simulation software sessions (MATLAB, ETAP, AutoCAD, Proteus), and project coding.
+                            </p>
+
+                            <!-- Dynamic Meta Info -->
+                            <div class="grid grid-cols-2 gap-2 mb-4 bg-slate-900/50 p-2.5 rounded-xl border border-slate-800 text-[11px]">
+                                <div class="flex items-center space-x-1.5 text-slate-300">
+                                    <i class="fa-solid fa-location-dot text-fusee-magenta"></i>
+                                    <span id="sys2-display-location">D202 Computer Lab</span>
+                                </div>
+                                <div class="flex items-center space-x-1.5 justify-end">
+                                    <span id="sys2-status-badge" class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OPEN NOW
+                                    </span>
+                                </div>
+                                <div class="flex items-center space-x-1.5 text-slate-400">
+                                    <i class="fa-regular fa-clock text-slate-400"></i>
+                                    <span id="sys2-display-hours">7:30 AM - 7:00 PM</span>
+                                </div>
+                                <div class="text-right text-slate-400">
+                                    <span class="text-fusee-cyan font-medium">40 Active Workstations</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Button for System 2 -->
+                        <div class="space-y-2 mt-auto">
+                            <a id="sys2-display-url" href="https://kjcmendoza-cmyk.github.io/Digital-Logbook/" target="_blank" rel="noopener noreferrer" 
+                               class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-fusee-magenta to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-neon-pink transition active:scale-[0.98]">
+                                <i class="fa-solid fa-right-to-bracket text-sm"></i>
+                                <span>Open Computer Lab Logbook</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
+                            </a>
+
+                            <button onclick="openModal('comlab-rules-modal')" class="w-full py-2 px-3 rounded-xl glass-panel hover:bg-slate-800 text-slate-300 text-[11px] font-medium flex items-center justify-center space-x-1 border border-slate-800 transition">
+                                <i class="fa-solid fa-laptop-code text-fusee-magenta"></i>
+                                <span>Workstation Policies & PC Rules</span>
+                            </button>
+                        </div>
+                    </article>
+
+                    <!-- CARD 3: Electrical Engineering Laboratory Digital Logbook (Hardware) -->
+                    <article class="system-card glass-card rounded-2xl p-4 md:p-5 relative overflow-hidden group border border-fusee-yellow/30 flex flex-col justify-between" data-category="hardware" data-name="electrical engineering laboratory digital logbook hardware circuits hardware lab bench experiments">
+                        <div>
+                            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-fusee-yellow via-amber-500 to-orange-500"></div>
+
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-11 h-11 rounded-xl bg-fusee-yellow/10 border border-fusee-yellow/40 flex items-center justify-center text-fusee-yellow shadow-neon-yellow flex-shrink-0">
+                                        <i class="fa-solid fa-microchip text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] font-pixel uppercase tracking-widest text-fusee-yellow">System 03 • Circuits & Benches</span>
+                                        <h3 class="text-sm font-bold text-white font-display leading-snug">EE Laboratory Digital Logbook</h3>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="text-xs text-slate-300 mb-3 leading-relaxed">
+                                Mandatory digital check-in logbook for all hands-on hardware lab classes, circuit testing, project bench work, and thesis experiments.
+                            </p>
+
+                            <!-- Dynamic Meta Info -->
+                            <div class="grid grid-cols-2 gap-2 mb-4 bg-slate-900/50 p-2.5 rounded-xl border border-slate-800 text-[11px]">
+                                <div class="flex items-center space-x-1.5 text-slate-300">
+                                    <i class="fa-solid fa-location-dot text-fusee-yellow"></i>
+                                    <span id="sys3-display-location">D205 Electronics Lab</span>
+                                </div>
+                                <div class="flex items-center space-x-1.5 justify-end">
+                                    <span id="sys3-status-badge" class="status-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OPEN NOW
+                                    </span>
+                                </div>
+                                <div class="flex items-center space-x-1.5 text-slate-400">
+                                    <i class="fa-regular fa-clock text-slate-400"></i>
+                                    <span id="sys3-display-hours">8:00 AM - 6:00 PM</span>
+                                </div>
+                                <div class="text-right text-slate-400">
+                                    <span class="text-emerald-400 font-medium">Mandatory Check-In</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Button for System 3 -->
+                        <div class="space-y-2 mt-auto">
+                            <a id="sys3-display-url" href="https://kjcmendoza-cmyk.github.io/EE-Laboratory-Digital-Logbook/login.html" target="_blank" rel="noopener noreferrer" 
+                               class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-fusee-yellow via-amber-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-slate-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-neon-yellow transition active:scale-[0.98]">
+                                <i class="fa-solid fa-bolt text-sm"></i>
+                                <span>Access Hardware Lab Logbook</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
+                            </a>
+
+                            <button onclick="openModal('hardware-safety-modal')" class="w-full py-2 px-3 rounded-xl glass-panel hover:bg-slate-800 text-slate-300 text-[11px] font-medium flex items-center justify-center space-x-1 border border-slate-800 transition">
+                                <i class="fa-solid fa-shield-halved text-fusee-yellow"></i>
+                                <span>Electrical Safety & Bench Guidelines</span>
+                            </button>
+                        </div>
+                    </article>
+
+                </section>
+            </div>
+
+            <!-- TAB 3: NOTICES VIEW -->
+            <div id="view-notices" class="tab-view hidden space-y-5">
+                <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-9 h-9 rounded-xl bg-fusee-magenta/20 text-fusee-magenta flex items-center justify-center">
+                            <i class="fa-solid fa-bullhorn text-base"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-base md:text-lg font-bold text-white font-display">EE Lab Announcements & Notices</h2>
+                            <p class="text-xs text-slate-400">Real-time alerts, maintenance schedules & policy updates</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="p-4 rounded-2xl glass-card border border-fusee-yellow/40 space-y-2">
+                        <div class="flex items-center justify-between text-xs font-bold text-fusee-yellow font-techno">
+                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation"></i> HARDWARE LAB EARLY CLOSING</span>
+                            <span class="px-2 py-0.5 rounded bg-fusee-yellow/10 border border-fusee-yellow/30 text-[10px]">Active Today</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">The EE Hardware Lab (D204) will close early at 4:30 PM today for faculty inventory and equipment calibration. Please return all borrowed multimeters, probes, and kits before 4:15 PM.</p>
+                    </div>
+
+                    <div class="p-4 rounded-2xl glass-card border border-fusee-cyan/40 space-y-2">
+                        <div class="flex items-center justify-between text-xs font-bold text-fusee-cyan font-techno">
+                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-desktop"></i> COMPUTER LAB WORKSTATION MAINTENANCE</span>
+                            <span class="px-2 py-0.5 rounded bg-fusee-cyan/10 border border-fusee-cyan/30 text-[10px]">Scheduled Saturday</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">Routine system maintenance and updates for ETAP 20, MATLAB R2024, AutoCAD, and Proteus on Workstations 01 to 20. Workstations 21-40 will remain accessible.</p>
+                    </div>
+
+                    <div class="p-4 rounded-2xl glass-card border border-slate-700 space-y-2">
+                        <div class="flex items-center justify-between text-xs font-bold text-slate-300 font-techno">
+                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-info"></i> TOOL BORROWING POLICY REMINDER</span>
+                            <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px]">Standing Rule</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">Overdue tools incur automated demerits in the Digital Borrowing System. Always request an extension 24 hours in advance through your department lab custodian if required for thesis experiments.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: INFO & RULES VIEW -->
+            <div id="view-info" class="tab-view hidden space-y-6">
+                <!-- Section Header -->
+                <div class="border-b border-white/10 pb-3">
+                    <h2 class="text-base md:text-lg font-bold text-white font-display flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-fusee-cyan"></i> EE Information & Lab Policies
+                    </h2>
+                    <p class="text-xs text-slate-400">Official AdDU SEA EE Rules, Operating Hours, Officers & FAQs</p>
+                </div>
+
+                <!-- 1. General Safety & Guidelines -->
+                <div class="glass-card rounded-2xl p-4 md:p-5 space-y-3 border border-fusee-cyan/30">
+                    <h3 class="text-sm font-bold text-fusee-cyan flex items-center gap-2">
+                        <i class="fa-solid fa-shield"></i> Laboratory Guidelines & Protocols
+                    </h3>
+                    <div class="space-y-3 text-xs text-slate-300">
+                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
+                            <h4 class="font-bold text-white flex items-center gap-1.5">1. Safety & Proper Attire</h4>
+                            <p class="text-[11px] leading-relaxed text-slate-300">
+                                All EE students entering D202, D204, or D205 laboratories must wear proper attire (closed shoes, long pants, ID badge visible). Food and open liquids are strictly prohibited near workstations and testing benches.
+                            </p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
+                            <h4 class="font-bold text-white flex items-center gap-1.5">2. Borrowing Duration & Overdue Policies</h4>
+                            <p class="text-[11px] leading-relaxed text-slate-300">
+                                Equipment borrowed via the Tool Management System must be returned within 3 working days unless granted an extended permit by the laboratory custodian or course professor.
+                            </p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
+                            <h4 class="font-bold text-white flex items-center gap-1.5">3. Mandatory Digital Logging</h4>
+                            <p class="text-[11px] leading-relaxed text-slate-300">
+                                Students must scan/log in using their student credentials on the respective logbook portal BEFORE touching laboratory PCs or powering bench circuits.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Operating Hours Summary -->
+                <div class="glass-card rounded-2xl p-4 md:p-5 space-y-3 border border-emerald-500/30">
+                    <h3 class="text-sm font-bold text-emerald-400 flex items-center gap-2">
+                        <i class="fa-solid fa-clock"></i> EE Laboratory Operating Hours
+                    </h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold text-white">System 01 Equipment Room (D204)</h4>
+                                <p class="text-[10px] text-slate-400">Monday - Friday</p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded bg-fusee-cyan/10 text-fusee-cyan font-bold font-techno text-[11px]">8:00 AM - 6:00 PM</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold text-white">System 02 Computer Laboratory (D202)</h4>
+                                <p class="text-[10px] text-slate-400">Monday - Saturday</p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded bg-fusee-magenta/10 text-fusee-magenta font-bold font-techno text-[11px]">7:30 AM - 7:00 PM</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold text-white">System 03 Hardware Circuits Lab (D205)</h4>
+                                <p class="text-[10px] text-slate-400">Monday - Friday</p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded bg-fusee-yellow/10 text-fusee-yellow font-bold font-techno text-[11px]">8:00 AM - 6:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Officers Directory Section -->
+                <div class="glass-card rounded-2xl p-4 md:p-5 space-y-3 border border-fusee-purple/30">
+                    <h3 class="text-sm font-bold text-fusee-purple flex items-center gap-2">
+                        <i class="fa-solid fa-users"></i> FUSEE Executive Officers & Directory
+                    </h3>
+                    <div class="officers-display-container space-y-2.5 text-xs">
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-fusee-cyan to-blue-600 text-slate-950 flex items-center justify-center font-bold font-pixel text-[10px]">
+                                PRES
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-white text-xs">FUSEE Executive President</h4>
+                                <p class="text-[10px] text-fusee-cyan font-medium">Department of Electrical Engineering</p>
+                                <p class="text-[10px] text-slate-400">fusee@addu.edu.ph</p>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-fusee-magenta to-pink-600 text-white flex items-center justify-center font-bold font-pixel text-[10px]">
+                                LAB
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-white text-xs">EE Laboratory Custodian</h4>
+                                <p class="text-[10px] text-fusee-cyan font-medium">D202 / D204 / D205 Admin</p>
+                                <p class="text-[10px] text-slate-400">eelab@addu.edu.ph</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. FAQs Accordion Section -->
+                <div class="glass-card rounded-2xl p-4 md:p-5 space-y-3 border border-fusee-yellow/30">
+                    <h3 class="text-sm font-bold text-fusee-yellow flex items-center gap-2">
+                        <i class="fa-solid fa-circle-question"></i> Frequently Asked Questions
+                    </h3>
+                    <div class="faq-display-container space-y-2 text-xs">
+                        <details class="group p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
+                            <summary class="font-semibold text-white cursor-pointer list-none flex justify-between items-center">
+                                <span class="text-xs md:text-sm">How do I borrow equipment for thesis or lab sessions?</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-open:rotate-180 transition"></i>
+                            </summary>
+                            <p class="mt-2 text-[11px] md:text-xs text-slate-300 leading-relaxed border-t border-slate-800 pt-2">
+                                Use System 01 (Tool Management System) by accessing the Student Portal link, submitting your request, and showing your Student ID at room D204.
+                            </p>
+                        </details>
+
+                        <details class="group p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
+                            <summary class="font-semibold text-white cursor-pointer list-none flex justify-between items-center">
+                                <span class="text-xs md:text-sm">Is check-in mandatory for Computer Lab PCs?</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-open:rotate-180 transition"></i>
+                            </summary>
+                            <p class="mt-2 text-[11px] md:text-xs text-slate-300 leading-relaxed border-t border-slate-800 pt-2">
+                                Yes, all students using D202 Computer Lab workstations must log in via System 02 to record workstation software usage and session hours.
+                            </p>
+                        </details>
+                    </div>
+                </div>
+            </div>
 
             <!-- Footer Meta -->
-            <footer class="text-center pt-2 pb-6 space-y-1">
+            <footer class="text-center pt-6 pb-6 space-y-1 border-t border-white/5 mt-8">
                 <p class="text-[11px] font-bold text-slate-400 font-techno">FUSEE Centralized Hub v2.0</p>
                 <p class="text-[10px] text-slate-400">First United Society of Electrical Engineers © 2026</p>
                 <p class="text-[9px] text-slate-400">Department of Electrical Engineering • AdDU SEA</p>
@@ -725,12 +917,12 @@
                 <i class="fa-solid fa-layer-group text-base"></i>
                 <span class="text-[10px] font-bold">Systems</span>
             </button>
-            <button onclick="openModal('announcements-modal')" class="nav-tab text-slate-400 hover:text-white flex flex-col items-center space-y-1 py-1 transition relative">
+            <button onclick="switchTab('notices')" id="tab-notices" class="nav-tab text-slate-400 hover:text-white flex flex-col items-center space-y-1 py-1 transition relative">
                 <i class="fa-solid fa-bell text-base"></i>
                 <span class="text-[10px] font-bold">Notices</span>
                 <span class="absolute top-0 right-3 w-2 h-2 rounded-full bg-fusee-magenta"></span>
             </button>
-            <button onclick="openModal('guidelines-modal')" class="nav-tab text-slate-400 hover:text-white flex flex-col items-center space-y-1 py-1 transition">
+            <button onclick="switchTab('info')" id="tab-info" class="nav-tab text-slate-400 hover:text-white flex flex-col items-center space-y-1 py-1 transition">
                 <i class="fa-solid fa-circle-info text-base"></i>
                 <span class="text-[10px] font-bold">Info & Rules</span>
             </button>
@@ -848,7 +1040,7 @@
             </div>
 
             <!-- Fallback officers list before Firestore sync -->
-            <div id="officers-display-container" class="space-y-2.5 text-xs">
+            <div id="officers-display-container" class="officers-display-container space-y-2.5 text-xs">
                 <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-fusee-cyan to-blue-600 text-slate-950 flex items-center justify-center font-bold font-pixel text-[10px]">
                         PRES
@@ -890,7 +1082,7 @@
             </div>
 
             <!-- Fallback FAQs list before Firestore sync -->
-            <div id="faq-display-container" class="space-y-2 text-xs">
+            <div id="faq-display-container" class="faq-display-container space-y-2 text-xs">
                 <details class="group p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
                     <summary class="font-semibold text-white cursor-pointer list-none flex justify-between items-center">
                         <span class="text-xs md:text-sm">How do I borrow equipment for thesis or lab sessions?</span>
@@ -1108,7 +1300,9 @@
 
         // Search Filtering Logic with "No Results" State Handler
         function filterSystems() {
-            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const searchInput = document.getElementById('search-input');
+            if (!searchInput) return;
+            const query = searchInput.value.toLowerCase().trim();
             const cards = document.querySelectorAll('.system-card');
             const clearBtn = document.getElementById('clear-search');
             const noResultsMsg = document.getElementById('no-results-msg');
@@ -1242,24 +1436,46 @@
             }
         }
 
-        // Navigation Tab Switcher
-        function switchTab(tab) {
-            const tabs = document.querySelectorAll('.nav-tab');
-            tabs.forEach(t => {
-                t.className = 'nav-tab text-slate-400 hover:text-white flex flex-col items-center space-y-1 py-1 transition';
+        // Navigation Tab Switcher Handler (View Page Switcher)
+        function switchTab(tabId) {
+            // Hide all view tab sections
+            const views = document.querySelectorAll('.tab-view');
+            views.forEach(v => v.classList.add('hidden'));
+
+            // Show selected view section
+            const targetView = document.getElementById(`view-${tabId}`);
+            if (targetView) {
+                targetView.classList.remove('hidden');
+            }
+
+            // Update mobile bottom nav active styles
+            const mobileTabs = document.querySelectorAll('.nav-tab');
+            mobileTabs.forEach(t => {
+                t.classList.remove('text-fusee-cyan');
+                t.classList.add('text-slate-400');
             });
 
-            const activeTab = document.getElementById(`tab-${tab}`);
-            if (activeTab) {
-                activeTab.className = 'nav-tab text-fusee-cyan flex flex-col items-center space-y-1 py-1 transition';
+            const activeMobileTab = document.getElementById(`tab-${tabId}`);
+            if (activeMobileTab) {
+                activeMobileTab.classList.remove('text-slate-400');
+                activeMobileTab.classList.add('text-fusee-cyan');
             }
 
-            if (tab === 'home') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else if (tab === 'systems') {
-                const sysContainer = document.getElementById('system-cards-container');
-                if (sysContainer) sysContainer.scrollIntoView({ behavior: 'smooth' });
+            // Update desktop header nav active styles
+            const desktopTabs = document.querySelectorAll('.desktop-nav-tab');
+            desktopTabs.forEach(dt => {
+                dt.classList.remove('text-fusee-cyan');
+                dt.classList.add('text-slate-300');
+            });
+
+            const activeDesktopTab = document.getElementById(`desktop-tab-${tabId}`);
+            if (activeDesktopTab) {
+                activeDesktopTab.classList.remove('text-slate-300');
+                activeDesktopTab.classList.add('text-fusee-cyan');
             }
+
+            // Scroll smoothly to top upon switching tabs
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
