@@ -754,7 +754,30 @@
             `;
             container.appendChild(div);
         };
+// FAQ Render & Add Functions
+        function renderFaqs(list = []) {
+            const container = document.getElementById('faq-container');
+            if (!container) return;
+            container.innerHTML = '';
+            list.forEach(item => window.addFaqRow(item.q, item.a));
+        }
 
+        window.addFaqRow = function(q = '', a = '') {
+            const container = document.getElementById('faq-container');
+            if (!container) return;
+            const div = document.createElement('div');
+            div.className = 'faq-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative';
+            div.innerHTML = `
+                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete FAQ">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                <div class="space-y-2 text-xs pt-2">
+                    <input type="text" class="faq-q-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Question" value="${q.replace(/"/g, '&quot;')}">
+                    <textarea class="faq-a-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="2" placeholder="Answer">${a}</textarea>
+                </div>
+            `;
+            container.appendChild(div);
+        };
         function renderOfficers(list) {
             const container = document.getElementById('officers-container');
             if (!container) return;
