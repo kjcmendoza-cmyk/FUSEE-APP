@@ -157,17 +157,20 @@
             }
 
             // 9. Upcoming Events Sync
-            if (data.events && Array.isArray(data.events) && data.events.length > 0) {
-                const primaryEvent = data.events[0];
-                const title = document.getElementById('event-display-title');
-                if (title && primaryEvent.title) title.textContent = `⚡ ${primaryEvent.title}`;
-
-                const loc = document.getElementById('event-display-location');
-                if (loc && primaryEvent.location) loc.textContent = primaryEvent.location;
-
-                const desc = document.getElementById('event-display-desc');
-                if (desc) desc.textContent = primaryEvent.date ? primaryEvent.date : 'Upcoming FUSEE event';
-            }
+if (data.events && Array.isArray(data.events)) {
+    const container = document.getElementById('events-display-container');
+    if (container) {
+        container.innerHTML = data.events.map(event => `
+            <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1 text-xs">
+                <div class="flex justify-between font-semibold text-white">
+                    <span>⚡ ${event.title || 'Upcoming Event'}</span>
+                    <span class="text-fusee-cyan text-[10px]">${event.location || ''}</span>
+                </div>
+                <p class="text-[10px] text-slate-400">${event.date || 'Upcoming FUSEE event'}</p>
+            </div>
+        `).join('');
+    }
+}
 
             // 10. EE Academic Drive Sync
             if (data.academicLinks && Array.isArray(data.academicLinks)) {
@@ -468,18 +471,14 @@
 <!-- FUSEE Events & Student Resources Strip -->
 <section class="grid grid-cols-1 md:grid-cols-2 gap-3">
     <!-- Upcoming Events -->
-    <div class="glass-card p-4 rounded-2xl border border-fusee-purple/30 space-y-2">
-        <h4 class="text-xs font-bold text-fusee-purple font-techno flex items-center gap-1.5">
-            <i class="fa-solid fa-calendar-day"></i> Upcoming in FUSEE
-        </h4>
-        <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1 text-xs">
-            <div class="flex justify-between font-semibold text-white">
-                <span id="event-display-title">⚡ EE General Assembly</span>
-                <span id="event-display-location" class="text-fusee-cyan text-[10px]">Room F213</span>
-            </div>
-            <p id="event-display-desc" class="text-[10px] text-slate-400">Join the EE community for org updates, games, and announcements.</p>
-        </div>
+<div class="glass-card p-4 rounded-2xl border border-fusee-purple/30 space-y-2">
+    <h4 class="text-xs font-bold text-fusee-purple font-techno flex items-center gap-1.5">
+        <i class="fa-solid fa-calendar-day"></i> Upcoming in FUSEE
+    </h4>
+    <div id="events-display-container" class="space-y-2">
+        <!-- Dynamic events will be injected here -->
     </div>
+</div>
 
     <!-- Quick Academic Links -->
     <div class="glass-card p-4 rounded-2xl border border-fusee-yellow/30 space-y-2">
