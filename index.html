@@ -43,7 +43,7 @@
         onSnapshot(doc(db, "fusee_hub", "landing_content"), (docSnap) => {
             if (!docSnap.exists()) return;
             const data = docSnap.data();
-
+            console.log("🔥 Firestore Landing Content Data:", data);
             // 1. Marquee Announcement Ticker
             if (data.tickerText) {
                 const tickerEl = document.getElementById('announcement-text');
