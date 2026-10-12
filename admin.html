@@ -634,7 +634,7 @@
                 };
 
                 // Write to Firestore with timeout fallback
-                await withTimeout(setDoc(docRef, updatedData), 8000);
+                await withTimeout(setDoc(docRef, updatedData, { merge: true }), 8000);
                 showToast("All changes published to FUSEE Hub live!");
             } catch (err) {
                 console.error("Save error:", err);
