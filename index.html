@@ -99,13 +99,7 @@
                 const url = document.getElementById('sys3-display-url');
                 if (url && data.sys3.url) url.href = data.sys3.url;
             }
-// 5b. Live Occupancy Dynamic Calculator
-const comlabActive = data.totalOccupants ?? data.activeOccupants ?? data.comlabActiveCount ?? data.sys2ActiveCount ?? data.occupants ?? 0;
-const freePCs = Math.max(0, 24 - comlabActive);
-document.getElementById('comlab-occupancy').textContent = `${freePCs} / 24 Free`;
 
-const hardwareActive = data.hardwareActiveCount ?? data.sys3ActiveCount ?? data.hardwareOccupants ?? 0;
-document.getElementById('hardware-occupancy').textContent = `${hardwareActive} Active Sessions`;
             if (typeof window.refreshAllSystemStatuses === 'function') {
                 window.refreshAllSystemStatuses();
             }
@@ -438,28 +432,6 @@ document.getElementById('hardware-occupancy').textContent = `${hardwareActive} A
                         </div>
                     </div>
                 </section>
-
-<!-- Live Lab Occupancy Widget -->
-<section class="glass-card rounded-2xl p-4 border border-fusee-cyan/30 space-y-3">
-    <div class="flex items-center justify-between">
-        <h3 class="text-xs font-bold text-white uppercase tracking-wider font-techno flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-fusee-lime animate-ping"></span> Live Lab Capacity
-        </h3>
-        <span class="text-[10px] text-slate-400">Updated Real-Time</span>
-    </div>
-    <div class="grid grid-cols-2 gap-3 text-center">
-        <!-- 1. D202 ComLab (Max 24 Workstations) -->
-        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
-            <p class="text-[10px] text-slate-400 font-medium">D202 ComLab</p>
-            <p id="comlab-occupancy" class="text-xs md:text-sm font-bold text-fusee-magenta font-techno mt-0.5">-- / 24 Free</p>
-        </div>
-        <!-- 2. D205 EE Hardware Lab (Flexible / Open Bench Access) -->
-        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
-            <p class="text-[10px] text-slate-400 font-medium">D205 EE Lab</p>
-            <p id="hardware-occupancy" class="text-xs md:text-sm font-bold text-fusee-yellow font-techno mt-0.5">-- Active Sessions</p>
-        </div>
-    </div>
-</section>
 
 <!-- FUSEE Events & Student Resources Strip -->
 <section class="grid grid-cols-1 md:grid-cols-2 gap-3">
