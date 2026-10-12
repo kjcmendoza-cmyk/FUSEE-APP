@@ -324,12 +324,11 @@
             <!-- Top University & Org Meta Bar + Desktop Quick Menu -->
             <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-gradient-to-tr from-fusee-cyan via-fusee-magenta to-fusee-yellow p-[1.5px] shadow-neon-cyan flex-shrink-0">
-                        <div class="w-full h-full bg-[#0B081E] rounded-[7px] flex items-center justify-center font-pixel text-xs text-fusee-cyan">
-                            EE
-                        </div>
-                    </div>
-                    <div>
+<div class="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-gradient-to-tr from-fusee-cyan via-fusee-magenta to-fusee-yellow p-[1.5px] shadow-neon-cyan flex-shrink-0 overflow-hidden">
+    <div class="w-full h-full bg-[#0B081E] rounded-[7px] flex items-center justify-center p-1">
+        <img src="fusee-logo.png" alt="FUSEE Logo" class="w-full h-full object-contain">
+    </div>
+</div>
                         <h2 class="text-[10px] md:text-xs tracking-wider text-fusee-cyan font-bold uppercase font-techno">Ateneo de Davao University</h2>
                         <p class="text-[9px] md:text-[10px] text-slate-400 font-medium tracking-tight">School of Engineering and Architecture (SEA)</p>
                     </div>
@@ -389,6 +388,22 @@
                 <i class="fa-solid fa-chevron-right"></i>
             </button>
         </section>
+
+        <!-- Brand Visual Hero Banner -->
+<section class="px-4 md:px-6 pt-4">
+    <div class="relative rounded-2xl overflow-hidden border border-fusee-cyan/30 shadow-neon-cyan group">
+        <img src="EE BRANDING 1.JPG" alt="FUSEE Banner Graphic" class="w-full h-32 md:h-48 object-cover object-center group-hover:scale-105 transition-transform duration-500">
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0B081E] via-transparent to-transparent opacity-80"></div>
+        <div class="absolute bottom-3 left-4 right-4 flex justify-between items-end">
+            <div>
+                <span class="px-2 py-0.5 text-[9px] font-pixel rounded bg-fusee-cyan/20 text-fusee-cyan border border-fusee-cyan/30">
+                    ADDU SEA • EE
+                </span>
+                <h2 class="text-sm md:text-lg font-bold text-white font-display mt-0.5">Electrical Engineering Portal</h2>
+            </div>
+        </div>
+    </div>
+</section>
 
         <!-- Main Scrollable Dashboard Content -->
         <main class="flex-1 px-4 md:px-6 pt-4 space-y-5">
@@ -648,25 +663,36 @@
                 </div>
             </section>
 
-            <!-- Inspirational Retro Brand Banner Showcase -->
-            <section class="glass-card rounded-2xl p-5 md:p-6 bg-gradient-to-br from-indigo-950/80 via-purple-950/60 to-slate-900/90 border border-fusee-cyan/30 text-center relative overflow-hidden my-4">
-                <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-fusee-cyan/15 rounded-full blur-2xl pointer-events-none"></div>
-                <div class="absolute -left-8 -top-8 w-32 h-32 bg-fusee-magenta/15 rounded-full blur-2xl pointer-events-none"></div>
-
-                <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-fusee-yellow/20 text-fusee-yellow mb-2.5 border border-fusee-yellow/30 shadow-neon-yellow">
-                    <i class="fa-solid fa-rocket text-sm"></i>
+            <!-- Inspiration & Brand Showcase Card -->
+        <section class="glass-card rounded-2xl p-4 md:p-6 bg-gradient-to-br from-indigo-950/80 via-purple-950/60 to-slate-900/90 border border-fusee-cyan/30 relative overflow-hidden my-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                <!-- Visual Art Cards -->
+                <div class="flex gap-2 justify-center md:justify-start">
+                    <img src="EE BRANDING 2.JPG" alt="EE Vision" class="w-28 md:w-36 rounded-xl border border-white/20 shadow-lg object-cover">
+                    <img src="EE BRANDING 3.JPG" alt="To Infinitee and Beeyond" class="w-28 md:w-36 rounded-xl border border-white/20 shadow-lg object-cover hidden sm:block">
                 </div>
 
-                <h3 id="banner-display-title" class="font-pixel text-xs md:text-sm text-white mb-2 tracking-wider uppercase">
-                    TO INFINITEE AND BEEYOND
-                </h3>
-                <p id="banner-display-body" class="text-xs md:text-sm text-slate-300 italic leading-relaxed max-w-xl mx-auto px-2">
-                    "Like wires that weave strength through every circuit and create connections across every bridge, electrical engineering transforms ideas into systems that power progress."
-                </p>
-                <div class="mt-3 inline-block font-techno text-[10px] md:text-xs font-bold tracking-widest text-fusee-cyan uppercase border-t border-white/10 pt-2 px-6">
-                    Ateneo de Davao University • MAGIS 2026
+                <!-- Text Content -->
+                <div class="md:col-span-2 text-center md:text-left space-y-2">
+                    <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-fusee-yellow/20 text-fusee-yellow text-[10px] font-pixel border border-fusee-yellow/30">
+                        <i class="fa-solid fa-rocket"></i>
+                        <span>THEME 2026</span>
+                    </div>
+                    
+                    <h3 id="banner-display-title" class="font-pixel text-xs md:text-sm text-white tracking-wider uppercase">
+                        TO INFINITEE AND BEEYOND
+                    </h3>
+                    
+                    <p id="banner-display-body" class="text-xs text-slate-300 italic leading-relaxed">
+                        "Like wires that weave strength through every circuit and create connections across every bridge, electrical engineering transforms ideas into systems that power progress."
+                    </p>
+                    
+                    <p class="font-techno text-[10px] font-bold tracking-widest text-fusee-cyan uppercase pt-1">
+                        Ateneo de Davao University • MAGIS 2026
+                    </p>
                 </div>
-            </section>
+            </div>
+        </section>
 
             <!-- Footer Meta -->
             <footer class="text-center pt-2 pb-6 space-y-1">
