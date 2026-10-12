@@ -44,6 +44,7 @@
             if (!docSnap.exists()) return;
             const data = docSnap.data();
             console.log("🔥 Firestore Landing Content Data:", data);
+
             // 1. Marquee Announcement Ticker
             if (data.tickerText) {
                 const tickerEl = document.getElementById('announcement-text');
@@ -154,25 +155,36 @@
                     `).join('');
                 });
             }
-            // 9. Upcoming Event Sync
-            if (data.event) {
+
+            // 9. Upcoming Events Sync
+            if (data.events && Array.isArray(data.events) && data.events.length > 0) {
+                const primaryEvent = data.events[0];
                 const title = document.getElementById('event-display-title');
-                if (title && data.event.title) title.textContent = data.event.title;
+                if (title && primaryEvent.title) title.textContent = `⚡ ${primaryEvent.title}`;
 
                 const loc = document.getElementById('event-display-location');
-                if (loc && data.event.location) loc.textContent = data.event.location;
+                if (loc && primaryEvent.location) loc.textContent = primaryEvent.location;
 
                 const desc = document.getElementById('event-display-desc');
-                if (desc && data.event.description) desc.textContent = data.event.description;
+                if (desc) desc.textContent = primaryEvent.date ? primaryEvent.date : 'Upcoming FUSEE event';
             }
 
             // 10. EE Academic Drive Sync
-            if (data.academicDrive) {
-                const curr = document.getElementById('drive-display-curriculum');
-                if (curr && data.academicDrive.curriculumUrl) curr.href = data.academicDrive.curriculumUrl;
-
-                const soft = document.getElementById('drive-display-software');
-                if (soft && data.academicDrive.softwareUrl) soft.href = data.academicDrive.softwareUrl;
+            if (data.academicLinks && Array.isArray(data.academicLinks)) {
+                if (data.academicLinks[0]) {
+                    const curr = document.getElementById('drive-display-curriculum');
+                    if (curr) {
+                        curr.href = data.academicLinks[0].url || '#';
+                        curr.innerHTML = `<i class="fa-solid fa-file-pdf text-rose-400"></i> ${data.academicLinks[0].title || 'Curriculum Guide'}`;
+                    }
+                }
+                if (data.academicLinks[1]) {
+                    const soft = document.getElementById('drive-display-software');
+                    if (soft) {
+                        soft.href = data.academicLinks[1].url || '#';
+                        soft.innerHTML = `<i class="fa-solid fa-code text-fusee-cyan"></i> ${data.academicLinks[1].title || 'Software Setup'}`;
+                    }
+                }
             }
         });
     </script>
