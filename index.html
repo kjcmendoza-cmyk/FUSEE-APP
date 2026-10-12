@@ -154,6 +154,26 @@
                     `).join('');
                 });
             }
+            // 9. Upcoming Event Sync
+            if (data.event) {
+                const title = document.getElementById('event-display-title');
+                if (title && data.event.title) title.textContent = data.event.title;
+
+                const loc = document.getElementById('event-display-location');
+                if (loc && data.event.location) loc.textContent = data.event.location;
+
+                const desc = document.getElementById('event-display-desc');
+                if (desc && data.event.description) desc.textContent = data.event.description;
+            }
+
+            // 10. EE Academic Drive Sync
+            if (data.academicDrive) {
+                const curr = document.getElementById('drive-display-curriculum');
+                if (curr && data.academicDrive.curriculumUrl) curr.href = data.academicDrive.curriculumUrl;
+
+                const soft = document.getElementById('drive-display-software');
+                if (soft && data.academicDrive.softwareUrl) soft.href = data.academicDrive.softwareUrl;
+            }
         });
     </script>
 
@@ -442,10 +462,10 @@
         </h4>
         <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1 text-xs">
             <div class="flex justify-between font-semibold text-white">
-                <span>⚡ EE General Assembly</span>
-                <span class="text-fusee-cyan text-[10px]">Room F213</span>
+                <span id="event-display-title">⚡ EE General Assembly</span>
+                <span id="event-display-location" class="text-fusee-cyan text-[10px]">Room F213</span>
             </div>
-            <p class="text-[10px] text-slate-400">Join the EE community for org updates, games, and announcements.</p>
+            <p id="event-display-desc" class="text-[10px] text-slate-400">Join the EE community for org updates, games, and announcements.</p>
         </div>
     </div>
 
@@ -455,10 +475,10 @@
             <i class="fa-solid fa-folder-open"></i> EE Academic Drive
         </h4>
         <div class="grid grid-cols-2 gap-2 text-[11px]">
-            <a href="#" class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-fusee-yellow text-slate-300 flex items-center gap-2">
+            <a id="drive-display-curriculum" href="#" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-fusee-yellow text-slate-300 flex items-center gap-2">
                 <i class="fa-solid fa-file-pdf text-rose-400"></i> Curriculum Guide
             </a>
-            <a href="#" class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-fusee-yellow text-slate-300 flex items-center gap-2">
+            <a id="drive-display-software" href="#" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-fusee-yellow text-slate-300 flex items-center gap-2">
                 <i class="fa-solid fa-code text-fusee-cyan"></i> Software Setup
             </a>
         </div>
