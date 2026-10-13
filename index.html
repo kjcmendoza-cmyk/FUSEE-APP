@@ -69,6 +69,8 @@
 
                 const studentUrl = document.getElementById('sys1-display-student-url');
                 if (studentUrl && data.sys1.studentUrl) studentUrl.href = data.sys1.studentUrl;
+            const sys1Rules = document.getElementById('sys1-display-rules');
+if (sys1Rules && data.sys1.guidelinesContent) sys1Rules.textContent = data.sys1.guidelinesContent;
             }
 
             // 4. System 02 Data Sync
@@ -84,6 +86,8 @@
 
                 const url = document.getElementById('sys2-display-url');
                 if (url && data.sys2.url) url.href = data.sys2.url;
+                const sys2Rules = document.getElementById('sys2-display-rules');
+            if (sys2Rules && data.sys2.policiesContent) sys2Rules.textContent = data.sys2.policiesContent;
             }
 
             // 5. System 03 Data Sync
@@ -97,6 +101,8 @@
                 const modalHours = document.getElementById('sys3-modal-hours');
                 if (modalHours && data.sys3.hours) modalHours.textContent = data.sys3.hours;
 
+                const sys3Rules = document.getElementById('sys3-display-rules');
+            if (sys3Rules && data.sys3.guidelinesContent) sys3Rules.textContent = data.sys3.guidelinesContent;
                 const url = document.getElementById('sys3-display-url');
                 if (url && data.sys3.url) url.href = data.sys3.url;
             }
@@ -1278,9 +1284,11 @@ if (data.eeDept) {
                 </button>
             </div>
             <div class="space-y-2 text-xs text-slate-300">
-                <p>• Clean and test all multimeters, probes, and equipment prior to returning.</p>
-                <p>• Broken or burnt components must be reported immediately to the lab technician.</p>
-                <p>• Always present your active student portal confirmation screen upon tool pickup.</p>
+                <p id="sys1-display-rules" class="whitespace-pre-line text-xs text-slate-300">
+    1. Always present validated AdDU Student ID before borrowing tools.
+    2. Inspect all equipment and component kits for damage before leaving the bench.
+    3. Return all borrowed tools clean, intact, and on time before lab closing hours.
+</p>
                 <a href="https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/student.html" target="_blank" class="block w-full text-center py-2.5 bg-fusee-cyan text-slate-950 font-bold rounded-xl mt-3">Open Tool Student Portal</a>
             </div>
         </div>
@@ -1302,11 +1310,13 @@ if (data.eeDept) {
                 </button>
             </div>
             <div class="space-y-2 text-xs text-slate-300">
-                <p>• Saving files locally on lab PCs is prohibited; use cloud storage or flash drives.</p>
-                <p>• Do not unplug network cables, HDMI display cords, or power blocks.</p>
-                <p>• Log out of your digital session immediately upon ending your workstation time.</p>
-                <a href="https://kjcmendoza-cmyk.github.io/Digital-Logbook/" target="_blank" class="block w-full text-center py-2.5 bg-fusee-magenta text-white font-bold rounded-xl mt-3">Open Computer Lab Logbook</a>
-            </div>
+    <p id="sys2-display-rules" class="whitespace-pre-line text-xs text-slate-300">
+        1. Food and open drinks are strictly prohibited near workstation PCs.
+        2. Always log out of your session when finished.
+        3. Unsafe file downloads and unauthorized system changes are strictly monitored.
+    </p>
+    <a href="https://kjcmendoza-cmyk.github.io/Digital-Logbook/" target="_blank" class="block w-full text-center py-2.5 bg-fusee-magenta text-white font-bold rounded-xl mt-3">Open Computer Lab Logbook</a>
+</div>
         </div>
 
         <!-- MODAL 8: Hardware Safety Modal -->
@@ -1326,11 +1336,13 @@ if (data.eeDept) {
                 </button>
             </div>
             <div class="space-y-2 text-xs text-slate-300">
-                <p>• Verify power supply voltages with a multimeter before connecting sensitive ICs.</p>
-                <p>• Turn off main bench circuit breakers prior to re-wiring high-current components.</p>
-                <p>• Wear protective eye glasses when soldering or trimming lead wires.</p>
-                <a href="https://kjcmendoza-cmyk.github.io/EE-Laboratory-Digital-Logbook/login.html" target="_blank" class="block w-full text-center py-2.5 bg-fusee-yellow text-slate-950 font-bold rounded-xl mt-3">Access Hardware Logbook</a>
-            </div>
+    <p id="sys3-display-rules" class="whitespace-pre-line text-xs text-slate-300">
+        1. Power off all bench sources before wiring or modifying circuit breadboards.
+        2. Wear protective equipment (safety glasses) during soldering or high-voltage tests.
+        3. Report faulty electrical outlets, exposed conductors, or bench equipment immediately.
+    </p>
+    <a href="https://kjcmendoza-cmyk.github.io/EE-Laboratory-Digital-Logbook/login.html" target="_blank" class="block w-full text-center py-2.5 bg-fusee-yellow text-slate-950 font-bold rounded-xl mt-3">Access Hardware Logbook</a>
+</div>
         </div>
 <!-- FULL-SCREEN MODAL 1: EE Department -->
 <div id="ee-dept-modal" class="bottom-sheet hidden-sheet fixed inset-0 z-[100] bg-[#0B081E] flex flex-col overflow-y-auto">
