@@ -163,22 +163,21 @@ if (data.officers && Array.isArray(data.officers)) {
             }
 
             // 10. EE Academic Drive Sync
-            if (data.academicLinks && Array.isArray(data.academicLinks)) {
-                if (data.academicLinks[0]) {
-                    const curr = document.getElementById('drive-display-curriculum');
-                    if (curr) {
-                        curr.href = data.academicLinks[0].url || '#';
-                        curr.innerHTML = `<i class="fa-solid fa-file-pdf text-rose-400"></i> ${data.academicLinks[0].title || 'Curriculum Guide'}`;
-                    }
-                }
-                if (data.academicLinks[1]) {
-                    const soft = document.getElementById('drive-display-software');
-                    if (soft) {
-                        soft.href = data.academicLinks[1].url || '#';
-                        soft.innerHTML = `<i class="fa-solid fa-code text-fusee-cyan"></i> ${data.academicLinks[1].title || 'Software Setup'}`;
-                    }
-                }
-            }
+if (data.academicLinks && Array.isArray(data.academicLinks)) {
+    const driveContainer = document.getElementById('academic-drive-display-container');
+    if (driveContainer) {
+        if (data.academicLinks.length === 0) {
+            driveContainer.innerHTML = `<span class="text-[10px] text-slate-400 italic col-span-2">No resource links available.</span>`;
+        } else {
+            driveContainer.innerHTML = data.academicLinks.map(link => `
+                <a href="${link.url || '#'}" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-fusee-yellow text-slate-300 flex items-center gap-2 truncate">
+                    <i class="fa-solid fa-file-pdf text-rose-400"></i>
+                    <span class="truncate">${link.title || 'Academic Link'}</span>
+                </a>
+            `).join('');
+        }
+    }
+}
             // 11. EE Department Real-Time Sync
 if (data.eeDept) {
     const desc = document.getElementById('ee-dept-display-desc');
@@ -545,13 +544,8 @@ if (data.eeDept) {
                         <h4 class="text-xs font-bold text-fusee-yellow font-techno flex items-center gap-1.5">
                             <i class="fa-solid fa-folder-open"></i> EE Academic Drive
                         </h4>
-                        <div class="grid grid-cols-2 gap-2 text-[11px]">
-                            <a id="drive-display-curriculum" href="#" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-fusee-yellow text-slate-300 flex items-center gap-2">
-                                <i class="fa-solid fa-file-pdf text-rose-400"></i> Curriculum Guide
-                            </a>
-                            <a id="drive-display-software" href="#" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-fusee-yellow text-slate-300 flex items-center gap-2">
-                                <i class="fa-solid fa-code text-fusee-cyan"></i> Software Setup
-                            </a>
+                        <div id="academic-drive-display-container" class="grid grid-cols-2 gap-2 text-[11px]">
+                            <!-- Dynamic links render here -->
                         </div>
                     </div>
                 </section>
