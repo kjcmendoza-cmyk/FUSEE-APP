@@ -216,6 +216,20 @@ if (data.eeDept) {
             `).join('');
         }
     }
+    // Facility locations renderer
+    if (data.eeDept.facilities && Array.isArray(data.eeDept.facilities)) {
+        const facilContainer = document.getElementById('ee-dept-facilities-container');
+        if (facilContainer) {
+            facilContainer.innerHTML = data.eeDept.facilities.map(f => `
+                <li class="flex items-center space-x-2 py-1 border-b border-slate-800/60 last:border-0">
+                    <span class="font-bold text-fusee-cyan font-pixel text-[10px] bg-fusee-cyan/10 px-2 py-0.5 rounded border border-fusee-cyan/30 flex-shrink-0">
+                        ${f.code || ''}
+                    </span>
+                    <span class="text-slate-300 text-xs font-medium">${f.description || ''}</span>
+                </li>
+            `).join('');
+        }
+    }
 }
 
             // 12. FUSEE Info Real-Time Sync
