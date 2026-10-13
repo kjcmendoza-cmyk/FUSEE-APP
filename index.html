@@ -1554,12 +1554,14 @@ window.renderOfficersUI = function() {
                     </h4>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
                         ${executives.map(off => `
-                            <div class="p-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-cyan/40 transition flex items-center space-x-2">
-                                <div class="w-7 h-7 rounded-lg bg-fusee-cyan/15 border border-fusee-cyan/30 text-fusee-cyan flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
-                                    ${off.badge || 'EXEC'}
+                            <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-cyan/40 transition flex flex-col justify-between">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <span class="px-1.5 py-0.5 rounded bg-fusee-cyan/15 border border-fusee-cyan/30 text-fusee-cyan font-techno text-[8px] font-bold uppercase tracking-wider">
+                                        ${off.badge || 'EXEC'}
+                                    </span>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <h5 class="font-bold text-white text-[10px] truncate leading-tight">${off.dept || 'Officer Name'}</h5>
+                                <div>
+                                    <h5 class="font-bold text-white text-[10px] leading-tight line-clamp-2 mb-0.5">${off.dept || 'Officer Name'}</h5>
                                     <p class="text-[9px] text-fusee-cyan font-semibold truncate">${off.title}</p>
                                 </div>
                             </div>
@@ -1578,12 +1580,14 @@ window.renderOfficersUI = function() {
                     </h4>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
                         ${reps.map(off => `
-                            <div class="p-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-magenta/40 transition flex items-center space-x-2">
-                                <div class="w-7 h-7 rounded-lg bg-fusee-magenta/15 border border-fusee-magenta/30 text-fusee-magenta flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
-                                    ${off.badge || 'REP'}
+                            <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-magenta/40 transition flex flex-col justify-between">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <span class="px-1.5 py-0.5 rounded bg-fusee-magenta/15 border border-fusee-magenta/30 text-fusee-magenta font-techno text-[8px] font-bold uppercase tracking-wider">
+                                        ${off.badge || 'REP'}
+                                    </span>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <h5 class="font-bold text-white text-[10px] truncate leading-tight">${off.dept || 'Representative Name'}</h5>
+                                <div>
+                                    <h5 class="font-bold text-white text-[10px] leading-tight line-clamp-2 mb-0.5">${off.dept || 'Representative Name'}</h5>
                                     <p class="text-[9px] text-fusee-magenta font-semibold truncate">${off.title}</p>
                                 </div>
                             </div>
@@ -1592,7 +1596,7 @@ window.renderOfficersUI = function() {
                 </div>`;
         }
 
-        // 3. Committees (With Mini Sub-Categorizations)
+        // 3. Committees with Mini Sub-Categories
         if (committees.length > 0) {
             const subCats = [
                 { id: 'academics', name: 'Academics & Scholarship', icon: 'fa-graduation-cap', color: 'text-amber-400', badgeColor: 'bg-amber-400/10 text-amber-300 border-amber-400/30', match: o => o.subCategory === 'academics' || /academic|scholarship/i.test((o.title || '') + (o.dept || '')) },
@@ -1624,12 +1628,14 @@ window.renderOfficersUI = function() {
                             </div>
                             <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
                                 ${subMembers.map(off => `
-                                    <div class="p-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/40 transition flex items-center space-x-2">
-                                        <div class="w-7 h-7 rounded-lg bg-fusee-yellow/15 border border-fusee-yellow/30 text-fusee-yellow flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
-                                            ${off.badge || 'CMTE'}
+                                    <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/40 transition flex flex-col justify-between">
+                                        <div class="flex items-center justify-between mb-1.5">
+                                            <span class="px-1.5 py-0.5 rounded bg-fusee-yellow/15 border border-fusee-yellow/30 text-fusee-yellow font-techno text-[8px] font-bold uppercase tracking-wider">
+                                                ${off.badge || 'CMTE'}
+                                            </span>
                                         </div>
-                                        <div class="flex-1 min-w-0">
-                                            <h5 class="font-bold text-white text-[10px] truncate leading-tight">${off.dept || 'Committee Member'}</h5>
+                                        <div>
+                                            <h5 class="font-bold text-white text-[10px] leading-tight line-clamp-2 mb-0.5">${off.dept || 'Committee Member'}</h5>
                                             <p class="text-[9px] text-fusee-yellow font-semibold truncate">${off.title}</p>
                                         </div>
                                     </div>
@@ -1652,12 +1658,14 @@ window.renderOfficersUI = function() {
                         </div>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
                             ${unassigned.map(off => `
-                                <div class="p-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/40 transition flex items-center space-x-2">
-                                    <div class="w-7 h-7 rounded-lg bg-fusee-yellow/15 border border-fusee-yellow/30 text-fusee-yellow flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
-                                        ${off.badge || 'CMTE'}
+                                <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/40 transition flex flex-col justify-between">
+                                    <div class="flex items-center justify-between mb-1.5">
+                                        <span class="px-1.5 py-0.5 rounded bg-fusee-yellow/15 border border-fusee-yellow/30 text-fusee-yellow font-techno text-[8px] font-bold uppercase tracking-wider">
+                                            ${off.badge || 'CMTE'}
+                                        </span>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h5 class="font-bold text-white text-[10px] truncate leading-tight">${off.dept || 'Committee Member'}</h5>
+                                    <div>
+                                        <h5 class="font-bold text-white text-[10px] leading-tight line-clamp-2 mb-0.5">${off.dept || 'Committee Member'}</h5>
                                         <p class="text-[9px] text-fusee-yellow font-semibold truncate">${off.title}</p>
                                     </div>
                                 </div>
