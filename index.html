@@ -132,7 +132,7 @@
                 });
             }
 
-            // 8. Tiered Officers List Sync
+            // 8. Tiered Officers List Sync (3-Column Category Layout)
             if (data.officers && Array.isArray(data.officers)) {
                 const offContainers = document.querySelectorAll('#officers-display-container, .officers-display-container');
                 
@@ -141,83 +141,84 @@
                 const committees = data.officers.filter(o => o.category === 'committees');
 
                 offContainers.forEach(offContainer => {
-                    let html = '';
+                    let html = '<div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 items-start">';
 
-                    // Tier 1: Executive Board (Prominent Cards)
-                    if (executives.length > 0) {
-                        html += `
+                    // COLUMN 1: Executive Board
+                    html += `
+                        <div class="space-y-2.5 bg-slate-950/40 p-3 rounded-2xl border border-fusee-cyan/20">
+                            <h4 class="text-[11px] font-bold font-techno text-fusee-cyan tracking-wider uppercase flex items-center justify-between border-b border-fusee-cyan/20 pb-2">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-crown text-amber-400"></i> Executive Board</span>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-fusee-cyan/10 border border-fusee-cyan/30 text-fusee-cyan">${executives.length}</span>
+                            </h4>
                             <div class="space-y-2">
-                                <h4 class="text-[11px] font-bold font-techno text-fusee-cyan tracking-wider uppercase flex items-center gap-1.5 border-b border-fusee-cyan/20 pb-1">
-                                    <i class="fa-solid fa-crown text-fusee-cyan"></i> Executive Board
-                                </h4>
-                                <div class="space-y-2">
-                                    ${executives.map(off => `
-                                        <div class="p-3.5 rounded-xl bg-gradient-to-r from-slate-900 via-slate-900/90 to-purple-950/40 border border-fusee-cyan/40 flex items-center space-x-3.5 shadow-md">
-                                            <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-fusee-cyan to-blue-600 text-slate-950 flex items-center justify-center font-bold font-pixel text-xs shadow-neon-cyan flex-shrink-0">
-                                                ${off.badge || 'EXEC'}
-                                            </div>
-                                            <div class="flex-1 min-w-0">
-                                                <h5 class="font-extrabold text-white text-xs truncate">${off.title}</h5>
-                                                <p class="text-[10px] text-fusee-cyan font-semibold truncate">${off.dept}</p>
-                                                <p class="text-[10px] text-slate-400 truncate"><i class="fa-regular fa-envelope text-[9px] mr-1"></i>${off.email}</p>
-                                            </div>
+                                ${executives.map(off => `
+                                    <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-cyan/40 transition flex items-center space-x-2.5">
+                                        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-fusee-cyan/20 to-blue-600/30 text-fusee-cyan border border-fusee-cyan/30 flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
+                                            ${off.badge || 'EXEC'}
                                         </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        `;
-                    }
-
-                    // Tier 2: Batch & Course Representatives (2-Column Compact Grid)
-                    if (reps.length > 0) {
-                        html += `
-                            <div class="space-y-2 pt-2">
-                                <h4 class="text-[11px] font-bold font-techno text-fusee-magenta tracking-wider uppercase flex items-center gap-1.5 border-b border-fusee-magenta/20 pb-1">
-                                    <i class="fa-solid fa-user-graduate text-fusee-magenta"></i> Batch & Course Reps
-                                </h4>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    ${reps.map(off => `
-                                        <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center space-x-2.5">
-                                            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-fusee-magenta to-pink-600 text-white flex items-center justify-center font-bold font-pixel text-[9px] flex-shrink-0">
-                                                ${off.badge || 'REP'}
-                                            </div>
-                                            <div class="flex-1 min-w-0">
-                                                <h5 class="font-bold text-white text-[11px] truncate">${off.title}</h5>
-                                                <p class="text-[9px] text-fusee-magenta font-medium truncate">${off.dept}</p>
-                                                <p class="text-[9px] text-slate-400 truncate">${off.email}</p>
-                                            </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h5 class="font-bold text-white text-[11px] truncate">${off.dept || 'Officer Name'}</h5>
+                                            <p class="text-[9px] text-fusee-cyan font-semibold truncate">${off.title}</p>
+                                            <p class="text-[9px] text-slate-400 truncate"><i class="fa-regular fa-envelope text-[8px] mr-1"></i>${off.email}</p>
                                         </div>
-                                    `).join('')}
-                                </div>
+                                    </div>
+                                `).join('')}
+                                ${executives.length === 0 ? '<p class="text-[10px] text-slate-500 italic p-1.5">No executive officers.</p>' : ''}
                             </div>
-                        `;
-                    }
+                        </div>
+                    `;
 
-                    // Tier 3: Committees (Grouped Sub-Grid)
-                    if (committees.length > 0) {
-                        html += `
-                            <div class="space-y-2 pt-2">
-                                <h4 class="text-[11px] font-bold font-techno text-fusee-yellow tracking-wider uppercase flex items-center gap-1.5 border-b border-fusee-yellow/20 pb-1">
-                                    <i class="fa-solid fa-users-gear text-fusee-yellow"></i> Committees & Task Forces
-                                </h4>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    ${committees.map(off => `
-                                        <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center space-x-2.5">
-                                            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-fusee-yellow to-amber-500 text-slate-950 flex items-center justify-center font-bold font-pixel text-[9px] flex-shrink-0">
-                                                ${off.badge || 'CMTE'}
-                                            </div>
-                                            <div class="flex-1 min-w-0">
-                                                <h5 class="font-bold text-white text-[11px] truncate">${off.title}</h5>
-                                                <p class="text-[9px] text-fusee-yellow font-medium truncate">${off.dept}</p>
-                                                <p class="text-[9px] text-slate-400 truncate">${off.email}</p>
-                                            </div>
+                    // COLUMN 2: Batch & Course Representatives
+                    html += `
+                        <div class="space-y-2.5 bg-slate-950/40 p-3 rounded-2xl border border-fusee-magenta/20">
+                            <h4 class="text-[11px] font-bold font-techno text-fusee-magenta tracking-wider uppercase flex items-center justify-between border-b border-fusee-magenta/20 pb-2">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-user-graduate text-fusee-magenta"></i> Batch & Course Reps</span>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-fusee-magenta/10 border border-fusee-magenta/30 text-fusee-magenta">${reps.length}</span>
+                            </h4>
+                            <div class="space-y-2">
+                                ${reps.map(off => `
+                                    <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-magenta/40 transition flex items-center space-x-2.5">
+                                        <div class="w-8 h-8 rounded-lg bg-fusee-magenta/15 border border-fusee-magenta/30 text-fusee-magenta flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
+                                            ${off.badge || 'REP'}
                                         </div>
-                                    `).join('')}
-                                </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h5 class="font-bold text-white text-[11px] truncate">${off.dept || 'Representative Name'}</h5>
+                                            <p class="text-[9px] text-fusee-magenta font-semibold truncate">${off.title}</p>
+                                            <p class="text-[9px] text-slate-400 truncate"><i class="fa-regular fa-envelope text-[8px] mr-1"></i>${off.email}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                                ${reps.length === 0 ? '<p class="text-[10px] text-slate-500 italic p-1.5">No representatives.</p>' : ''}
                             </div>
-                        `;
-                    }
+                        </div>
+                    `;
 
+                    // COLUMN 3: Committees & Task Forces
+                    html += `
+                        <div class="space-y-2.5 bg-slate-950/40 p-3 rounded-2xl border border-fusee-yellow/20">
+                            <h4 class="text-[11px] font-bold font-techno text-fusee-yellow tracking-wider uppercase flex items-center justify-between border-b border-fusee-yellow/20 pb-2">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-users-gear text-fusee-yellow"></i> Committees</span>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-fusee-yellow/10 border border-fusee-yellow/30 text-fusee-yellow">${committees.length}</span>
+                            </h4>
+                            <div class="space-y-2">
+                                ${committees.map(off => `
+                                    <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/40 transition flex items-center space-x-2.5">
+                                        <div class="w-8 h-8 rounded-lg bg-fusee-yellow/15 border border-fusee-yellow/30 text-fusee-yellow flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
+                                            ${off.badge || 'CMTE'}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h5 class="font-bold text-white text-[11px] truncate">${off.dept || 'Committee Chair'}</h5>
+                                            <p class="text-[9px] text-fusee-yellow font-semibold truncate">${off.title}</p>
+                                            <p class="text-[9px] text-slate-400 truncate"><i class="fa-regular fa-envelope text-[8px] mr-1"></i>${off.email}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                                ${committees.length === 0 ? '<p class="text-[10px] text-slate-500 italic p-1.5">No committees.</p>' : ''}
+                            </div>
+                        </div>
+                    `;
+
+                    html += '</div>';
                     offContainer.innerHTML = html;
                 });
             }
@@ -1151,7 +1152,7 @@
         </div>
 
         <!-- MODAL 3: Dynamic FUSEE Officers Directory -->
-        <div id="officers-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-lg lg:max-w-xl mx-auto bg-[#130e2e] border-t border-fusee-purple/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[85vh] overflow-y-auto">
+        <div id="officers-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-2xl lg:max-w-4xl mx-auto bg-[#130e2e] border-t border-fusee-purple/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[85vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-white/10 pb-3">
                 <div class="flex items-center space-x-2">
                     <div class="w-8 h-8 rounded-lg bg-fusee-purple/20 text-fusee-purple flex items-center justify-center">
