@@ -1317,9 +1317,9 @@ if (data.officers && Array.isArray(data.officers)) {
                     <h2 class="text-base font-bold text-white font-display">Department of Electrical Engineering</h2>
                 </div>
             </div>
-            <p class="text-xs text-slate-300 leading-relaxed border-t border-white/10 pt-3">
-                Welcome to the official Electrical Engineering Department portal. The department resides on the 2nd floor of Dotterweich Hall (D201–D205), providing academic instruction, research guidance, and technical laboratory support for all EE undergraduates.
-            </p>
+            <p id="ee-dept-display-desc" class="text-xs text-slate-300 leading-relaxed border-t border-white/10 pt-3">
+    Welcome to the official Electrical Engineering Department portal. The department resides on the 2nd floor of Dotterweich Hall (D201–D205), providing academic instruction, research guidance, and technical laboratory support for all EE undergraduates.
+</p>
         </div>
 
         <div class="space-y-3">
@@ -1327,82 +1327,38 @@ if (data.officers && Array.isArray(data.officers)) {
                 <i class="fa-solid fa-graduation-cap"></i> Academic & Faculty Leadership
             </h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
-                    <span class="text-[9px] text-fusee-cyan font-bold font-techno">DEPARTMENT CHAIR</span>
-                    <h5 class="font-bold text-white">Engr. EE Department Head</h5>
-                    <p class="text-[11px] text-slate-400">Dotterweich Hall D201 • eedept@addu.edu.ph</p>
-                </div>
-                <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
-                    <span class="text-[9px] text-fusee-cyan font-bold font-techno">LABORATORY CUSTODIAN</span>
-                    <h5 class="font-bold text-white">EE Laboratory Technician</h5>
-                    <p class="text-[11px] text-slate-400">Hardware & ComLab D202/D204/D205</p>
-                </div>
-            </div>
-        </div>
+    <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+        <span class="text-[9px] text-fusee-cyan font-bold font-techno">DEPARTMENT CHAIR</span>
+        <h5 id="ee-dept-chair-name" class="font-bold text-white">Engr. EE Department Head</h5>
+        <p id="ee-dept-chair-details" class="text-[11px] text-slate-400">Dotterweich Hall D201 • eedept@addu.edu.ph</p>
+    </div>
+    <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+        <span class="text-[9px] text-fusee-cyan font-bold font-techno">LABORATORY CUSTODIAN</span>
+        <h5 id="ee-dept-custodian-name" class="font-bold text-white">EE Laboratory Technician</h5>
+        <p id="ee-dept-custodian-details" class="text-[11px] text-slate-400">Hardware & ComLab D202/D204/D205</p>
+    </div>
+</div>
 
 <!-- EE Department Faculty Members Box -->
-        <div class="glass-card rounded-2xl p-4 border border-slate-800 space-y-3">
-            <h4 class="text-xs font-bold text-white font-techno flex items-center gap-1.5">
-                <i class="fa-solid fa-chalkboard-user text-fusee-cyan"></i> EE Department Faculty Members
-            </h4>
-            
-            <div class="grid grid-cols-2 gap-2 text-xs">
-                <!-- Faculty Member 1 -->
-                <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-cyan/40 transition flex items-center space-x-2">
-                    <div class="w-7 h-7 rounded-lg bg-fusee-cyan/15 border border-fusee-cyan/30 text-fusee-cyan flex items-center justify-center text-[10px] flex-shrink-0">
-                        <i class="fa-solid fa-user-tie"></i>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <h5 class="font-bold text-white text-[11px] truncate leading-tight">Engr. Faculty Member</h5>
-                        <p class="text-[9px] text-fusee-cyan font-medium truncate">Power Systems & Energy</p>
-                    </div>
-                </div>
+<div class="glass-card rounded-2xl p-4 border border-slate-800 space-y-3">
+    <h4 class="text-xs font-bold text-white font-techno flex items-center gap-1.5">
+        <i class="fa-solid fa-chalkboard-user text-fusee-cyan"></i> EE Department Faculty Members
+    </h4>
+    
+    <div id="ee-dept-faculty-container" class="grid grid-cols-2 gap-2 text-xs">
+        <!-- Faculty cards will populate dynamically from Firebase -->
+    </div>
+</div>
 
-                <!-- Faculty Member 2 -->
-                <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-cyan/40 transition flex items-center space-x-2">
-                    <div class="w-7 h-7 rounded-lg bg-fusee-cyan/15 border border-fusee-cyan/30 text-fusee-cyan flex items-center justify-center text-[10px] flex-shrink-0">
-                        <i class="fa-solid fa-user-tie"></i>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <h5 class="font-bold text-white text-[11px] truncate leading-tight">Engr. Faculty Member</h5>
-                        <p class="text-[9px] text-fusee-cyan font-medium truncate">Electronics & Circuits</p>
-                    </div>
-                </div>
-
-                <!-- Faculty Member 3 -->
-                <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-cyan/40 transition flex items-center space-x-2">
-                    <div class="w-7 h-7 rounded-lg bg-fusee-cyan/15 border border-fusee-cyan/30 text-fusee-cyan flex items-center justify-center text-[10px] flex-shrink-0">
-                        <i class="fa-solid fa-user-tie"></i>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <h5 class="font-bold text-white text-[11px] truncate leading-tight">Engr. Faculty Member</h5>
-                        <p class="text-[9px] text-fusee-cyan font-medium truncate">Control Systems</p>
-                    </div>
-                </div>
-
-                <!-- Faculty Member 4 -->
-                <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-cyan/40 transition flex items-center space-x-2">
-                    <div class="w-7 h-7 rounded-lg bg-fusee-cyan/15 border border-fusee-cyan/30 text-fusee-cyan flex items-center justify-center text-[10px] flex-shrink-0">
-                        <i class="fa-solid fa-user-tie"></i>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <h5 class="font-bold text-white text-[11px] truncate leading-tight">Engr. Faculty Member</h5>
-                        <p class="text-[9px] text-fusee-cyan font-medium truncate">Renewable Energy</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="glass-card rounded-2xl p-4 border border-slate-800 space-y-2">
-            <h4 class="text-xs font-bold text-white font-techno flex items-center gap-1.5">
-                <i class="fa-solid fa-location-dot text-fusee-cyan"></i> Facility Locations
-            </h4>
-            <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
-                <li><strong class="text-white">D202:</strong> EE Computer Laboratory & Workstations</li>
-                <li><strong class="text-white">D204:</strong> Tool Management Room & Equipment Checkout</li>
-                <li><strong class="text-white">D205:</strong> Hardware Circuits & Electronics Testing Lab</li>
-            </ul>
-        </div>
+<!-- Facility Locations Box -->
+<div class="glass-card rounded-2xl p-4 border border-slate-800 space-y-2">
+    <h4 class="text-xs font-bold text-white font-techno flex items-center gap-1.5">
+        <i class="fa-solid fa-location-dot text-fusee-cyan"></i> Facility Locations
+    </h4>
+    <ul id="ee-dept-facilities-container" class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+        <!-- Facility list items will populate dynamically from Firebase -->
+    </ul>
+</div>
         
         <button onclick="closeModal('ee-dept-modal')" class="w-full py-3 bg-fusee-cyan text-slate-950 font-bold rounded-xl text-xs shadow-neon-cyan flex items-center justify-center space-x-2">
             <i class="fa-solid fa-house"></i>
@@ -1437,9 +1393,9 @@ if (data.officers && Array.isArray(data.officers)) {
                     <h2 class="text-base font-bold text-white font-display">First United Society of Electrical Engineers</h2>
                 </div>
             </div>
-            <p class="text-xs text-slate-300 leading-relaxed border-t border-white/10 pt-3">
-                FUSEE is the premiere student organization representing all Electrical Engineering students under the School of Engineering and Architecture (SEA) at Ateneo de Davao University.
-            </p>
+            <p id="fusee-info-display-desc" class="text-xs text-slate-300 leading-relaxed border-t border-white/10 pt-3">
+    FUSEE is the premiere student organization representing all Electrical Engineering students under the School of Engineering and Architecture (SEA) at Ateneo de Davao University.
+</p>
         </div>
 
         <div class="grid grid-cols-2 gap-3 text-xs">
@@ -1451,7 +1407,7 @@ if (data.officers && Array.isArray(data.officers)) {
             <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-1">
                 <i class="fa-solid fa-envelope text-fusee-magenta text-lg block"></i>
                 <h5 class="font-bold text-white text-xs">Contact Org</h5>
-                <p class="text-[10px] text-slate-400">fusee@addu.edu.ph</p>
+                <p id="fusee-info-display-email" class="text-[10px] text-slate-400">fusee@addu.edu.ph</p>
             </div>
         </div>
 

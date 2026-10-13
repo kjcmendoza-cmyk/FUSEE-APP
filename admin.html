@@ -430,7 +430,76 @@
                 </div>
             </div>
         </section>
+<!-- SECTION 6: EE Department Management -->
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-cyan/30">
+            <div class="flex items-center space-x-2 border-b border-white/10 pb-3">
+                <i class="fa-solid fa-building-columns text-fusee-cyan"></i>
+                <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">6. EE Department Content Management</h2>
+            </div>
 
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">Department Main Overview Text</label>
+                    <textarea id="ee-dept-desc" rows="3" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white" placeholder="Welcome description..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Department Chair Name</label>
+                        <input type="text" id="ee-dept-chair-name-input" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white" placeholder="Engr. EE Department Head">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Chair Office & Email</label>
+                        <input type="text" id="ee-dept-chair-details-input" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white" placeholder="Dotterweich Hall D201 • eedept@addu.edu.ph">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Laboratory Custodian Name</label>
+                        <input type="text" id="ee-dept-custodian-name-input" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white" placeholder="EE Laboratory Technician">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Custodian Office / Lab Location</label>
+                        <input type="text" id="ee-dept-custodian-details-input" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white" placeholder="Hardware & ComLab D202/D204/D205">
+                    </div>
+                </div>
+
+<!-- Dynamic Faculty List Editor -->
+                <div class="pt-2">
+                    <h3 class="font-bold text-white mb-2">EE Faculty Members</h3>
+                    <div id="ee-faculty-editor-container" class="space-y-2"></div>
+                    <button type="button" onclick="addFacultyRow()" class="mt-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-plus text-fusee-cyan"></i> Add Faculty Member
+                    </button>
+                </div>
+
+                <!-- Dynamic Facility Locations Editor -->
+                <div class="pt-2">
+                    <h3 class="font-bold text-white mb-2">Facility Locations</h3>
+                    <div id="ee-facilities-editor-container" class="space-y-2"></div>
+                    <button type="button" onclick="addFacilityRow()" class="mt-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-plus text-fusee-cyan"></i> Add Facility Room
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: FUSEE Org Details -->
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-magenta/30">
+            <div class="flex items-center space-x-2 border-b border-white/10 pb-3">
+                <i class="fa-solid fa-bolt text-fusee-magenta"></i>
+                <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">7. FUSEE Organization Info</h2>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">FUSEE Organization Description</label>
+                    <textarea id="fusee-info-desc-input" rows="3" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white"></textarea>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">FUSEE Official Contact Email</label>
+                    <input type="email" id="fusee-info-email-input" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white" placeholder="fusee@addu.edu.ph">
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Firebase SDK Scripts -->
@@ -526,7 +595,29 @@
             ],
             banner: {
                 title: "TO INFINITEE AND BEEYOND",
-                body: "Like wires that weave strength through every circuit and create connections across every bridge, electrical engineering transforms ideas into systems that power progress."
+                body: "Like wires that weave strength through every circuit..."
+            },
+            eeDept: {
+                description: "Welcome to the official Electrical Engineering Department portal. The department resides on the 2nd floor of Dotterweich Hall (D201–D205), providing academic instruction, research guidance, and technical laboratory support for all EE undergraduates.",
+                chairName: "Engr. EE Department Head",
+                chairDetails: "Dotterweich Hall D201 • eedept@addu.edu.ph",
+                custodianName: "EE Laboratory Technician",
+                custodianDetails: "Hardware & ComLab D202/D204/D205",
+                faculty: [
+                    { name: "Engr. Faculty Member", specialization: "Power Systems & Energy" },
+                    { name: "Engr. Faculty Member", specialization: "Electronics & Circuits" },
+                    { name: "Engr. Faculty Member", specialization: "Control Systems" },
+                    { name: "Engr. Faculty Member", specialization: "Renewable Energy" }
+                ],
+                facilities: [
+                    { code: "D202", description: "EE Computer Laboratory & Workstations" },
+                    { code: "D204", description: "Tool Management Room & Equipment Checkout" },
+                    { code: "D205", description: "Hardware Circuits & Electronics Testing Lab" }
+                ]
+            },
+            fuseeInfo: {
+                description: "FUSEE is the premiere student organization representing all Electrical Engineering students under the School of Engineering and Architecture (SEA) at Ateneo de Davao University.",
+                email: "fusee@addu.edu.ph"
             }
         };
 
@@ -581,8 +672,66 @@
             renderAcademicLinks(data.academicLinks || defaultData.academicLinks);
             renderFaqs(data.faqs || defaultData.faqs);
             renderOfficers(data.officers || defaultData.officers);
+        // EE Department & FUSEE UI Population
+            const eeDescEl = document.getElementById('ee-dept-desc');
+            if (eeDescEl) {
+                eeDescEl.value = data.eeDept?.description || defaultData.eeDept.description;
+                document.getElementById('ee-dept-chair-name-input').value = data.eeDept?.chairName || defaultData.eeDept.chairName;
+                document.getElementById('ee-dept-chair-details-input').value = data.eeDept?.chairDetails || defaultData.eeDept.chairDetails;
+                document.getElementById('ee-dept-custodian-name-input').value = data.eeDept?.custodianName || defaultData.eeDept.custodianName;
+                document.getElementById('ee-dept-custodian-details-input').value = data.eeDept?.custodianDetails || defaultData.eeDept.custodianDetails;
+
+                renderFacultyRows(data.eeDept?.faculty || defaultData.eeDept.faculty);
+                renderFacilityRows(data.eeDept?.facilities || defaultData.eeDept.facilities);
+            }
+
+            const fuseeDescEl = document.getElementById('fusee-info-desc-input');
+            if (fuseeDescEl) {
+                fuseeDescEl.value = data.fuseeInfo?.description || defaultData.fuseeInfo.description;
+                document.getElementById('fusee-info-email-input').value = data.fuseeInfo?.email || defaultData.fuseeInfo.email;
+            }
+        }
+// Faculty Row Helper Functions
+        function renderFacultyRows(list = []) {
+            const container = document.getElementById('ee-faculty-editor-container');
+            if (!container) return;
+            container.innerHTML = '';
+            list.forEach(f => window.addFacultyRow(f.name, f.specialization));
         }
 
+        window.addFacultyRow = function(name = '', specialization = '') {
+            const container = document.getElementById('ee-faculty-editor-container');
+            if (!container) return;
+            const div = document.createElement('div');
+            div.className = 'faculty-item-row flex items-center space-x-2';
+            div.innerHTML = `
+                <input type="text" class="fac-name-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs flex-1" placeholder="Faculty Name" value="${name.replace(/"/g, '&quot;')}">
+                <input type="text" class="fac-spec-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs flex-1" placeholder="Specialization" value="${specialization.replace(/"/g, '&quot;')}">
+                <button type="button" onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-300 px-2"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+        };
+
+        // Facility Row Helper Functions
+        function renderFacilityRows(list = []) {
+            const container = document.getElementById('ee-facilities-editor-container');
+            if (!container) return;
+            container.innerHTML = '';
+            list.forEach(f => window.addFacilityRow(f.code, f.description));
+        }
+
+        window.addFacilityRow = function(code = '', description = '') {
+            const container = document.getElementById('ee-facilities-editor-container');
+            if (!container) return;
+            const div = document.createElement('div');
+            div.className = 'facility-item-row flex items-center space-x-2';
+            div.innerHTML = `
+                <input type="text" class="facil-code-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs w-28" placeholder="Room Code (e.g. D202)" value="${code.replace(/"/g, '&quot;')}">
+                <input type="text" class="facil-desc-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs flex-1" placeholder="Room Description" value="${description.replace(/"/g, '&quot;')}">
+                <button type="button" onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-300 px-2"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+        };
         async function loadContent() {
             try {
                 const docSnap = await withTimeout(getDoc(docRef), 5000);
@@ -631,15 +780,29 @@
                 // Safe query for Officers with Categories
                 const officers = [];
                 document.querySelectorAll('.officer-item-row').forEach(row => {
-                    const category = row.querySelector('.off-category-input')?.value || 'executive';
+                    const category = row.querySelector('.off-category-input')?.value?.trim() || '';
                     const title = row.querySelector('.off-title-input')?.value?.trim() || '';
                     const dept = row.querySelector('.off-dept-input')?.value?.trim() || '';
                     const email = row.querySelector('.off-email-input')?.value?.trim() || '';
-                    const badge = row.querySelector('.off-badge-input')?.value?.trim() || 'EE';
-                    
-                    if (title && email) officers.push({ title, dept, email, badge, category });
+                    const badge = row.querySelector('.off-badge-input')?.value?.trim() || '';
+
+                    if (title && email) officers.push({ title, dept, email, category, badge });
+                });
+// Collect Faculty Members
+                const faculty = [];
+                document.querySelectorAll('.faculty-item-row').forEach(row => {
+                    const name = row.querySelector('.fac-name-input')?.value?.trim() || '';
+                    const specialization = row.querySelector('.fac-spec-input')?.value?.trim() || '';
+                    if (name) faculty.push({ name, specialization });
                 });
 
+                // Collect Facilities
+                const facilities = [];
+                document.querySelectorAll('.facility-item-row').forEach(row => {
+                    const code = row.querySelector('.facil-code-input')?.value?.trim() || '';
+                    const description = row.querySelector('.facil-desc-input')?.value?.trim() || '';
+                    if (code && description) facilities.push({ code, description });
+                });
                 // Build updated object safely
                 const updatedData = {
                     tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
@@ -689,10 +852,23 @@
                     faqs,
                     officers,
                     banner: {
-                        title: document.getElementById('banner-title')?.value?.trim() || '',
-                        body: document.getElementById('banner-body')?.value?.trim() || ''
-                    },
-                    updatedAt: new Date().toISOString()
+                    title: document.getElementById('banner-title')?.value?.trim() || '',
+                    body: document.getElementById('banner-body')?.value?.trim() || ''
+                },
+                eeDept: {
+                    description: document.getElementById('ee-dept-desc')?.value?.trim() || '',
+                    chairName: document.getElementById('ee-dept-chair-name-input')?.value?.trim() || '',
+                    chairDetails: document.getElementById('ee-dept-chair-details-input')?.value?.trim() || '',
+                    custodianName: document.getElementById('ee-dept-custodian-name-input')?.value?.trim() || '',
+                    custodianDetails: document.getElementById('ee-dept-custodian-details-input')?.value?.trim() || '',
+                    faculty,
+                    facilities
+                },
+                fuseeInfo: {
+                    description: document.getElementById('fusee-info-desc-input')?.value?.trim() || '',
+                    email: document.getElementById('fusee-info-email-input')?.value?.trim() || ''
+                },
+                updatedAt: new Date().toISOString()
                 };
 
                 // Write to Firestore with timeout fallback
