@@ -173,6 +173,58 @@ if (data.officers && Array.isArray(data.officers)) {
                     }
                 }
             }
+            // 11. EE Department Real-Time Sync
+            if (data.eeDept) {
+                const desc = document.getElementById('ee-dept-display-desc');
+                if (desc && data.eeDept.description) desc.textContent = data.eeDept.description;
+
+                const chairName = document.getElementById('ee-dept-chair-name');
+                if (chairName && data.eeDept.chairName) chairName.textContent = data.eeDept.chairName;
+
+                const chairDetails = document.getElementById('ee-dept-chair-details');
+                if (chairDetails && data.eeDept.chairDetails) chairDetails.textContent = data.eeDept.chairDetails;
+
+                const custodianName = document.getElementById('ee-dept-custodian-name');
+                if (custodianName && data.eeDept.custodianName) custodianName.textContent = data.eeDept.custodianName;
+
+                const custodianDetails = document.getElementById('ee-dept-custodian-details');
+                if (custodianDetails && data.eeDept.custodianDetails) custodianDetails.textContent = data.eeDept.custodianDetails;
+
+                if (data.eeDept.faculty && Array.isArray(data.eeDept.faculty)) {
+                    const facContainer = document.getElementById('ee-dept-faculty-container');
+                    if (facContainer) {
+                        facContainer.innerHTML = data.eeDept.faculty.map(f => `
+                            <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-cyan/40 transition flex items-center space-x-2">
+                                <div class="w-7 h-7 rounded-lg bg-fusee-cyan/15 border border-fusee-cyan/30 text-fusee-cyan flex items-center justify-center text-[10px] flex-shrink-0">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <h5 class="font-bold text-white text-[11px] truncate leading-tight">${f.name || 'Engr. Faculty Member'}</h5>
+                                    <p class="text-[9px] text-fusee-cyan font-medium truncate">${f.specialization || 'EE Faculty'}</p>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+
+                if (data.eeDept.facilities && Array.isArray(data.eeDept.facilities)) {
+                    const facilContainer = document.getElementById('ee-dept-facilities-container');
+                    if (facilContainer) {
+                        facilContainer.innerHTML = data.eeDept.facilities.map(fac => `
+                            <li><strong class="text-white">${fac.code || ''}:</strong> ${fac.description || ''}</li>
+                        `).join('');
+                    }
+                }
+            }
+
+            // 12. FUSEE Info Real-Time Sync
+            if (data.fuseeInfo) {
+                const fuseeDesc = document.getElementById('fusee-info-display-desc');
+                if (fuseeDesc && data.fuseeInfo.description) fuseeDesc.textContent = data.fuseeInfo.description;
+
+                const fuseeEmail = document.getElementById('fusee-info-display-email');
+                if (fuseeEmail && data.fuseeInfo.email) fuseeEmail.textContent = data.fuseeInfo.email;
+            }
         });
     </script>
 
