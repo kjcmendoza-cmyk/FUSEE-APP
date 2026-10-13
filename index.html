@@ -580,17 +580,17 @@ if (data.eeDept) {
     </button>
 
     <!-- Right Column: FUSEE -->
-    <button onclick="openModal('fusee-info-modal')" class="glass-card p-3 rounded-2xl border border-fusee-magenta/30 text-left hover:border-fusee-magenta transition group flex items-center justify-between">
+    <button onclick="openModal('fusee-info-modal')" class="glass-card p-3 rounded-2xl border border-fusee-magenta/40 hover:border-fusee-magenta hover:shadow-neon-pink transition-all duration-300 group flex items-center justify-between text-left">
         <div class="flex items-center space-x-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-lg bg-fusee-magenta/15 border border-fusee-magenta/30 text-fusee-magenta flex items-center justify-center font-bold text-xs flex-shrink-0 group-hover:scale-105 transition">
-                <i class="fa-solid fa-bolt"></i>
+            <div class="w-12 h-12 rounded-xl bg-fusee-magenta/10 border border-fusee-magenta/30 p-0.5 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+                <img src="fusee-logo.png" alt="FUSEE Logo" class="w-full h-full object-contain filter drop-shadow-[0_0_6px_rgba(255,0,122,0.5)]" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%23FF007A\'><path d=\'M13 2L3 14h9l-1 8 10-12h-9l1-8z\'/></svg>';">
             </div>
             <div class="min-w-0">
-                <h4 class="text-xs font-bold text-white font-techno truncate">FUSEE</h4>
+                <h4 class="text-xs font-bold text-white font-techno truncate group-hover:text-fusee-magenta transition-colors">FUSEE</h4>
                 <p class="text-[10px] text-slate-400 truncate">Student Org Details</p>
             </div>
         </div>
-        <i class="fa-solid fa-chevron-right text-[10px] text-fusee-magenta ml-1 flex-shrink-0"></i>
+        <i class="fa-solid fa-chevron-right text-[10px] text-fusee-magenta ml-1 flex-shrink-0 group-hover:translate-x-0.5 transition-transform"></i>
     </button>
 </section>
                 
@@ -1476,14 +1476,16 @@ if (data.eeDept) {
     <!-- Full Screen Content -->
     <div class="p-4 md:p-6 space-y-5 max-w-2xl mx-auto w-full flex-1">
         <!-- FUSEE Overview Card -->
-        <div class="glass-card rounded-2xl p-5 border border-fusee-magenta/30 space-y-3">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-fusee-magenta/20 text-fusee-magenta flex items-center justify-center text-lg font-bold">
-                    <i class="fa-solid fa-bolt"></i>
+        <div class="glass-card rounded-2xl p-5 border border-fusee-magenta/40 shadow-neon-pink/20 space-y-3 bg-gradient-to-br from-[#181038]/90 via-[#130e2e]/90 to-[#0B081E]/95">
+            <div class="flex items-center space-x-3.5">
+                <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-tr from-fusee-magenta/30 via-fusee-purple/20 to-fusee-cyan/20 border border-fusee-magenta/50 p-1 flex items-center justify-center shadow-neon-pink flex-shrink-0">
+                    <img src="fusee-logo.png" alt="FUSEE Logo" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(255,0,122,0.6)]" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%23FF007A\'><path d=\'M13 2L3 14h9l-1 8 10-12h-9l1-8z\'/></svg>';">
                 </div>
                 <div>
-                    <span class="text-[9px] font-pixel text-fusee-magenta uppercase">Official Student Organization</span>
-                    <h2 class="text-base font-bold text-white font-display">Federation of the United Students of Electrical Engineering</h2>
+                    <span class="px-2 py-0.5 text-[8px] font-pixel rounded bg-fusee-magenta/20 text-fusee-magenta border border-fusee-magenta/40 uppercase tracking-wider inline-block mb-1">
+                        Official Student Organization
+                    </span>
+                    <h2 class="text-sm md:text-base font-black text-white font-techno leading-tight">Federation of the United Students of <br>Electrical Engineering</h2>
                 </div>
             </div>
             <p id="fusee-info-display-desc" class="text-xs text-slate-300 leading-relaxed border-t border-white/10 pt-3">
@@ -1491,28 +1493,28 @@ if (data.eeDept) {
             </p>
         </div>
 
-        <!-- Quick Links Grid -->
+       <!-- Quick Links Grid -->
         <div class="grid grid-cols-2 gap-3 text-xs">
             <!-- Toggle Button for Inline Officers Directory -->
-            <button onclick="toggleExpandablePanel('fusee-officers-panel', 'fusee-officers-chevron')" class="glass-card p-4 rounded-xl border border-fusee-purple/40 text-left hover:border-fusee-purple transition group space-y-1 flex items-center justify-between">
+            <button onclick="toggleExpandablePanel('fusee-officers-panel', 'fusee-officers-chevron')" class="glass-card p-4 rounded-2xl border border-fusee-magenta/30 hover:border-fusee-magenta hover:shadow-neon-pink/30 text-left transition-all duration-300 group space-y-1 flex items-center justify-between">
                 <div>
-                    <i class="fa-solid fa-users text-fusee-purple text-lg group-hover:scale-110 transition block mb-1"></i>
-                    <h5 class="font-bold text-white text-xs">Officers Directory</h5>
-                    <p class="text-[10px] text-slate-400">View executive board & committee chairs</p>
+                    <i class="fa-solid fa-id-card-clip text-fusee-magenta text-lg group-hover:scale-110 transition-transform duration-300 block mb-1"></i>
+                    <h5 class="font-bold text-white text-xs group-hover:text-fusee-magenta transition-colors">Officers Directory</h5>
+                    <p class="text-[10px] text-slate-400">Executive board & chairs</p>
                 </div>
-                <i id="fusee-officers-chevron" class="fa-solid fa-chevron-down text-fusee-purple text-xs transition-transform duration-300"></i>
+                <i id="fusee-officers-chevron" class="fa-solid fa-chevron-down text-fusee-magenta text-xs transition-transform duration-300"></i>
             </button>
 
             <!-- Contact Card -->
-            <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-1">
-                <i class="fa-solid fa-envelope text-fusee-magenta text-lg block"></i>
+            <div class="glass-card p-4 rounded-2xl border border-fusee-cyan/30 hover:border-fusee-cyan hover:shadow-neon-cyan/20 transition-all duration-300 space-y-1">
+                <i class="fa-solid fa-envelope text-fusee-cyan text-lg block mb-1"></i>
                 <h5 class="font-bold text-white text-xs">Contact Org</h5>
-                <p id="fusee-info-display-email" class="text-[10px] text-slate-400">fusee@addu.edu.ph</p>
+                <p id="fusee-info-display-email" class="text-[10px] text-slate-400 truncate">fusee@addu.edu.ph</p>
             </div>
         </div>
 
         <!-- Integrated Officers Directory Container (Renders Inline inside FUSEE Tab) -->
-        <div id="fusee-officers-panel" class="hidden glass-card rounded-2xl p-4 md:p-5 border border-fusee-purple/50 space-y-4">
+        <div id="fusee-officers-panel" class="hidden glass-card rounded-2xl p-4 md:p-5 border border-fusee-magenta/40 shadow-neon-pink/20 space-y-4 transition-all duration-300">
             <div class="flex items-center justify-between border-b border-white/10 pb-2">
                 <h4 class="text-xs font-bold text-white font-techno flex items-center gap-2">
                     <i class="fa-solid fa-id-card text-fusee-purple"></i> FUSEE Officers & Leadership
