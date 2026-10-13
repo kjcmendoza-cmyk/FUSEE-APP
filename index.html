@@ -225,9 +225,43 @@ if (data.eeDept) {
 
                 const fuseeEmail = document.getElementById('fusee-info-display-email');
                 if (fuseeEmail && data.fuseeInfo.email) fuseeEmail.textContent = data.fuseeInfo.email;
+           }    
+                // 13. EE Merch Catalog Real-Time Sync
+            if (data.merchItems && Array.isArray(data.merchItems)) {
+                const merchContainer = document.getElementById('merch-display-container');
+                if (merchContainer) {
+                    if (data.merchItems.length === 0) {
+                        merchContainer.innerHTML = `<p class="text-[10px] text-slate-400 italic text-center py-4">No merchandise items available at the moment.</p>`;
+                    } else {
+                        merchContainer.innerHTML = data.merchItems.map(item => `
+                            <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2 hover:border-fusee-magenta/40 transition">
+                                ${item.imageUrl ? `
+                                    <div class="w-full h-36 rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
+                                        <img src="${item.imageUrl}" alt="${item.title}" class="w-full h-full object-cover">
+                                    </div>
+                                ` : ''}
+                                <div class="flex justify-between items-start gap-2">
+                                    <div>
+                                        <h4 class="font-bold text-white text-xs">${item.title || 'EE Merch Item'}</h4>
+                                        <p class="text-fusee-magenta font-techno font-bold text-xs mt-0.5">${item.price || ''}</p>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded bg-fusee-magenta/20 text-fusee-magenta text-[9px] font-bold border border-fusee-magenta/30 flex-shrink-0">
+                                        ${item.badge || 'Pre-Orders'}
+                                    </span>
+                                </div>
+                                ${item.description ? `<p class="text-[11px] text-slate-300 leading-relaxed">${item.description}</p>` : ''}
+                                ${item.orderUrl ? `
+                                    <a href="${item.orderUrl}" target="_blank" rel="noopener noreferrer" class="block w-full text-center py-2 bg-gradient-to-r from-fusee-magenta to-pink-600 text-white font-bold rounded-lg text-xs hover:from-pink-500 hover:to-purple-500 transition shadow-neon-pink mt-1">
+                                        <i class="fa-solid fa-cart-shopping mr-1"></i> Order Now
+                                    </a>
+                                ` : ''}
+                            </div>
+                        `).join('');
             }
-        });
-    </script>
+        }
+    }
+});
+</script>
 
     <script>
         tailwind.config = {
@@ -1496,15 +1530,9 @@ if (data.eeDept) {
                 </button>
             </div>
 
-            <div class="space-y-3 text-xs text-slate-300">
-                <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-                    <div class="flex justify-between items-center">
-                        <h4 class="font-bold text-white">Official FUSEE T-Shirt & Lanyard Set</h4>
-                        <span class="px-2 py-0.5 rounded bg-fusee-magenta/20 text-fusee-magenta text-[10px] font-bold">Pre-Orders</span>
-                    </div>
-                    <p class="text-[11px] text-slate-300">Exclusive Electrical Engineering shirts and ID lanyards for AY 2026–2027.</p>
-                </div>
-                <p class="text-[10px] text-slate-400 italic">Merchandise order forms and catalog updates will render here during pre-order periods.</p>
+            <!-- Dynamic Merch Catalog Target Container -->
+            <div id="merch-display-container" class="space-y-3 text-xs text-slate-300">
+                <!-- Merch items will populate dynamically from Firebase -->
             </div>
         </div>
     <script>
