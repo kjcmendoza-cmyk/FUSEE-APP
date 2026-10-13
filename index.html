@@ -291,6 +291,49 @@ if (data.eeDept) {
                             `;
                         }).join('');
                     }
+                // 14. EE Laboratory Policies Real-Time Sync
+            if (data.labPolicies && Array.isArray(data.labPolicies)) {
+                const colors = ['fusee-cyan', 'fusee-yellow', 'fusee-magenta', 'fusee-purple', 'emerald-400'];
+                const icons = ['fa-shield', 'fa-clock', 'fa-pen-to-square', 'fa-circle-info', 'fa-triangle-exclamation'];
+
+                // Sync Guidelines Modal
+                const modalContainer = document.getElementById('lab-policies-display-container');
+                if (modalContainer) {
+                    modalContainer.innerHTML = data.labPolicies.map((item, idx) => {
+                        const color = colors[idx % colors.length];
+                        const icon = icons[idx % icons.length];
+                        return `
+                            <div class="space-y-1.5">
+                                <h4 class="font-bold text-${color} flex items-center gap-1.5">
+                                    <i class="fa-solid ${icon} text-xs"></i> ${item.title || 'Policy Rule'}
+                                </h4>
+                                <p class="text-[11px] leading-relaxed text-slate-300">
+                                    ${item.content || ''}
+                                </p>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // Sync Rules & Info Tab 4
+                const tab4Container = document.getElementById('tab4-lab-policies-container');
+                if (tab4Container) {
+                    tab4Container.innerHTML = data.labPolicies.map((item, idx) => {
+                        const color = colors[idx % colors.length];
+                        const icon = icons[idx % icons.length];
+                        return `
+                            <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
+                                <h4 class="font-bold text-white flex items-center gap-1.5">
+                                    <i class="fa-solid ${icon} text-${color} text-xs"></i> ${item.title || 'Policy Rule'}
+                                </h4>
+                                <p class="text-[11px] leading-relaxed text-slate-300">
+                                    ${item.content || ''}
+                                </p>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
                 }
             }
         });
@@ -427,6 +470,7 @@ if (data.eeDept) {
 
         .gradient-text-cyan-pink {
             background: linear-gradient(135deg, #00F0FF 0%, #FF007A 100%);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -974,27 +1018,10 @@ if (data.eeDept) {
                     <h3 class="text-sm font-bold text-fusee-cyan flex items-center gap-2">
                         <i class="fa-solid fa-shield"></i> Laboratory Guidelines & Protocols
                     </h3>
-                    <div class="space-y-3 text-xs text-slate-300">
-                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-                            <h4 class="font-bold text-white flex items-center gap-1.5">1. Safety & Proper Attire</h4>
-                            <p class="text-[11px] leading-relaxed text-slate-300">
-                                All EE students entering D202, D204, or D205 laboratories must wear proper attire (closed shoes, long pants, ID badge visible). Food and open liquids are strictly prohibited near workstations and testing benches.
-                            </p>
-                        </div>
-                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-                            <h4 class="font-bold text-white flex items-center gap-1.5">2. Borrowing Duration & Overdue Policies</h4>
-                            <p class="text-[11px] leading-relaxed text-slate-300">
-                                Equipment borrowed via the Tool Management System must be returned within 3 working days unless granted an extended permit by the laboratory custodian or course professor.
-                            </p>
-                        </div>
-                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-                            <h4 class="font-bold text-white flex items-center gap-1.5">3. Mandatory Digital Logging</h4>
-                            <p class="text-[11px] leading-relaxed text-slate-300">
-                                Students must scan/log in using their student credentials on the respective logbook portal BEFORE touching laboratory PCs or powering bench circuits.
-                            </p>
-                        </div>
+                    <div id="tab4-lab-policies-container" class="space-y-3 text-xs text-slate-300">
+    <!-- Dynamic policies synced live from Firestore -->
+</div>
                     </div>
-                </div>
 
                 <!-- 2. Operating Hours Summary -->
                 <div class="glass-card rounded-2xl p-4 md:p-5 space-y-3 border border-emerald-500/30">
@@ -1178,33 +1205,9 @@ if (data.eeDept) {
                 </button>
             </div>
 
-            <div class="space-y-3 text-xs text-slate-300">
-                <div class="space-y-1.5">
-                    <h4 class="font-bold text-fusee-cyan flex items-center gap-1.5">
-                        <i class="fa-solid fa-shield text-xs"></i> 1. General Safety & Protocol
-                    </h4>
-                    <p class="text-[11px] leading-relaxed text-slate-300">
-                        All EE students entering D202, D204, or D205 laboratories must wear proper attire (closed shoes, long pants, ID badge visible). Food and open liquids are strictly prohibited near workstations and testing benches.
-                    </p>
-                </div>
-
-                <div class="space-y-1.5">
-                    <h4 class="font-bold text-fusee-yellow flex items-center gap-1.5">
-                        <i class="fa-solid fa-clock text-xs"></i> 2. Borrowing Limits & Duration
-                    </h4>
-                    <p class="text-[11px] leading-relaxed text-slate-300">
-                        Equipment borrowed via the Tool Management System must be returned within 3 working days unless granted an extended permit by the laboratory custodian or course professor.
-                    </p>
-                </div>
-
-                <div class="space-y-1.5">
-                    <h4 class="font-bold text-fusee-magenta flex items-center gap-1.5">
-                        <i class="fa-solid fa-pen-to-square text-xs"></i> 3. Mandatory Digital Logging
-                    </h4>
-                    <p class="text-[11px] leading-relaxed text-slate-300">
-                        Students must scan/log in using their student credentials on the respective logbook portal BEFORE touching laboratory PCs or powering bench circuits.
-                    </p>
-                </div>
+            <div id="lab-policies-display-container" class="space-y-3 text-xs text-slate-300">
+    <!-- Dynamic policies synced live from Firestore -->
+</div>
             </div>
         </div> 
 

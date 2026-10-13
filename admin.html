@@ -516,6 +516,23 @@
                 <i class="fa-solid fa-plus text-fusee-magenta"></i> Add New Merch Item
             </button>
         </section>
+
+<!-- SECTION 9: EE Laboratory Policies Management -->
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-cyan/30">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-book-bookmark text-fusee-cyan"></i>
+                    <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">9. EE Laboratory Policies</h2>
+                </div>
+            </div>
+
+            <div id="lab-policies-container" class="space-y-3"></div>
+
+            <button type="button" onclick="addPolicyRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-plus text-fusee-cyan"></i> Add New Policy Item
+            </button>
+        </section>
+
     </main>
 
    <!-- Firebase SDK Scripts -->
@@ -546,7 +563,20 @@
         }
 
         const defaultData = {
-            
+            labPolicies: [
+                {
+                    title: "1. General Safety & Protocol",
+                    content: "All EE students entering R202B or R202C laboratories must wear proper attire (closed shoes, long pants, ID badge visible). Food and open liquids are strictly prohibited near workstations and testing benches."
+                },
+                {
+                    title: "2. Borrowing Limits & Duration",
+                    content: "Equipment borrowed via the Tool Management System must be returned within 3 working days unless granted an extended permit by the laboratory custodian or course professor."
+                },
+                {
+                    title: "3. Mandatory Digital Logging",
+                    content: "Students must scan/log in using their student credentials on the respective logbook portal BEFORE touching laboratory PCs or powering bench circuits."
+                }
+            ],
             tickerText: "⚡ EE Hardware Lab: Equipment checkouts close early at 4:30 PM on Fridays • 💻 Computer Lab PC Maintenance scheduled this Saturday • 📢 Always bring your ADDU Student ID for verification",
             globalStatus: "ALL OPEN",
             events: [
@@ -746,6 +776,29 @@
             `;
             container.appendChild(div);
         };
+        function renderLabPolicies(list = []) {
+            const container = document.getElementById('lab-policies-container');
+            if (!container) return;
+            container.innerHTML = '';
+            list.forEach(item => window.addPolicyRow(item.title, item.content));
+        }
+
+        window.addPolicyRow = function(title = '', content = '') {
+            const container = document.getElementById('lab-policies-container');
+            if (!container) return;
+            const div = document.createElement('div');
+            div.className = 'policy-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative';
+            div.innerHTML = `
+                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Policy">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                <div class="space-y-2 text-xs pt-2">
+                    <input type="text" class="policy-title-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 font-bold" placeholder="Policy Title (e.g., 1. General Safety & Protocol)" value="${title.replace(/"/g, '&quot;')}">
+                    <textarea class="policy-content-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="2" placeholder="Policy Description / Rules...">${content}</textarea>
+                </div>
+            `;
+            container.appendChild(div);
+        };
         function populateUI(data) {
             document.getElementById('ticker-text').value = data.tickerText || defaultData.tickerText;
             document.getElementById('global-status-select').value = data.globalStatus || "ALL OPEN";
@@ -801,7 +854,8 @@
 );
             renderFaqs(data.faqs || defaultData.faqs);
             renderOfficers(data.officers || defaultData.officers);
-            renderMerchRows(data.merchItems || defaultData.merchItems);    
+            renderMerchRows(data.merchItems || defaultData.merchItems);
+            renderLabPolicies(data.labPolicies || defaultData.labPolicies);    
             const eeDescEl = document.getElementById('ee-dept-desc');
             if (eeDescEl) {
                 eeDescEl.value = data.eeDept?.description || defaultData.eeDept.description;
@@ -945,12 +999,19 @@
 
                     if (title) merchItems.push({ title, price, badge, description, orderUrl, imageUrl });
                 });
+                const labPolicies = [];
+                document.querySelectorAll('.policy-item-row').forEach(row => {
+                    const title = row.querySelector('.policy-title-input')?.value?.trim() || '';
+                    const content = row.querySelector('.policy-content-input')?.value?.trim() || '';
+                    if (title || content) labPolicies.push({ title, content });
+                });
                 const updatedData = {
                     tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
                     globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
                     events,
                     academicLinks,
                     merchItems,
+                    labPolicies,
                     sys1: {
                         tag: document.getElementById('sys1-tag')?.value?.trim() || '',
                         title: document.getElementById('sys1-title')?.value?.trim() || '',
