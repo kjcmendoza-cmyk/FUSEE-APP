@@ -598,23 +598,24 @@
                 body: "Like wires that weave strength through every circuit..."
             },
             eeDept: {
-                description: "Welcome to the official Electrical Engineering Department portal. The department resides on the 2nd floor of Dotterweich Hall (D201–D205), providing academic instruction, research guidance, and technical laboratory support for all EE undergraduates.",
-                chairName: "Engr. EE Department Head",
-                chairDetails: "Dotterweich Hall D201 • eedept@addu.edu.ph",
-                custodianName: "EE Laboratory Technician",
-                custodianDetails: "Hardware & ComLab D202/D204/D205",
-                faculty: [
-                    { name: "Engr. Faculty Member", specialization: "Power Systems & Energy" },
-                    { name: "Engr. Faculty Member", specialization: "Electronics & Circuits" },
-                    { name: "Engr. Faculty Member", specialization: "Control Systems" },
-                    { name: "Engr. Faculty Member", specialization: "Renewable Energy" }
-                ],
-                facilities: [
-                    { code: "D202", description: "EE Computer Laboratory & Workstations" },
-                    { code: "D204", description: "Tool Management Room & Equipment Checkout" },
-                    { code: "D205", description: "Hardware Circuits & Electronics Testing Lab" }
-                ]
-            },
+    description: "Welcome to the official Electrical Engineering Department portal. The department resides on the 2nd floor of Dotterweich Hall (D201–D205), providing academic instruction, research guidance, and technical laboratory support for all EE undergraduates.",
+    chairName: "Engr. Fortunata Pompeya L. Nicolas",
+    chairDetails: "Dotterweich Hall D201 • eedept@addu.edu.ph",
+    custodianName: "Dr. Edu Daryl C. Maceren",
+    custodianDetails: "Hardware & ComLab D202/D204/D205",
+    faculty: [
+        { name: "Engr. Victoria Teofilo", specialization: "Part-time Faculty", imageUrl: "Teofilo.png" },
+        { name: "Engr. Jessie R. Rama", specialization: "Part-time Faculty", imageUrl: "Rama.png" },
+        { name: "Engr. Sheena Alinsub", specialization: "Part-time Faculty", imageUrl: "Alinsub.png" },
+        { name: "Engr. Roger A. Alvarez", specialization: "Part-time Faculty", imageUrl: "Alvarez.png" },
+        { name: "Engr. Eddie P. Paras", specialization: "Part-time Faculty", imageUrl: "Paras.png" }
+    ],
+    facilities: [
+        { code: "R202C", description: "EE Computer Laboratory" },
+        { code: "R202B", description: "EE Laboratory Storage Room" },
+        { code: "R202C", description: "EE Laboratory" }
+    ]
+},
             fuseeInfo: {
                 description: "FUSEE is the premiere student organization representing all Electrical Engineering students under the School of Engineering and Architecture (SEA) at Ateneo de Davao University.",
                 email: "fusee@addu.edu.ph"
@@ -692,33 +693,26 @@
             }
         }
 // Faculty Row Helper Functions
-        function renderFacultyRows(list = []) {
-            const container = document.getElementById('ee-faculty-editor-container');
-            if (!container) return;
-            container.innerHTML = '';
-            list.forEach(f => window.addFacultyRow(f.name, f.specialization));
-        }
+function renderFacultyRows(list = []) {
+    const container = document.getElementById('ee-faculty-editor-container');
+    if (!container) return;
+    container.innerHTML = '';
+    list.forEach(f => window.addFacultyRow(f.name, f.specialization, f.imageUrl));
+}
 
-        window.addFacultyRow = function(name = '', specialization = '') {
-            const container = document.getElementById('ee-faculty-editor-container');
-            if (!container) return;
-            const div = document.createElement('div');
-            div.className = 'faculty-item-row flex items-center space-x-2';
-            div.innerHTML = `
-                <input type="text" class="fac-name-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs flex-1" placeholder="Faculty Name" value="${name.replace(/"/g, '&quot;')}">
-                <input type="text" class="fac-spec-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs flex-1" placeholder="Specialization" value="${specialization.replace(/"/g, '&quot;')}">
-                <button type="button" onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-300 px-2"><i class="fa-solid fa-trash"></i></button>
-            `;
-            container.appendChild(div);
-        };
-
-        // Facility Row Helper Functions
-        function renderFacilityRows(list = []) {
-            const container = document.getElementById('ee-facilities-editor-container');
-            if (!container) return;
-            container.innerHTML = '';
-            list.forEach(f => window.addFacilityRow(f.code, f.description));
-        }
+window.addFacultyRow = function(name = '', specialization = '', imageUrl = '') {
+    const container = document.getElementById('ee-faculty-editor-container');
+    if (!container) return;
+    const div = document.createElement('div');
+    div.className = 'faculty-item-row flex items-center space-x-2 mb-2';
+    div.innerHTML = `
+        <input type="text" class="fac-name-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs flex-1" placeholder="Faculty Name" value="${name.replace(/"/g, '&quot;')}">
+        <input type="text" class="fac-spec-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs flex-1" placeholder="Specialization" value="${specialization.replace(/"/g, '&quot;')}">
+        <input type="text" class="fac-img-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs flex-1" placeholder="Image Filename (e.g., Teofilo.png)" value="${imageUrl ? imageUrl.replace(/"/g, '&quot;') : ''}">
+        <button type="button" onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-300 px-2"><i class="fa-solid fa-trash"></i></button>
+    `;
+    container.appendChild(div);
+};
 
         window.addFacilityRow = function(code = '', description = '') {
             const container = document.getElementById('ee-facilities-editor-container');
@@ -790,11 +784,12 @@
                 });
 // Collect Faculty Members
                 const faculty = [];
-                document.querySelectorAll('.faculty-item-row').forEach(row => {
-                    const name = row.querySelector('.fac-name-input')?.value?.trim() || '';
-                    const specialization = row.querySelector('.fac-spec-input')?.value?.trim() || '';
-                    if (name) faculty.push({ name, specialization });
-                });
+        document.querySelectorAll('.faculty-item-row').forEach(row => {
+            const name = row.querySelector('.fac-name-input')?.value?.trim() || '';
+            const specialization = row.querySelector('.fac-spec-input')?.value?.trim() || '';
+            const imageUrl = row.querySelector('.fac-img-input')?.value?.trim() || '';
+            if (name) faculty.push({ name, specialization, imageUrl });
+        });
 
                 // Collect Facilities
                 const facilities = [];
