@@ -1544,6 +1544,7 @@ window.renderOfficersUI = function() {
     offContainers.forEach(offContainer => {
         let html = '<div class="space-y-4">';
 
+        // 1. Executive Board
         if (executives.length > 0) {
             html += `
                 <div class="space-y-2">
@@ -1567,6 +1568,7 @@ window.renderOfficersUI = function() {
                 </div>`;
         }
 
+        // 2. Batch & Course Reps
         if (reps.length > 0) {
             html += `
                 <div class="space-y-2">
@@ -1590,27 +1592,82 @@ window.renderOfficersUI = function() {
                 </div>`;
         }
 
+        // 3. Committees (With Mini Sub-Categorizations)
         if (committees.length > 0) {
+            const subCats = [
+                { id: 'academics', name: 'Academics & Scholarship', icon: 'fa-graduation-cap', color: 'text-amber-400', badgeColor: 'bg-amber-400/10 text-amber-300 border-amber-400/30', match: o => o.subCategory === 'academics' || /academic|scholarship/i.test((o.title || '') + (o.dept || '')) },
+                { id: 'creatives', name: 'Creatives', icon: 'fa-palette', color: 'text-pink-400', badgeColor: 'bg-pink-400/10 text-pink-300 border-pink-400/30', match: o => o.subCategory === 'creatives' || /creative/i.test((o.title || '') + (o.dept || '')) },
+                { id: 'documentations', name: 'Documentations', icon: 'fa-camera', color: 'text-sky-400', badgeColor: 'bg-sky-400/10 text-sky-300 border-sky-400/30', match: o => o.subCategory === 'documentations' || /docu/i.test((o.title || '') + (o.dept || '')) },
+                { id: 'communications', name: 'Communications', icon: 'fa-bullhorn', color: 'text-cyan-400', badgeColor: 'bg-cyan-400/10 text-cyan-300 border-cyan-400/30', match: o => o.subCategory === 'communications' || /comm/i.test((o.title || '') + (o.dept || '')) },
+                { id: 'logistics', name: 'Logistics', icon: 'fa-boxes-packing', color: 'text-emerald-400', badgeColor: 'bg-emerald-400/10 text-emerald-300 border-emerald-400/30', match: o => o.subCategory === 'logistics' || /logi/i.test((o.title || '') + (o.dept || '')) },
+                { id: 'projects', name: 'FUSEE Projects', icon: 'fa-rocket', color: 'text-purple-400', badgeColor: 'bg-purple-400/10 text-purple-300 border-purple-400/30', match: o => o.subCategory === 'projects' || /project/i.test((o.title || '') + (o.dept || '')) }
+            ];
+
             html += `
-                <div class="space-y-2">
+                <div class="space-y-3">
                     <h4 class="text-[11px] font-bold font-techno text-fusee-yellow tracking-wider uppercase flex items-center justify-between border-b border-fusee-yellow/20 pb-1">
                         <span class="flex items-center gap-1.5"><i class="fa-solid fa-users-gear text-fusee-yellow"></i> Committees</span>
                         <span class="text-[9px] px-1.5 py-0.5 rounded bg-fusee-yellow/10 border border-fusee-yellow/30 text-fusee-yellow">${committees.length}</span>
                     </h4>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        ${committees.map(off => `
-                            <div class="p-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/40 transition flex items-center space-x-2">
-                                <div class="w-7 h-7 rounded-lg bg-fusee-yellow/15 border border-fusee-yellow/30 text-fusee-yellow flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
-                                    ${off.badge || 'CMTE'}
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h5 class="font-bold text-white text-[10px] truncate leading-tight">${off.dept || 'Committee Chair'}</h5>
-                                    <p class="text-[9px] text-fusee-yellow font-semibold truncate">${off.title}</p>
-                                </div>
+                    <div class="space-y-3 pl-1">
+            `;
+
+            subCats.forEach(sub => {
+                const subMembers = committees.filter(sub.match);
+                if (subMembers.length > 0) {
+                    html += `
+                        <div class="space-y-1.5">
+                            <div class="flex items-center space-x-1.5 text-[10px] font-bold ${sub.color}">
+                                <i class="fa-solid ${sub.icon}"></i>
+                                <span>${sub.name}</span>
+                                <span class="text-[8px] px-1.5 py-0.2 rounded ${sub.badgeColor} border">${subMembers.length}</span>
                             </div>
-                        `).join('')}
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                ${subMembers.map(off => `
+                                    <div class="p-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/40 transition flex items-center space-x-2">
+                                        <div class="w-7 h-7 rounded-lg bg-fusee-yellow/15 border border-fusee-yellow/30 text-fusee-yellow flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
+                                            ${off.badge || 'CMTE'}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h5 class="font-bold text-white text-[10px] truncate leading-tight">${off.dept || 'Committee Member'}</h5>
+                                            <p class="text-[9px] text-fusee-yellow font-semibold truncate">${off.title}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            // Fallback for unassigned committee members
+            const unassigned = committees.filter(off => !subCats.some(sub => sub.match(off)));
+            if (unassigned.length > 0) {
+                html += `
+                    <div class="space-y-1.5">
+                        <div class="flex items-center space-x-1.5 text-[10px] font-bold text-slate-400">
+                            <i class="fa-solid fa-users"></i>
+                            <span>General Committee</span>
+                            <span class="text-[8px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700">${unassigned.length}</span>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                            ${unassigned.map(off => `
+                                <div class="p-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/40 transition flex items-center space-x-2">
+                                    <div class="w-7 h-7 rounded-lg bg-fusee-yellow/15 border border-fusee-yellow/30 text-fusee-yellow flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
+                                        ${off.badge || 'CMTE'}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h5 class="font-bold text-white text-[10px] truncate leading-tight">${off.dept || 'Committee Member'}</h5>
+                                        <p class="text-[9px] text-fusee-yellow font-semibold truncate">${off.title}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
-                </div>`;
+                `;
+            }
+
+            html += `</div></div>`;
         }
 
         if (filtered.length === 0) {
