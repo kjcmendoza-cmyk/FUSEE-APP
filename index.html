@@ -450,6 +450,37 @@ if (data.officers && Array.isArray(data.officers)) {
                     </div>
                 </section>
 
+<!-- Two-Column Full-Screen Screen Triggers: EE Department & FUSEE -->
+<section class="grid grid-cols-2 gap-3 mb-4">
+    <!-- Left Column: EE Department -->
+    <button onclick="openModal('ee-dept-modal')" class="glass-card p-3 rounded-2xl border border-fusee-cyan/30 text-left hover:border-fusee-cyan transition group flex items-center justify-between">
+        <div class="flex items-center space-x-2.5 min-w-0">
+            <div class="w-8 h-8 rounded-lg bg-fusee-cyan/15 border border-fusee-cyan/30 text-fusee-cyan flex items-center justify-center font-bold text-xs flex-shrink-0 group-hover:scale-105 transition">
+                <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div class="min-w-0">
+                <h4 class="text-xs font-bold text-white font-techno truncate">EE Department</h4>
+                <p class="text-[10px] text-slate-400 truncate">Academic & Faculty Info</p>
+            </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-[10px] text-fusee-cyan ml-1 flex-shrink-0"></i>
+    </button>
+
+    <!-- Right Column: FUSEE -->
+    <button onclick="openModal('fusee-info-modal')" class="glass-card p-3 rounded-2xl border border-fusee-magenta/30 text-left hover:border-fusee-magenta transition group flex items-center justify-between">
+        <div class="flex items-center space-x-2.5 min-w-0">
+            <div class="w-8 h-8 rounded-lg bg-fusee-magenta/15 border border-fusee-magenta/30 text-fusee-magenta flex items-center justify-center font-bold text-xs flex-shrink-0 group-hover:scale-105 transition">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div class="min-w-0">
+                <h4 class="text-xs font-bold text-white font-techno truncate">FUSEE</h4>
+                <p class="text-[10px] text-slate-400 truncate">Student Org Details</p>
+            </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-[10px] text-fusee-magenta ml-1 flex-shrink-0"></i>
+    </button>
+</section>
+                
                 <!-- FUSEE Events & Student Resources Strip -->
                 <section class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <!-- Upcoming Events -->
@@ -1260,7 +1291,123 @@ if (data.officers && Array.isArray(data.officers)) {
                 <a href="https://kjcmendoza-cmyk.github.io/EE-Laboratory-Digital-Logbook/login.html" target="_blank" class="block w-full text-center py-2.5 bg-fusee-yellow text-slate-950 font-bold rounded-xl mt-3">Access Hardware Logbook</a>
             </div>
         </div>
+<!-- FULL-SCREEN MODAL 1: EE Department -->
+<div id="ee-dept-modal" class="bottom-sheet hidden-sheet fixed inset-0 z-50 bg-[#0B081E] flex flex-col overflow-y-auto">
+    <!-- Sticky Header with Return to Home Button -->
+    <div class="sticky top-0 z-10 p-4 glass-panel border-b border-white/10 flex items-center justify-between">
+        <button onclick="closeModal('ee-dept-modal')" class="flex items-center space-x-2 text-xs font-bold text-fusee-cyan hover:underline">
+            <i class="fa-solid fa-arrow-left text-sm"></i>
+            <span>Return to Home</span>
+        </button>
+        <h3 class="text-xs font-bold font-techno text-white uppercase tracking-wider">EE Department</h3>
+        <button onclick="closeModal('ee-dept-modal')" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+    </div>
 
+    <!-- Full Screen Content -->
+    <div class="p-4 md:p-6 space-y-5 max-w-2xl mx-auto w-full flex-1">
+        <div class="glass-card rounded-2xl p-5 border border-fusee-cyan/30 space-y-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-fusee-cyan/20 text-fusee-cyan flex items-center justify-center text-lg font-bold">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <div>
+                    <span class="text-[9px] font-pixel text-fusee-cyan uppercase">Ateneo de Davao University • SEA</span>
+                    <h2 class="text-base font-bold text-white font-display">Department of Electrical Engineering</h2>
+                </div>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed border-t border-white/10 pt-3">
+                Welcome to the official Electrical Engineering Department portal. The department resides on the 2nd floor of Dotterweich Hall (D201–D205), providing academic instruction, research guidance, and technical laboratory support for all EE undergraduates.
+            </p>
+        </div>
+
+        <div class="space-y-3">
+            <h4 class="text-xs font-bold font-techno text-fusee-cyan uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-graduation-cap"></i> Academic & Faculty Leadership
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+                    <span class="text-[9px] text-fusee-cyan font-bold font-techno">DEPARTMENT CHAIR</span>
+                    <h5 class="font-bold text-white">Engr. EE Department Head</h5>
+                    <p class="text-[11px] text-slate-400">Dotterweich Hall D201 • eedept@addu.edu.ph</p>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+                    <span class="text-[9px] text-fusee-cyan font-bold font-techno">LABORATORY CUSTODIAN</span>
+                    <h5 class="font-bold text-white">EE Laboratory Technician</h5>
+                    <p class="text-[11px] text-slate-400">Hardware & ComLab D202/D204/D205</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-4 border border-slate-800 space-y-2">
+            <h4 class="text-xs font-bold text-white font-techno flex items-center gap-1.5">
+                <i class="fa-solid fa-location-dot text-fusee-cyan"></i> Facility Locations
+            </h4>
+            <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+                <li><strong class="text-white">D202:</strong> EE Computer Laboratory & Workstations</li>
+                <li><strong class="text-white">D204:</strong> Tool Management Room & Equipment Checkout</li>
+                <li><strong class="text-white">D205:</strong> Hardware Circuits & Electronics Testing Lab</li>
+            </ul>
+        </div>
+        
+        <button onclick="closeModal('ee-dept-modal')" class="w-full py-3 bg-fusee-cyan text-slate-950 font-bold rounded-xl text-xs shadow-neon-cyan flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-house"></i>
+            <span>Return to Home Dashboard</span>
+        </button>
+    </div>
+</div>
+
+<!-- FULL-SCREEN MODAL 2: FUSEE -->
+<div id="fusee-info-modal" class="bottom-sheet hidden-sheet fixed inset-0 z-50 bg-[#0B081E] flex flex-col overflow-y-auto">
+    <!-- Sticky Header with Return to Home Button -->
+    <div class="sticky top-0 z-10 p-4 glass-panel border-b border-white/10 flex items-center justify-between">
+        <button onclick="closeModal('fusee-info-modal')" class="flex items-center space-x-2 text-xs font-bold text-fusee-magenta hover:underline">
+            <i class="fa-solid fa-arrow-left text-sm"></i>
+            <span>Return to Home</span>
+        </button>
+        <h3 class="text-xs font-bold font-techno text-white uppercase tracking-wider">FUSEE Organization</h3>
+        <button onclick="closeModal('fusee-info-modal')" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+    </div>
+
+    <!-- Full Screen Content -->
+    <div class="p-4 md:p-6 space-y-5 max-w-2xl mx-auto w-full flex-1">
+        <div class="glass-card rounded-2xl p-5 border border-fusee-magenta/30 space-y-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-fusee-magenta/20 text-fusee-magenta flex items-center justify-center text-lg font-bold">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div>
+                    <span class="text-[9px] font-pixel text-fusee-magenta uppercase">Official Student Organization</span>
+                    <h2 class="text-base font-bold text-white font-display">First United Society of Electrical Engineers</h2>
+                </div>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed border-t border-white/10 pt-3">
+                FUSEE is the premiere student organization representing all Electrical Engineering students under the School of Engineering and Architecture (SEA) at Ateneo de Davao University.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-xs">
+            <button onclick="closeModal('fusee-info-modal'); openModal('officers-modal');" class="glass-card p-4 rounded-xl border border-fusee-purple/40 text-left hover:border-fusee-purple transition group space-y-1">
+                <i class="fa-solid fa-users text-fusee-purple text-lg group-hover:scale-110 transition block"></i>
+                <h5 class="font-bold text-white text-xs">Officers Directory</h5>
+                <p class="text-[10px] text-slate-400">View executive board & committee chairs</p>
+            </button>
+            <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-1">
+                <i class="fa-solid fa-envelope text-fusee-magenta text-lg block"></i>
+                <h5 class="font-bold text-white text-xs">Contact Org</h5>
+                <p class="text-[10px] text-slate-400">fusee@addu.edu.ph</p>
+            </div>
+        </div>
+
+        <button onclick="closeModal('fusee-info-modal')" class="w-full py-3 bg-fusee-magenta text-white font-bold rounded-xl text-xs shadow-neon-pink flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-house"></i>
+            <span>Return to Home Dashboard</span>
+        </button>
+    </div>
+</div>
     </div>
 
     <script>
@@ -1701,6 +1848,14 @@ window.setOfficerCategory = function(cat, evt) {
 window.filterOfficers = function() {
     window.renderOfficersUI();
 };
+function toggleExpandablePanel(panelId, chevronId) {
+    const panel = document.getElementById(panelId);
+    const chevron = document.getElementById(chevronId);
+    if (panel && chevron) {
+        panel.classList.toggle('hidden');
+        chevron.classList.toggle('rotate-180');
+    }
+}
     </script>
 </body>
 </html>
