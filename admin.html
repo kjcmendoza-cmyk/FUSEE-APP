@@ -906,15 +906,19 @@
                 });
 
                 const officers = [];
-                document.querySelectorAll('.officer-item-row').forEach(row => {
-                    const category = row.querySelector('.off-category-input')?.value?.trim() || '';
-                    const title = row.querySelector('.off-title-input')?.value?.trim() || '';
-                    const dept = row.querySelector('.off-dept-input')?.value?.trim() || '';
-                    const email = row.querySelector('.off-email-input')?.value?.trim() || '';
-                    const badge = row.querySelector('.off-badge-input')?.value?.trim() || '';
+        document.querySelectorAll('.officer-item-row').forEach(row => {
+            const category = row.querySelector('.off-category-input')?.value?.trim() || '';
+            const badge = row.querySelector('.off-badge-input')?.value?.trim() || '';
+            const name = row.querySelector('.off-name-input')?.value?.trim() || '';
+            const title = row.querySelector('.off-title-input')?.value?.trim() || '';
+            const dept = row.querySelector('.off-dept-input')?.value?.trim() || '';
+            const email = row.querySelector('.off-email-input')?.value?.trim() || '';
+            const imageUrl = row.querySelector('.off-img-input')?.value?.trim() || '';
 
-                    if (title && email) officers.push({ title, dept, email, category, badge });
-                });
+            if (title || name) {
+                officers.push({ name, title, dept, email, category, badge, imageUrl });
+            }
+        });
 
                 const faculty = [];
                 document.querySelectorAll('.faculty-item-row').forEach(row => {
@@ -1095,33 +1099,45 @@
         };
 
         function renderOfficers(list = []) {
-            const container = document.getElementById('officers-container');
-            if (!container) return;
-            container.innerHTML = '';
-            list.forEach(item => window.addOfficerRow(item.title, item.dept, item.email, item.badge, item.category));
-        }
+    const container = document.getElementById('officers-container');
+    if (!container) return;
+    container.innerHTML = '';
+    list.forEach(item => window.addOfficerRow(
+        item.title, 
+        item.dept, 
+        item.email, 
+        item.badge, 
+        item.category,
+        item.name || '',
+        item.imageUrl || item.photo || item.image || ''
+    ));
+}
 
-        window.addOfficerRow = function(title = '', dept = '', email = '', badge = 'PRES', category = 'executive') {
-            const container = document.getElementById('officers-container');
-            if (!container) return;
-            const div = document.createElement('div');
-            div.className = 'officer-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 grid grid-cols-1 md:grid-cols-5 gap-2 relative';
-            div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove()" class="md:col-span-5 text-right text-rose-400 text-xs hover:text-rose-300 transition">
-                    <i class="fa-solid fa-trash"></i> Remove Contact
-                </button>
-                <select class="off-category-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 focus:outline-none focus:border-fusee-purple">
-                    <option value="executive" ${category === 'executive' ? 'selected' : ''}>Executive</option>
-                    <option value="reps" ${category === 'reps' ? 'selected' : ''}>Representative</option>
-                    <option value="committees" ${category === 'committees' ? 'selected' : ''}>Committee</option>
-                </select>
-                <input type="text" class="off-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 font-pixel text-[10px]" placeholder="Badge" value="${badge}">
-                <input type="text" class="off-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Title" value="${title}">
-                <input type="text" class="off-dept-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Department" value="${dept}">
-                <input type="email" class="off-email-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Email" value="${email}">
-            `;
-            container.appendChild(div);
-        };
+        window.addOfficerRow = function(title = '', dept = '', email = '', badge = 'PRES', category = 'executive', name = '', imageUrl = '') {
+    const container = document.getElementById('officers-container');
+    if (!container) return;
+    const div = document.createElement('div');
+    div.className = 'officer-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative';
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Remove Contact">
+            <i class="fa-solid fa-trash"></i> Remove Contact
+        </button>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-2">
+            <select class="off-category-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 focus:outline-none focus:border-fusee-purple">
+                <option value="executive" ${category === 'executive' ? 'selected' : ''}>Executive</option>
+                <option value="reps" ${category === 'reps' ? 'selected' : ''}>Representative</option>
+                <option value="committees" ${category === 'committees' ? 'selected' : ''}>Committee</option>
+            </select>
+            <input type="text" class="off-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 font-pixel text-[10px]" placeholder="Badge (e.g. PRES)" value="${badge}">
+            <input type="text" class="off-name-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Officer Name" value="${name}">
+            <input type="text" class="off-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Title / Position" value="${title}">
+            <input type="text" class="off-dept-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Department / Office" value="${dept}">
+            <input type="email" class="off-email-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Email" value="${email}">
+            <input type="text" class="off-img-input md:col-span-3 p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Image URL or Filename (e.g., photo.png or https://...)" value="${imageUrl}">
+        </div>
+    `;
+    container.appendChild(div);
+};
 
         function showToast(msg, isError = false) {
             const toast = document.getElementById('toast-msg');
