@@ -534,9 +534,9 @@ if (data.eeDept) {
                         <h4 class="text-xs font-bold text-fusee-purple font-techno flex items-center gap-1.5">
                             <i class="fa-solid fa-calendar-day"></i> Upcoming in FUSEE
                         </h4>
-                        <div id="events-display-container" class="space-y-2">
-                            <!-- Dynamic events will be injected here -->
-                        </div>
+                        <div id="events-display-container" class="space-y-2 max-h-[130px] overflow-y-auto pr-1">
+    <!-- Dynamic events will be injected here -->
+</div>
                     </div>
 
                     <!-- Quick Academic Links -->
@@ -551,45 +551,45 @@ if (data.eeDept) {
                 </section>
 
                 <!-- Quick Hub Services Grid -->
-                <section class="pt-1">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5 font-techno">
-                        <i class="fa-solid fa-compass text-fusee-cyan"></i> Quick EE Navigation & Info
-                    </h2>
+<section class="pt-1">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5 font-techno">
+        <i class="fa-solid fa-compass text-fusee-cyan"></i> Quick EE Navigation & Info
+    </h2>
 
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-                        <button onclick="openModal('guidelines-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
-                            <div class="w-8 h-8 rounded-lg bg-fusee-cyan/10 text-fusee-cyan flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                                <i class="fa-solid fa-book-open text-fusee-cyan"></i>
-                            </div>
-                            <h4 class="text-xs font-bold text-white mb-0.5">Lab Policies</h4>
-                            <p class="text-[10px] text-slate-400">Safety, borrowing & log protocols</p>
-                        </button>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+        <button onclick="openModal('guidelines-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
+            <div class="w-8 h-8 rounded-lg bg-fusee-cyan/10 text-fusee-cyan flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                <i class="fa-solid fa-book-open text-fusee-cyan"></i>
+            </div>
+            <h4 class="text-xs font-bold text-white mb-0.5">Lab Policies</h4>
+            <p class="text-[10px] text-slate-400">Safety, borrowing & log protocols</p>
+        </button>
 
-                        <button onclick="openModal('officers-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-magenta/50 transition group">
-                            <div class="w-8 h-8 rounded-lg bg-fusee-magenta/10 text-fusee-magenta flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                                <i class="fa-solid fa-users text-fusee-magenta"></i>
-                            </div>
-                            <h4 class="text-xs font-bold text-white mb-0.5">FUSEE Officers</h4>
-                            <p class="text-[10px] text-slate-400">Directory & contact support</p>
-                        </button>
+        <button onclick="openModal('merch-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-magenta/50 transition group">
+            <div class="w-8 h-8 rounded-lg bg-fusee-magenta/10 text-fusee-magenta flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                <i class="fa-solid fa-shirt text-fusee-magenta"></i>
+            </div>
+            <h4 class="text-xs font-bold text-white mb-0.5">EE Merch</h4>
+            <p class="text-[10px] text-slate-400">Official shirts, lanyards & gear</p>
+        </button>
 
-                        <button onclick="openModal('faq-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-yellow/50 transition group">
-                            <div class="w-8 h-8 rounded-lg bg-fusee-yellow/10 text-fusee-yellow flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                                <i class="fa-solid fa-circle-question text-fusee-yellow"></i>
-                            </div>
-                            <h4 class="text-xs font-bold text-white mb-0.5">FAQs & Help</h4>
-                            <p class="text-[10px] text-slate-400">Common borrowing questions</p>
-                        </button>
+        <button onclick="openModal('faq-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-yellow/50 transition group">
+            <div class="w-8 h-8 rounded-lg bg-fusee-yellow/10 text-fusee-yellow flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                <i class="fa-solid fa-circle-question text-fusee-yellow"></i>
+            </div>
+            <h4 class="text-xs font-bold text-white mb-0.5">FAQs & Help</h4>
+            <p class="text-[10px] text-slate-400">Common borrowing questions</p>
+        </button>
 
-                        <button onclick="openModal('hours-modal')" class="glass-card p-3 rounded-xl text-left hover:border-emerald-400/50 transition group">
-                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                                <i class="fa-solid fa-calendar-days text-emerald-400"></i>
-                            </div>
-                            <h4 class="text-xs font-bold text-white mb-0.5">Operating Hours</h4>
-                            <p class="text-[10px] text-slate-400">Schedules & faculty hours</p>
-                        </button>
-                    </div>
-                </section>
+        <button onclick="openModal('hours-modal')" class="glass-card p-3 rounded-xl text-left hover:border-emerald-400/50 transition group">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                <i class="fa-solid fa-calendar-days text-emerald-400"></i>
+            </div>
+            <h4 class="text-xs font-bold text-white mb-0.5">Operating Hours</h4>
+            <p class="text-[10px] text-slate-400">Schedules & faculty hours</p>
+        </button>
+    </div>
+</section>
 
                 <!-- Featured Systems CTA Banner -->
                 <section class="glass-card rounded-2xl p-4 md:p-5 border border-fusee-cyan/30 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4">
@@ -1019,7 +1019,7 @@ if (data.eeDept) {
             <!-- Footer Meta -->
             <footer class="text-center pt-6 pb-6 space-y-1 border-t border-white/5 mt-8">
                 <p class="text-[11px] font-bold text-slate-400 font-techno">FUSEE Centralized Hub v2.0</p>
-                <p class="text-[10px] text-slate-400">First United Society of Electrical Engineers © 2026</p>
+                <p class="text-[10px] text-slate-400">Federation of the United Students of Electrical Engineering © 2026</p>
                 <p class="text-[9px] text-slate-400">Department of Electrical Engineering • AdDU SEA</p>
             </footer>
 
@@ -1141,7 +1141,7 @@ if (data.eeDept) {
         </div>
 
         <!-- MODAL 3: Dynamic FUSEE Officers Directory -->
-<div id="officers-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-3xl lg:max-w-5xl mx-auto bg-[#130e2e] border-t border-fusee-purple/40 rounded-t-3xl z-50 p-4 md:p-6 space-y-3 max-h-[85vh] overflow-y-auto">
+<div id="officers-modal" class="bottom-sheet hidden-sheet fixed bottom-0 md:top-1/2 md:bottom-auto md:-translate-y-1/2 left-0 right-0 max-w-md md:max-w-3xl lg:max-w-4xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border border-fusee-purple/50 rounded-t-3xl md:rounded-3xl z-[110] p-5 md:p-7 space-y-4 max-h-[85vh] md:max-h-[80vh] overflow-y-auto shadow-2xl shadow-purple-950/80">
     <div class="flex items-center justify-between border-b border-white/10 pb-3 sticky top-0 bg-[#130e2e] z-10 pt-1">
         <div class="flex items-center space-x-2">
             <div class="w-8 h-8 rounded-lg bg-fusee-purple/20 text-fusee-purple flex items-center justify-center">
@@ -1451,7 +1451,7 @@ if (data.eeDept) {
                 </div>
                 <div>
                     <span class="text-[9px] font-pixel text-fusee-magenta uppercase">Official Student Organization</span>
-                    <h2 class="text-base font-bold text-white font-display">First United Society of Electrical Engineers</h2>
+                    <h2 class="text-base font-bold text-white font-display">Federation of the United Students of Electrical Engineering</h2>
                 </div>
             </div>
             <p id="fusee-info-display-desc" class="text-xs text-slate-300 leading-relaxed border-t border-white/10 pt-3">
@@ -1460,11 +1460,11 @@ if (data.eeDept) {
         </div>
 
         <div class="grid grid-cols-2 gap-3 text-xs">
-            <button onclick="closeModal('fusee-info-modal'); openModal('officers-modal');" class="glass-card p-4 rounded-xl border border-fusee-purple/40 text-left hover:border-fusee-purple transition group space-y-1">
-                <i class="fa-solid fa-users text-fusee-purple text-lg group-hover:scale-110 transition block"></i>
-                <h5 class="font-bold text-white text-xs">Officers Directory</h5>
-                <p class="text-[10px] text-slate-400">View executive board & committee chairs</p>
-            </button>
+            <button onclick="openModal('officers-modal')" class="glass-card p-4 rounded-xl border border-fusee-purple/40 text-left hover:border-fusee-purple transition group space-y-1">
+    <i class="fa-solid fa-users text-fusee-purple text-lg group-hover:scale-110 transition block"></i>
+    <h5 class="font-bold text-white text-xs">Officers Directory</h5>
+    <p class="text-[10px] text-slate-400">View executive board & committee chairs</p>
+</button>
             <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-1">
                 <i class="fa-solid fa-envelope text-fusee-magenta text-lg block"></i>
                 <h5 class="font-bold text-white text-xs">Contact Org</h5>
@@ -1480,6 +1480,34 @@ if (data.eeDept) {
 </div>
     </div>
 
+    <!-- MODAL 9: EE Merch Modal -->
+        <div id="merch-modal" class="bottom-sheet hidden-sheet fixed bottom-0 md:top-1/2 md:bottom-auto md:-translate-y-1/2 left-0 right-0 max-w-md md:max-w-lg lg:max-w-xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border border-fusee-magenta/40 rounded-t-3xl md:rounded-3xl z-[110] p-5 md:p-6 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl shadow-pink-950/80">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-lg bg-fusee-magenta/20 text-fusee-magenta flex items-center justify-center">
+                        <i class="fa-solid fa-shirt text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white font-display">Official EE Merch & Gear</h3>
+                        <p class="text-[10px] text-slate-400">Apparel, Lanyards & Accessories</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('merch-modal')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300">
+                <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-white">Official FUSEE T-Shirt & Lanyard Set</h4>
+                        <span class="px-2 py-0.5 rounded bg-fusee-magenta/20 text-fusee-magenta text-[10px] font-bold">Pre-Orders</span>
+                    </div>
+                    <p class="text-[11px] text-slate-300">Exclusive Electrical Engineering shirts and ID lanyards for AY 2026–2027.</p>
+                </div>
+                <p class="text-[10px] text-slate-400 italic">Merchandise order forms and catalog updates will render here during pre-order periods.</p>
+            </div>
+        </div>
     <script>
         // Automatic Operating Hours to OPEN/CLOSED Status Calculator
         function parseTimeStringToMinutes(timeStr) {

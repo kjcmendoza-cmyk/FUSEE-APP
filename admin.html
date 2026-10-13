@@ -670,7 +670,11 @@
             document.getElementById('banner-body').value = data.banner?.body || defaultData.banner.body;
 
             renderEvents(data.events || defaultData.events);
-            renderAcademicLinks(data.academicLinks || defaultData.academicLinks);
+            renderAcademicLinks(
+    (data.academicLinks && data.academicLinks.length) 
+        ? data.academicLinks 
+        : defaultData.academicLinks
+);
             renderFaqs(data.faqs || defaultData.faqs);
             renderOfficers(data.officers || defaultData.officers);
 
