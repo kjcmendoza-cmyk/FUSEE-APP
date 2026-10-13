@@ -1058,7 +1058,7 @@ if (data.officers && Array.isArray(data.officers)) {
         </nav>
 
         <!-- MODAL OVERLAY BACKGROUND -->
-        <div id="modal-backdrop" onclick="closeAllModals()" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden transition-opacity opacity-0"></div>
+        <div id="modal-backdrop" onclick="closeAllModals()" class="fixed inset-0 bg-black/70 backdrop-blur-md z-40 hidden transition-opacity opacity-0"></div>
 
         <!-- MODAL 1: Announcements & Notices -->
         <div id="announcements-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-lg lg:max-w-xl mx-auto bg-[#130e2e] border-t border-fusee-magenta/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[85vh] overflow-y-auto">
@@ -1344,7 +1344,7 @@ if (data.officers && Array.isArray(data.officers)) {
             </div>
         </div>
 <!-- FULL-SCREEN MODAL 1: EE Department -->
-<div id="ee-dept-modal" class="bottom-sheet hidden-sheet fixed inset-0 z-50 bg-[#0B081E] flex flex-col overflow-y-auto">
+<div id="ee-dept-modal" class="bottom-sheet hidden-sheet fixed inset-0 z-[100] bg-[#0B081E] flex flex-col overflow-y-auto">
     <!-- Sticky Header with Return to Home Button -->
     <div class="sticky top-0 z-10 p-4 glass-panel border-b border-white/10 flex items-center justify-between">
         <button onclick="closeModal('ee-dept-modal')" class="flex items-center space-x-2 text-xs font-bold text-fusee-cyan hover:underline">
@@ -1418,9 +1418,9 @@ if (data.officers && Array.isArray(data.officers)) {
         </button>
     </div>
 </div>
-
+</div>
 <!-- FULL-SCREEN MODAL 2: FUSEE -->
-<div id="fusee-info-modal" class="bottom-sheet hidden-sheet fixed inset-0 z-50 bg-[#0B081E] flex flex-col overflow-y-auto">
+<div id="fusee-info-modal" class="bottom-sheet hidden-sheet fixed inset-0 z-[100] bg-[#0B081E] flex flex-col overflow-y-auto">
     <!-- Sticky Header with Return to Home Button -->
     <div class="sticky top-0 z-10 p-4 glass-panel border-b border-white/10 flex items-center justify-between">
         <button onclick="closeModal('fusee-info-modal')" class="flex items-center space-x-2 text-xs font-bold text-fusee-magenta hover:underline">
