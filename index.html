@@ -132,96 +132,13 @@
                 });
             }
 
-            // 8. Tiered Officers List Sync (3-Column Category Layout)
-            if (data.officers && Array.isArray(data.officers)) {
-                const offContainers = document.querySelectorAll('#officers-display-container, .officers-display-container');
-                
-                const executives = data.officers.filter(o => o.category === 'executive' || !o.category);
-                const reps = data.officers.filter(o => o.category === 'reps');
-                const committees = data.officers.filter(o => o.category === 'committees');
-
-                offContainers.forEach(offContainer => {
-                    let html = '<div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 items-start">';
-
-                    // COLUMN 1: Executive Board
-                    html += `
-                        <div class="space-y-2.5 bg-slate-950/40 p-3 rounded-2xl border border-fusee-cyan/20">
-                            <h4 class="text-[11px] font-bold font-techno text-fusee-cyan tracking-wider uppercase flex items-center justify-between border-b border-fusee-cyan/20 pb-2">
-                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-crown text-amber-400"></i> Executive Board</span>
-                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-fusee-cyan/10 border border-fusee-cyan/30 text-fusee-cyan">${executives.length}</span>
-                            </h4>
-                            <div class="space-y-2">
-                                ${executives.map(off => `
-                                    <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-cyan/40 transition flex items-center space-x-2.5">
-                                        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-fusee-cyan/20 to-blue-600/30 text-fusee-cyan border border-fusee-cyan/30 flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
-                                            ${off.badge || 'EXEC'}
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <h5 class="font-bold text-white text-[11px] truncate">${off.dept || 'Officer Name'}</h5>
-                                            <p class="text-[9px] text-fusee-cyan font-semibold truncate">${off.title}</p>
-                                            <p class="text-[9px] text-slate-400 truncate"><i class="fa-regular fa-envelope text-[8px] mr-1"></i>${off.email}</p>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                                ${executives.length === 0 ? '<p class="text-[10px] text-slate-500 italic p-1.5">No executive officers.</p>' : ''}
-                            </div>
-                        </div>
-                    `;
-
-                    // COLUMN 2: Batch & Course Representatives
-                    html += `
-                        <div class="space-y-2.5 bg-slate-950/40 p-3 rounded-2xl border border-fusee-magenta/20">
-                            <h4 class="text-[11px] font-bold font-techno text-fusee-magenta tracking-wider uppercase flex items-center justify-between border-b border-fusee-magenta/20 pb-2">
-                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-user-graduate text-fusee-magenta"></i> Batch & Course Reps</span>
-                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-fusee-magenta/10 border border-fusee-magenta/30 text-fusee-magenta">${reps.length}</span>
-                            </h4>
-                            <div class="space-y-2">
-                                ${reps.map(off => `
-                                    <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-magenta/40 transition flex items-center space-x-2.5">
-                                        <div class="w-8 h-8 rounded-lg bg-fusee-magenta/15 border border-fusee-magenta/30 text-fusee-magenta flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
-                                            ${off.badge || 'REP'}
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <h5 class="font-bold text-white text-[11px] truncate">${off.dept || 'Representative Name'}</h5>
-                                            <p class="text-[9px] text-fusee-magenta font-semibold truncate">${off.title}</p>
-                                            <p class="text-[9px] text-slate-400 truncate"><i class="fa-regular fa-envelope text-[8px] mr-1"></i>${off.email}</p>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                                ${reps.length === 0 ? '<p class="text-[10px] text-slate-500 italic p-1.5">No representatives.</p>' : ''}
-                            </div>
-                        </div>
-                    `;
-
-                    // COLUMN 3: Committees & Task Forces
-                    html += `
-                        <div class="space-y-2.5 bg-slate-950/40 p-3 rounded-2xl border border-fusee-yellow/20">
-                            <h4 class="text-[11px] font-bold font-techno text-fusee-yellow tracking-wider uppercase flex items-center justify-between border-b border-fusee-yellow/20 pb-2">
-                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-users-gear text-fusee-yellow"></i> Committees</span>
-                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-fusee-yellow/10 border border-fusee-yellow/30 text-fusee-yellow">${committees.length}</span>
-                            </h4>
-                            <div class="space-y-2">
-                                ${committees.map(off => `
-                                    <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/40 transition flex items-center space-x-2.5">
-                                        <div class="w-8 h-8 rounded-lg bg-fusee-yellow/15 border border-fusee-yellow/30 text-fusee-yellow flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
-                                            ${off.badge || 'CMTE'}
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <h5 class="font-bold text-white text-[11px] truncate">${off.dept || 'Committee Chair'}</h5>
-                                            <p class="text-[9px] text-fusee-yellow font-semibold truncate">${off.title}</p>
-                                            <p class="text-[9px] text-slate-400 truncate"><i class="fa-regular fa-envelope text-[8px] mr-1"></i>${off.email}</p>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                                ${committees.length === 0 ? '<p class="text-[10px] text-slate-500 italic p-1.5">No committees.</p>' : ''}
-                            </div>
-                        </div>
-                    `;
-
-                    html += '</div>';
-                    offContainer.innerHTML = html;
-                });
-            }
+            // 8. Tiered Officers List Sync (Updated for 2-column Grid & Search/Filter)
+if (data.officers && Array.isArray(data.officers)) {
+    window.allOfficersData = data.officers;
+    if (typeof window.renderOfficersUI === 'function') {
+        window.renderOfficersUI();
+    }
+}
 
             // 9. Upcoming Events Sync
             if (data.events && Array.isArray(data.events)) {
@@ -1152,36 +1069,40 @@
         </div>
 
         <!-- MODAL 3: Dynamic FUSEE Officers Directory -->
-        <div id="officers-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-2xl lg:max-w-4xl mx-auto bg-[#130e2e] border-t border-fusee-purple/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[85vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b border-white/10 pb-3">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-lg bg-fusee-purple/20 text-fusee-purple flex items-center justify-center">
-                        <i class="fa-solid fa-id-card text-sm"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-bold text-white font-display">FUSEE Officers & Leadership</h3>
-                        <p class="text-[10px] text-slate-400">Directory & Officers Structure</p>
-                    </div>
-                </div>
-                <button onclick="closeModal('officers-modal')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
-                    <i class="fa-solid fa-xmark text-xs"></i>
-                </button>
+<div id="officers-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-3xl lg:max-w-5xl mx-auto bg-[#130e2e] border-t border-fusee-purple/40 rounded-t-3xl z-50 p-4 md:p-6 space-y-3 max-h-[85vh] overflow-y-auto">
+    <div class="flex items-center justify-between border-b border-white/10 pb-3 sticky top-0 bg-[#130e2e] z-10 pt-1">
+        <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 rounded-lg bg-fusee-purple/20 text-fusee-purple flex items-center justify-center">
+                <i class="fa-solid fa-id-card text-sm"></i>
             </div>
-
-            <!-- Tiered Officers List Render Container -->
-            <div id="officers-display-container" class="officers-display-container space-y-4 text-xs">
-                <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-fusee-cyan to-blue-600 text-slate-950 flex items-center justify-center font-bold font-pixel text-[10px]">
-                        PRES
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-white text-xs">FUSEE Executive President</h4>
-                        <p class="text-[10px] text-fusee-cyan font-medium">Department of Electrical Engineering</p>
-                        <p class="text-[10px] text-slate-400">fusee@addu.edu.ph</p>
-                    </div>
-                </div>
+            <div>
+                <h3 class="text-sm font-bold text-white font-display">FUSEE Officers & Leadership</h3>
+                <p class="text-[10px] text-slate-400">Directory & Officers Structure</p>
             </div>
         </div>
+        <button onclick="closeModal('officers-modal')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+            <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+    </div>
+
+    <!-- Quick Search & Category Pills -->
+    <div class="space-y-2">
+        <input type="text" id="officer-search" onkeyup="filterOfficers()" placeholder="Search officer or position..." 
+               class="w-full px-3 py-2 rounded-xl bg-slate-900/90 text-xs text-white placeholder-slate-500 border border-slate-800 focus:outline-none focus:border-fusee-purple transition">
+        
+        <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar text-[11px] pb-1">
+            <button onclick="setOfficerCategory('all', event)" class="off-pill px-3 py-1 rounded-lg bg-fusee-purple text-white font-bold flex-shrink-0">All</button>
+            <button onclick="setOfficerCategory('exec', event)" class="off-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">Exec Board</button>
+            <button onclick="setOfficerCategory('reps', event)" class="off-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">Reps</button>
+            <button onclick="setOfficerCategory('cmte', event)" class="off-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">Committees</button>
+        </div>
+    </div>
+
+    <!-- Tiered Officers List Render Container -->
+    <div id="officers-display-container" class="officers-display-container space-y-4 pt-1 text-xs">
+        <!-- Rendered dynamically via Firestore -->
+    </div>
+</div>  
 
         <!-- MODAL 4: Dynamic Frequently Asked Questions (FAQs) -->
         <div id="faq-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-lg lg:max-w-xl mx-auto bg-[#130e2e] border-t border-fusee-yellow/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[85vh] overflow-y-auto">
@@ -1596,6 +1517,125 @@
             // Scroll smoothly to top upon switching tabs
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+        // Officers UI Category Filter & Search Logic
+let currentOfficerCategory = 'all';
+
+window.renderOfficersUI = function() {
+    const data = window.allOfficersData || [];
+    const searchVal = (document.getElementById('officer-search')?.value || '').toLowerCase();
+    const offContainers = document.querySelectorAll('#officers-display-container, .officers-display-container');
+
+    const filtered = data.filter(o => {
+        const matchesCat = currentOfficerCategory === 'all' || 
+                           (currentOfficerCategory === 'exec' && (o.category === 'executive' || !o.category)) ||
+                           (currentOfficerCategory === 'reps' && o.category === 'reps') ||
+                           (currentOfficerCategory === 'cmte' && o.category === 'committees');
+        const matchesSearch = !searchVal || 
+                              (o.dept && o.dept.toLowerCase().includes(searchVal)) || 
+                              (o.title && o.title.toLowerCase().includes(searchVal)) || 
+                              (o.email && o.email.toLowerCase().includes(searchVal));
+        return matchesCat && matchesSearch;
+    });
+
+    const executives = filtered.filter(o => o.category === 'executive' || !o.category);
+    const reps = filtered.filter(o => o.category === 'reps');
+    const committees = filtered.filter(o => o.category === 'committees');
+
+    offContainers.forEach(offContainer => {
+        let html = '<div class="space-y-4">';
+
+        if (executives.length > 0) {
+            html += `
+                <div class="space-y-2">
+                    <h4 class="text-[11px] font-bold font-techno text-fusee-cyan tracking-wider uppercase flex items-center justify-between border-b border-fusee-cyan/20 pb-1">
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-crown text-amber-400"></i> Executive Board</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-fusee-cyan/10 border border-fusee-cyan/30 text-fusee-cyan">${executives.length}</span>
+                    </h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        ${executives.map(off => `
+                            <div class="p-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-cyan/40 transition flex items-center space-x-2">
+                                <div class="w-7 h-7 rounded-lg bg-fusee-cyan/15 border border-fusee-cyan/30 text-fusee-cyan flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
+                                    ${off.badge || 'EXEC'}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h5 class="font-bold text-white text-[10px] truncate leading-tight">${off.dept || 'Officer Name'}</h5>
+                                    <p class="text-[9px] text-fusee-cyan font-semibold truncate">${off.title}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+        }
+
+        if (reps.length > 0) {
+            html += `
+                <div class="space-y-2">
+                    <h4 class="text-[11px] font-bold font-techno text-fusee-magenta tracking-wider uppercase flex items-center justify-between border-b border-fusee-magenta/20 pb-1">
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-user-graduate text-fusee-magenta"></i> Batch & Course Reps</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-fusee-magenta/10 border border-fusee-magenta/30 text-fusee-magenta">${reps.length}</span>
+                    </h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        ${reps.map(off => `
+                            <div class="p-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-magenta/40 transition flex items-center space-x-2">
+                                <div class="w-7 h-7 rounded-lg bg-fusee-magenta/15 border border-fusee-magenta/30 text-fusee-magenta flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
+                                    ${off.badge || 'REP'}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h5 class="font-bold text-white text-[10px] truncate leading-tight">${off.dept || 'Representative Name'}</h5>
+                                    <p class="text-[9px] text-fusee-magenta font-semibold truncate">${off.title}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+        }
+
+        if (committees.length > 0) {
+            html += `
+                <div class="space-y-2">
+                    <h4 class="text-[11px] font-bold font-techno text-fusee-yellow tracking-wider uppercase flex items-center justify-between border-b border-fusee-yellow/20 pb-1">
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-users-gear text-fusee-yellow"></i> Committees</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-fusee-yellow/10 border border-fusee-yellow/30 text-fusee-yellow">${committees.length}</span>
+                    </h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        ${committees.map(off => `
+                            <div class="p-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/40 transition flex items-center space-x-2">
+                                <div class="w-7 h-7 rounded-lg bg-fusee-yellow/15 border border-fusee-yellow/30 text-fusee-yellow flex items-center justify-center font-bold font-techno text-[9px] flex-shrink-0">
+                                    ${off.badge || 'CMTE'}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h5 class="font-bold text-white text-[10px] truncate leading-tight">${off.dept || 'Committee Chair'}</h5>
+                                    <p class="text-[9px] text-fusee-yellow font-semibold truncate">${off.title}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+        }
+
+        if (filtered.length === 0) {
+            html = `<p class="text-[11px] text-slate-400 italic p-3 text-center">No matching officers found.</p>`;
+        }
+
+        html += '</div>';
+        offContainer.innerHTML = html;
+    });
+};
+
+window.setOfficerCategory = function(cat, evt) {
+    currentOfficerCategory = cat;
+    document.querySelectorAll('.off-pill').forEach(btn => {
+        btn.className = 'off-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0';
+    });
+    if (evt && evt.target) {
+        evt.target.className = 'off-pill px-3 py-1 rounded-lg bg-fusee-purple text-white font-bold flex-shrink-0';
+    }
+    window.renderOfficersUI();
+};
+
+window.filterOfficers = function() {
+    window.renderOfficersUI();
+};
     </script>
 </body>
 </html>
