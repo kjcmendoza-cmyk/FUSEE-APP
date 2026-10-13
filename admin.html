@@ -137,37 +137,39 @@
                 </div>
             </div>
         </section>
-<!-- SECTION 3: Upcoming FUSEE Events Management -->
-<section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-purple/30">
-    <div class="flex items-center justify-between border-b border-white/10 pb-3">
-        <div class="flex items-center space-x-2">
-            <i class="fa-solid fa-calendar-day text-fusee-purple"></i>
-            <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">3. Upcoming FUSEE Events Management</h2>
-        </div>
-    </div>
 
-    <div id="events-container" class="space-y-3"></div>
+        <!-- SECTION 3: Upcoming FUSEE Events Management -->
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-purple/30">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-calendar-day text-fusee-purple"></i>
+                    <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">3. Upcoming FUSEE Events Management</h2>
+                </div>
+            </div>
 
-    <button type="button" onclick="addEventRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
-        <i class="fa-solid fa-plus text-fusee-purple"></i> Add New Event
-    </button>
-</section>
+            <div id="events-container" class="space-y-3"></div>
 
-<!-- SECTION 4: EE Academic Drive Links Management -->
-<section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-yellow/30">
-    <div class="flex items-center justify-between border-b border-white/10 pb-3">
-        <div class="flex items-center space-x-2">
-            <i class="fa-solid fa-folder-open text-fusee-yellow"></i>
-            <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">4. EE Academic Drive Links</h2>
-        </div>
-    </div>
+            <button type="button" onclick="addEventRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-plus text-fusee-purple"></i> Add New Event
+            </button>
+        </section>
 
-    <div id="academic-drive-container" class="space-y-3"></div>
+        <!-- SECTION 4: EE Academic Drive Links Management -->
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-yellow/30">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-folder-open text-fusee-yellow"></i>
+                    <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">4. EE Academic Drive Links</h2>
+                </div>
+            </div>
 
-    <button type="button" onclick="addAcademicLinkRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
-        <i class="fa-solid fa-plus text-fusee-yellow"></i> Add Academic Resource Link
-    </button>
-</section>
+            <div id="academic-drive-container" class="space-y-3"></div>
+
+            <button type="button" onclick="addAcademicLinkRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-plus text-fusee-yellow"></i> Add Academic Resource Link
+            </button>
+        </section>
+
         <!-- SECTION 2: System Cards (Equipment, ComLab, Hardware) -->
         <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-6 border border-fusee-magenta/30">
             <div class="flex items-center space-x-2 border-b border-white/10 pb-3">
@@ -518,9 +520,9 @@
                 }
             ],
             officers: [
-                { title: "FUSEE President", dept: "Executive Office", email: "fusee.president@addu.edu.ph", badge: "PRES" },
-                { title: "EE Lab Manager / Officer", dept: "Tool & Equipment Overseer", email: "fusee.lab@addu.edu.ph", badge: "LAB" },
-                { title: "EE Department Chair", dept: "SEA Faculty Office", email: "ee.department@addu.edu.ph", badge: "SEA" }
+                { title: "FUSEE President", dept: "Executive Office", email: "fusee.president@addu.edu.ph", badge: "PRES", category: "executive" },
+                { title: "EE Lab Manager / Officer", dept: "Tool & Equipment Overseer", email: "fusee.lab@addu.edu.ph", badge: "LAB", category: "committees" },
+                { title: "EE Department Chair", dept: "SEA Faculty Office", email: "ee.department@addu.edu.ph", badge: "SEA", category: "executive" }
             ],
             banner: {
                 title: "TO INFINITEE AND BEEYOND",
@@ -626,14 +628,16 @@
                     if (q && a) faqs.push({ q, a });
                 });
 
-                // Safe query for Officers
+                // Safe query for Officers with Categories
                 const officers = [];
                 document.querySelectorAll('.officer-item-row').forEach(row => {
+                    const category = row.querySelector('.off-category-input')?.value || 'executive';
                     const title = row.querySelector('.off-title-input')?.value?.trim() || '';
                     const dept = row.querySelector('.off-dept-input')?.value?.trim() || '';
                     const email = row.querySelector('.off-email-input')?.value?.trim() || '';
                     const badge = row.querySelector('.off-badge-input')?.value?.trim() || 'EE';
-                    if (title && email) officers.push({ title, dept, email, badge });
+                    
+                    if (title && email) officers.push({ title, dept, email, badge, category });
                 });
 
                 // Build updated object safely
@@ -754,7 +758,8 @@
             `;
             container.appendChild(div);
         };
-// FAQ Render & Add Functions
+
+        // FAQ Render & Add Functions
         function renderFaqs(list = []) {
             const container = document.getElementById('faq-container');
             if (!container) return;
@@ -778,22 +783,29 @@
             `;
             container.appendChild(div);
         };
+
+        // Officers Render & Add Functions (Updated for Categories)
         function renderOfficers(list) {
             const container = document.getElementById('officers-container');
             if (!container) return;
             container.innerHTML = '';
-            list.forEach(item => window.addOfficerRow(item.title, item.dept, item.email, item.badge));
+            list.forEach(item => window.addOfficerRow(item.title, item.dept, item.email, item.badge, item.category));
         }
 
-        window.addOfficerRow = function(title = '', dept = '', email = '', badge = 'PRES') {
+        window.addOfficerRow = function(title = '', dept = '', email = '', badge = 'PRES', category = 'executive') {
             const container = document.getElementById('officers-container');
             if (!container) return;
             const div = document.createElement('div');
-            div.className = 'officer-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 grid grid-cols-1 md:grid-cols-4 gap-2 relative';
+            div.className = 'officer-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 grid grid-cols-1 md:grid-cols-5 gap-2 relative';
             div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove()" class="md:col-span-4 text-right text-rose-400 text-xs">
+                <button type="button" onclick="this.parentElement.remove()" class="md:col-span-5 text-right text-rose-400 text-xs hover:text-rose-300 transition">
                     <i class="fa-solid fa-trash"></i> Remove Contact
                 </button>
+                <select class="off-category-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 focus:outline-none focus:border-fusee-purple">
+                    <option value="executive" ${category === 'executive' ? 'selected' : ''}>Executive</option>
+                    <option value="reps" ${category === 'reps' ? 'selected' : ''}>Representative</option>
+                    <option value="committees" ${category === 'committees' ? 'selected' : ''}>Committee</option>
+                </select>
                 <input type="text" class="off-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 font-pixel text-[10px]" placeholder="Badge" value="${badge}">
                 <input type="text" class="off-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Title" value="${title}">
                 <input type="text" class="off-dept-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Department" value="${dept}">
