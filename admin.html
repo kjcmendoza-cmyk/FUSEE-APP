@@ -500,6 +500,22 @@
                 </div>
             </div>
         </section>
+
+        <!-- SECTION 8: EE Merch & Gear Management -->
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-magenta/30">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-shirt text-fusee-magenta"></i>
+                    <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">8. Official EE Merch & Gear Catalog</h2>
+                </div>
+            </div>
+
+            <div id="merch-container" class="space-y-4"></div>
+
+            <button type="button" onclick="addMerchRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-plus text-fusee-magenta"></i> Add New Merch Item
+            </button>
+        </section>
     </main>
 
    <!-- Firebase SDK Scripts -->
@@ -530,6 +546,7 @@
         }
 
         const defaultData = {
+            
             tickerText: "⚡ EE Hardware Lab: Equipment checkouts close early at 4:30 PM on Fridays • 💻 Computer Lab PC Maintenance scheduled this Saturday • 📢 Always bring your ADDU Student ID for verification",
             globalStatus: "ALL OPEN",
             events: [
@@ -619,13 +636,98 @@
             fuseeInfo: {
                 description: "FUSEE is the premiere student organization representing all Electrical Engineering students under the School of Engineering and Architecture (SEA) at Ateneo de Davao University.",
                 email: "fusee@addu.edu.ph"
+            },
+            merchItems: [
+                {
+                    title: "Official FUSEE T-Shirt & Lanyard Set",
+                    price: "₱350.00",
+                    badge: "Pre-Orders",
+                    description: "Exclusive Electrical Engineering shirts and ID lanyards for AY 2026–2027.",
+                    orderUrl: "https://forms.google.com",
+                    imageUrl: ""
+                }
+            ]
+        };
+// Image File Reader to Base64 Data URL
+        window.handleMerchImageUpload = function(input, previewId, hiddenInputId) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.size > 1.5 * 1024 * 1024) {
+                alert("File size is too large! Please choose an image under 1.5MB.");
+                return;
             }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                document.getElementById(hiddenInputId).value = dataUrl;
+                const preview = document.getElementById(previewId);
+                preview.src = dataUrl;
+                preview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
         };
 
+        // Render Merch Rows
+        function renderMerchRows(list = []) {
+            const container = document.getElementById('merch-container');
+            if (!container) return;
+            container.innerHTML = '';
+            list.forEach((item, index) => window.addMerchRow(item.title, item.price, item.badge, item.description, item.orderUrl, item.imageUrl, index));
+        }
+
+        window.addMerchRow = function(title = '', price = '', badge = 'Pre-Orders', description = '', orderUrl = '', imageUrl = '', idx = Date.now()) {
+            const container = document.getElementById('merch-container');
+            if (!container) return;
+
+            const previewId = `merch-img-preview-${idx}`;
+            const hiddenId = `merch-img-data-${idx}`;
+
+            const div = document.createElement('div');
+            div.className = 'merch-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
+            div.innerHTML = `
+                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Item">
+                    <i class="fa-solid fa-trash"></i> Remove Item
+                </button>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
+                    <div class="space-y-2">
+                        <label class="block text-slate-400 font-semibold">T-Shirt / Product Photo</label>
+                        <div class="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-700 rounded-xl bg-slate-950/50 text-center space-y-2">
+                            <img id="${previewId}" src="${imageUrl}" class="${imageUrl ? '' : 'hidden'} w-24 h-24 object-cover rounded-lg border border-slate-700 mb-1">
+                            <input type="file" accept="image/*" onchange="handleMerchImageUpload(this, '${previewId}', '${hiddenId}')" class="text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-semibold file:bg-fusee-magenta/20 file:text-fusee-magenta hover:file:bg-fusee-magenta/30 cursor-pointer">
+                            <input type="hidden" class="merch-image-input" id="${hiddenId}" value="${imageUrl}">
+                            <span class="text-[9px] text-slate-500">Upload direct JPG/PNG photo</span>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 space-y-2">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <input type="text" class="merch-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 md:col-span-2" placeholder="Item Name" value="${title.replace(/"/g, '&quot;')}">
+                            <input type="text" class="merch-price-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Price (e.g. ₱350.00)" value="${price.replace(/"/g, '&quot;')}">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <select class="merch-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                                <option value="Pre-Orders" ${badge === 'Pre-Orders' ? 'selected' : ''}>Pre-Orders</option>
+                                <option value="In Stock" ${badge === 'In Stock' ? 'selected' : ''}>In Stock</option>
+                                <option value="Available" ${badge === 'Available' ? 'selected' : ''}>Available</option>
+                                <option value="Sold Out" ${badge === 'Sold Out' ? 'selected' : ''}>Sold Out</option>
+                            </select>
+                            <input type="text" class="merch-url-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Order Form Link" value="${orderUrl.replace(/"/g, '&quot;')}">
+                        </div>
+
+                        <textarea class="merch-desc-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="2" placeholder="Item description...">${description}</textarea>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        };
         function populateUI(data) {
             document.getElementById('ticker-text').value = data.tickerText || defaultData.tickerText;
             document.getElementById('global-status-select').value = data.globalStatus || "ALL OPEN";
-
+            
             // System 1
             document.getElementById('sys1-tag').value = data.sys1?.tag || defaultData.sys1.tag;
             document.getElementById('sys1-title').value = data.sys1?.title || defaultData.sys1.title;
@@ -677,7 +779,7 @@
 );
             renderFaqs(data.faqs || defaultData.faqs);
             renderOfficers(data.officers || defaultData.officers);
-
+            renderMerchRows(data.merchItems || defaultData.merchItems);    
             const eeDescEl = document.getElementById('ee-dept-desc');
             if (eeDescEl) {
                 eeDescEl.value = data.eeDept?.description || defaultData.eeDept.description;
@@ -806,12 +908,23 @@
                     const description = row.querySelector('.facil-desc-input')?.value?.trim() || '';
                     if (code && description) facilities.push({ code, description });
                 });
+                const merchItems = [];
+                document.querySelectorAll('.merch-item-row').forEach(row => {
+                    const title = row.querySelector('.merch-title-input')?.value?.trim() || '';
+                    const price = row.querySelector('.merch-price-input')?.value?.trim() || '';
+                    const badge = row.querySelector('.merch-badge-input')?.value || 'Pre-Orders';
+                    const description = row.querySelector('.merch-desc-input')?.value?.trim() || '';
+                    const orderUrl = row.querySelector('.merch-url-input')?.value?.trim() || '';
+                    const imageUrl = row.querySelector('.merch-image-input')?.value || '';
 
+                    if (title) merchItems.push({ title, price, badge, description, orderUrl, imageUrl });
+                });
                 const updatedData = {
                     tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
                     globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
                     events,
                     academicLinks,
+                    merchItems,
                     sys1: {
                         tag: document.getElementById('sys1-tag')?.value?.trim() || '',
                         title: document.getElementById('sys1-title')?.value?.trim() || '',
