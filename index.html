@@ -1761,7 +1761,7 @@ if (data.eeDept) {
             // Scroll smoothly to top upon switching tabs
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        // Officers UI Category Filter & Search Logic
+// Officers UI Category Filter, Search Logic & Photo Avatar Renderer
 let currentOfficerCategory = 'all';
 
 window.renderOfficersUI = function() {
@@ -1775,6 +1775,7 @@ window.renderOfficersUI = function() {
                            (currentOfficerCategory === 'reps' && o.category === 'reps') ||
                            (currentOfficerCategory === 'cmte' && o.category === 'committees');
         const matchesSearch = !searchVal || 
+                              (o.name && o.name.toLowerCase().includes(searchVal)) ||
                               (o.dept && o.dept.toLowerCase().includes(searchVal)) || 
                               (o.title && o.title.toLowerCase().includes(searchVal)) || 
                               (o.email && o.email.toLowerCase().includes(searchVal));
@@ -1784,6 +1785,38 @@ window.renderOfficersUI = function() {
     const executives = filtered.filter(o => o.category === 'executive' || !o.category);
     const reps = filtered.filter(o => o.category === 'reps');
     const committees = filtered.filter(o => o.category === 'committees');
+
+    // Helper function to build mobile-friendly officer card HTML with photo support
+    const createOfficerCard = (off, themeColor, defaultIcon) => {
+        const photoSrc = off.imageUrl || off.photo || off.image || '';
+        const officerName = off.name || off.dept || 'Officer Name';
+        const officerTitle = off.title || 'Position Title';
+        const badgeText = off.badge || 'OFFICER';
+
+        return `
+            <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-${themeColor}/40 transition flex items-center space-x-3 min-w-0">
+                <!-- Officer Photo Avatar -->
+                <div class="w-10 h-10 rounded-lg bg-${themeColor}/15 border border-${themeColor}/30 text-${themeColor} flex items-center justify-center text-xs flex-shrink-0 overflow-hidden">
+                    ${photoSrc ? `
+                        <img src="${photoSrc}" alt="${officerName}" class="w-full h-full object-cover object-top" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid ${defaultIcon}\\'></i>';">
+                    ` : `
+                        <i class="fa-solid ${defaultIcon}"></i>
+                    `}
+                </div>
+
+                <!-- Officer Information Details -->
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                        <h5 class="font-bold text-white text-[11px] leading-tight truncate">${officerName}</h5>
+                        <span class="px-1.5 py-0.2 rounded bg-${themeColor}/15 border border-${themeColor}/30 text-${themeColor} font-techno text-[7px] font-bold uppercase tracking-wider flex-shrink-0">
+                            ${badgeText}
+                        </span>
+                    </div>
+                    <p class="text-[9.5px] text-${themeColor} font-semibold truncate leading-tight">${officerTitle}</p>
+                </div>
+            </div>
+        `;
+    };
 
     offContainers.forEach(offContainer => {
         let html = '<div class="space-y-4">';
@@ -1796,20 +1829,8 @@ window.renderOfficersUI = function() {
                         <span class="flex items-center gap-1.5"><i class="fa-solid fa-crown text-amber-400"></i> Executive Board</span>
                         <span class="text-[9px] px-1.5 py-0.5 rounded bg-fusee-cyan/10 border border-fusee-cyan/30 text-fusee-cyan">${executives.length}</span>
                     </h4>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        ${executives.map(off => `
-                            <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-cyan/40 transition flex flex-col justify-between">
-                                <div class="flex items-center justify-between mb-1.5">
-                                    <span class="px-1.5 py-0.5 rounded bg-fusee-cyan/15 border border-fusee-cyan/30 text-fusee-cyan font-techno text-[8px] font-bold uppercase tracking-wider">
-                                        ${off.badge || 'EXEC'}
-                                    </span>
-                                </div>
-                                <div>
-                                    <h5 class="font-bold text-white text-[10px] leading-tight line-clamp-2 mb-0.5">${off.dept || 'Officer Name'}</h5>
-                                    <p class="text-[9px] text-fusee-cyan font-semibold truncate">${off.title}</p>
-                                </div>
-                            </div>
-                        `).join('')}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        ${executives.map(off => createOfficerCard(off, 'fusee-cyan', 'fa-user-tie')).join('')}
                     </div>
                 </div>`;
         }
@@ -1822,33 +1843,21 @@ window.renderOfficersUI = function() {
                         <span class="flex items-center gap-1.5"><i class="fa-solid fa-user-graduate text-fusee-magenta"></i> Batch & Course Reps</span>
                         <span class="text-[9px] px-1.5 py-0.5 rounded bg-fusee-magenta/10 border border-fusee-magenta/30 text-fusee-magenta">${reps.length}</span>
                     </h4>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        ${reps.map(off => `
-                            <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-magenta/40 transition flex flex-col justify-between">
-                                <div class="flex items-center justify-between mb-1.5">
-                                    <span class="px-1.5 py-0.5 rounded bg-fusee-magenta/15 border border-fusee-magenta/30 text-fusee-magenta font-techno text-[8px] font-bold uppercase tracking-wider">
-                                        ${off.badge || 'REP'}
-                                    </span>
-                                </div>
-                                <div>
-                                    <h5 class="font-bold text-white text-[10px] leading-tight line-clamp-2 mb-0.5">${off.dept || 'Representative Name'}</h5>
-                                    <p class="text-[9px] text-fusee-magenta font-semibold truncate">${off.title}</p>
-                                </div>
-                            </div>
-                        `).join('')}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        ${reps.map(off => createOfficerCard(off, 'fusee-magenta', 'fa-user-graduate')).join('')}
                     </div>
                 </div>`;
         }
 
-        // 3. Committees with Mini Sub-Categories
+        // 3. Committees
         if (committees.length > 0) {
             const subCats = [
-                { id: 'academics', name: 'Academics & Scholarship', icon: 'fa-graduation-cap', color: 'text-amber-400', badgeColor: 'bg-amber-400/10 text-amber-300 border-amber-400/30', match: o => o.subCategory === 'academics' || /academic|scholarship/i.test((o.title || '') + (o.dept || '')) },
-                { id: 'creatives', name: 'Creatives', icon: 'fa-palette', color: 'text-pink-400', badgeColor: 'bg-pink-400/10 text-pink-300 border-pink-400/30', match: o => o.subCategory === 'creatives' || /creative/i.test((o.title || '') + (o.dept || '')) },
-                { id: 'documentations', name: 'Documentations', icon: 'fa-camera', color: 'text-sky-400', badgeColor: 'bg-sky-400/10 text-sky-300 border-sky-400/30', match: o => o.subCategory === 'documentations' || /docu/i.test((o.title || '') + (o.dept || '')) },
-                { id: 'communications', name: 'Communications', icon: 'fa-bullhorn', color: 'text-cyan-400', badgeColor: 'bg-cyan-400/10 text-cyan-300 border-cyan-400/30', match: o => o.subCategory === 'communications' || /comm/i.test((o.title || '') + (o.dept || '')) },
-                { id: 'logistics', name: 'Logistics', icon: 'fa-boxes-packing', color: 'text-emerald-400', badgeColor: 'bg-emerald-400/10 text-emerald-300 border-emerald-400/30', match: o => o.subCategory === 'logistics' || /logi/i.test((o.title || '') + (o.dept || '')) },
-                { id: 'projects', name: 'FUSEE Projects', icon: 'fa-rocket', color: 'text-purple-400', badgeColor: 'bg-purple-400/10 text-purple-300 border-purple-400/30', match: o => o.subCategory === 'projects' || /project/i.test((o.title || '') + (o.dept || '')) }
+                { id: 'academics', name: 'Academics & Scholarship', icon: 'fa-graduation-cap', color: 'text-amber-400', theme: 'fusee-yellow', badgeColor: 'bg-amber-400/10 text-amber-300 border-amber-400/30', match: o => o.subCategory === 'academics' || /academic|scholarship/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
+                { id: 'creatives', name: 'Creatives', icon: 'fa-palette', color: 'text-pink-400', theme: 'fusee-magenta', badgeColor: 'bg-pink-400/10 text-pink-300 border-pink-400/30', match: o => o.subCategory === 'creatives' || /creative/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
+                { id: 'documentations', name: 'Documentations', icon: 'fa-camera', color: 'text-sky-400', theme: 'fusee-cyan', badgeColor: 'bg-sky-400/10 text-sky-300 border-sky-400/30', match: o => o.subCategory === 'documentations' || /docu/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
+                { id: 'communications', name: 'Communications', icon: 'fa-bullhorn', color: 'text-cyan-400', theme: 'fusee-cyan', badgeColor: 'bg-cyan-400/10 text-cyan-300 border-cyan-400/30', match: o => o.subCategory === 'communications' || /comm/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
+                { id: 'logistics', name: 'Logistics', icon: 'fa-boxes-packing', color: 'text-emerald-400', theme: 'emerald-400', badgeColor: 'bg-emerald-400/10 text-emerald-300 border-emerald-400/30', match: o => o.subCategory === 'logistics' || /logi/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
+                { id: 'projects', name: 'FUSEE Projects', icon: 'fa-rocket', color: 'text-purple-400', theme: 'fusee-purple', badgeColor: 'bg-purple-400/10 text-purple-300 border-purple-400/30', match: o => o.subCategory === 'projects' || /project/i.test((o.title || '') + (o.dept || '') + (o.name || '')) }
             ];
 
             html += `
@@ -1870,20 +1879,8 @@ window.renderOfficersUI = function() {
                                 <span>${sub.name}</span>
                                 <span class="text-[8px] px-1.5 py-0.2 rounded ${sub.badgeColor} border">${subMembers.length}</span>
                             </div>
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                ${subMembers.map(off => `
-                                    <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/40 transition flex flex-col justify-between">
-                                        <div class="flex items-center justify-between mb-1.5">
-                                            <span class="px-1.5 py-0.5 rounded bg-fusee-yellow/15 border border-fusee-yellow/30 text-fusee-yellow font-techno text-[8px] font-bold uppercase tracking-wider">
-                                                ${off.badge || 'CMTE'}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <h5 class="font-bold text-white text-[10px] leading-tight line-clamp-2 mb-0.5">${off.dept || 'Committee Member'}</h5>
-                                            <p class="text-[9px] text-fusee-yellow font-semibold truncate">${off.title}</p>
-                                        </div>
-                                    </div>
-                                `).join('')}
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                ${subMembers.map(off => createOfficerCard(off, 'fusee-yellow', sub.icon)).join('')}
                             </div>
                         </div>
                     `;
@@ -1900,20 +1897,8 @@ window.renderOfficersUI = function() {
                             <span>General Committee</span>
                             <span class="text-[8px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700">${unassigned.length}</span>
                         </div>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            ${unassigned.map(off => `
-                                <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/40 transition flex flex-col justify-between">
-                                    <div class="flex items-center justify-between mb-1.5">
-                                        <span class="px-1.5 py-0.5 rounded bg-fusee-yellow/15 border border-fusee-yellow/30 text-fusee-yellow font-techno text-[8px] font-bold uppercase tracking-wider">
-                                            ${off.badge || 'CMTE'}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <h5 class="font-bold text-white text-[10px] leading-tight line-clamp-2 mb-0.5">${off.dept || 'Committee Member'}</h5>
-                                        <p class="text-[9px] text-fusee-yellow font-semibold truncate">${off.title}</p>
-                                    </div>
-                                </div>
-                            `).join('')}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            ${unassigned.map(off => createOfficerCard(off, 'fusee-yellow', 'fa-user')).join('')}
                         </div>
                     </div>
                 `;
