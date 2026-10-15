@@ -611,6 +611,23 @@
     </button>
 </section>
 
+<!-- SECTION 14: Peer Tutoring & Study Group Management -->
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-cyan/30">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-user-graduate text-fusee-cyan"></i>
+                    <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">14. Peer Tutoring & Study Group Directory</h2>
+                </div>
+            </div>
+
+            <!-- Container for dynamic tutoring rows -->
+            <div id="tutoring-container" class="space-y-4"></div>
+
+            <button type="button" onclick="addPeerTutoringRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-plus text-fusee-cyan"></i> Add Tutor or Study Group Listing
+            </button>
+        </section>
+
     </main>
 
    <!-- Firebase SDK Scripts -->
@@ -641,6 +658,32 @@
         }
 
         const defaultData = {
+            peerTutoring: [
+                {
+                    type: "TUTOR",
+                    status: "AVAILABLE",
+                    tutorName: "Marc Reyes",
+                    yearLevel: "4th Year BS EE",
+                    subject: "Signals & Systems",
+                    topicFocus: "Fourier & Laplace Transforms, Convolution, Z-Transforms",
+                    location: "D202 Computer Lab / MS Teams",
+                    schedule: "Tue & Thu 3:00 PM - 5:00 PM",
+                    contact: "mreyes@addu.edu.ph",
+                    maxStudents: "3"
+                },
+                {
+                    type: "STUDY_GROUP",
+                    status: "AVAILABLE",
+                    tutorName: "Circuits 2 Exam Prep Group",
+                    yearLevel: "3rd Year BS EE",
+                    subject: "Circuits 2",
+                    topicFocus: "AC Power Analysis & Polyphase Circuits Review",
+                    location: "Dotterweich D204 / Library",
+                    schedule: "Wednesdays 4:00 PM - 6:00 PM",
+                    contact: "fusee.academics@addu.edu.ph",
+                    maxStudents: "6"
+                }
+            ],
             lostAndFound: [
                 {
                     type: "FOUND",
@@ -1010,7 +1053,7 @@ window.addCapstoneRow = function(title = '', advisor = '', authors = '', year = 
 
             renderEvents(data.events || defaultData.events);
             renderAcademicLinks(
-    (data.academicLinks && data.academicLinks.length) 
+    (data.academicLinks && data.academicLinks.length)
         ? data.academicLinks 
         : defaultData.academicLinks
 );
@@ -1022,6 +1065,7 @@ window.addCapstoneRow = function(title = '', advisor = '', authors = '', year = 
             renderLostFoundAdmin(data.lostAndFound || defaultData.lostAndFound);  
             renderScheduleAdmin(data.weeklySchedule || defaultData.weeklySchedule);
             renderActivityEventsAdmin(data.activityEvents || defaultData.activityEvents);  
+            renderPeerTutoringAdmin(data.peerTutoring || defaultData.peerTutoring);
             const eeDescEl = document.getElementById('ee-dept-desc');
             if (eeDescEl) {
                 eeDescEl.value = data.eeDept?.description || defaultData.eeDept.description;
@@ -1102,6 +1146,23 @@ window.addCapstoneRow = function(title = '', advisor = '', authors = '', year = 
             saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
 
             try {
+                const peerTutoring = [];
+                document.querySelectorAll('.tutoring-item-row').forEach(row => {
+                    const type = row.querySelector('.tut-type-input')?.value || 'TUTOR';
+                    const status = row.querySelector('.tut-status-input')?.value || 'AVAILABLE';
+                    const tutorName = row.querySelector('.tut-name-input')?.value?.trim() || '';
+                    const yearLevel = row.querySelector('.tut-year-input')?.value?.trim() || '';
+                    const subject = row.querySelector('.tut-subject-input')?.value?.trim() || '';
+                    const topicFocus = row.querySelector('.tut-focus-input')?.value?.trim() || '';
+                    const location = row.querySelector('.tut-location-input')?.value?.trim() || '';
+                    const schedule = row.querySelector('.tut-schedule-input')?.value?.trim() || '';
+                    const contact = row.querySelector('.tut-contact-input')?.value?.trim() || '';
+                    const maxStudents = row.querySelector('.tut-max-input')?.value?.trim() || '1';
+
+                    if (tutorName && subject) {
+                        peerTutoring.push({ type, status, tutorName, yearLevel, subject, topicFocus, location, schedule, contact, maxStudents });
+                    }
+                });
                 const lostAndFound = [];
                 document.querySelectorAll('.lost-found-item-row').forEach(row => {
                     const type = row.querySelector('.lf-type-input')?.value || 'FOUND';
@@ -1235,6 +1296,7 @@ document.querySelectorAll('.act-event-item-row').forEach(row => {
                     weeklySchedule,
                     activityEvents,
                     lostAndFound,
+                    peerTutoring,
                     sys1: {
                         tag: document.getElementById('sys1-tag')?.value?.trim() || '',
                         title: document.getElementById('sys1-title')?.value?.trim() || '',
@@ -1567,6 +1629,64 @@ window.addActivityEventRow = function(room = 'both', eventTitle = '', descriptio
             `;
             container.appendChild(div);
         };
+        function renderPeerTutoringAdmin(list = []) {
+    const container = document.getElementById('tutoring-container');
+    if (!container) return;
+    container.innerHTML = '';
+    list.forEach((item, index) => window.addPeerTutoringRow(
+        item.type, item.status, item.tutorName, item.yearLevel, item.subject, 
+        item.topicFocus, item.location, item.schedule, item.contact, item.maxStudents, index
+    ));
+}
+
+window.addPeerTutoringRow = function(type = 'TUTOR', status = 'AVAILABLE', tutorName = '', yearLevel = '4th Year BS EE', subject = 'Circuits 1', topicFocus = '', location = 'D202 ComLab', schedule = '', contact = '', maxStudents = '1', idx = Date.now()) {
+    const container = document.getElementById('tutoring-container');
+    if (!container) return;
+
+    const div = document.createElement('div');
+    div.className = 'tutoring-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Listing">
+            <i class="fa-solid fa-trash"></i> Remove Listing
+        </button>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
+            <div class="space-y-2">
+                <label class="block text-slate-400 font-semibold">Session Format & Status</label>
+                <select class="tut-type-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                    <option value="TUTOR" ${type === 'TUTOR' ? 'selected' : ''}>⚡ 1-on-1 Peer Tutor</option>
+                    <option value="STUDY_GROUP" ${type === 'STUDY_GROUP' ? 'selected' : ''}>👥 Peer Study Group</option>
+                </select>
+
+                <select class="tut-status-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                    <option value="AVAILABLE" ${status === 'AVAILABLE' ? 'selected' : ''}>🟢 AVAILABLE</option>
+                    <option value="LIMITED" ${status === 'LIMITED' ? 'selected' : ''}>🟡 LIMITED SEATS</option>
+                    <option value="FULL" ${status === 'FULL' ? 'selected' : ''}>🔴 FULL / CLOSED</option>
+                </select>
+
+                <input type="text" class="tut-subject-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Subject (e.g. Circuits 1, Signals & Systems)" value="${subject.replace(/"/g, '&quot;')}">
+            </div>
+
+            <div class="md:col-span-2 space-y-2">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <input type="text" class="tut-name-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 md:col-span-2" placeholder="Tutor / Group Leader Name" value="${tutorName.replace(/"/g, '&quot;')}">
+                    <input type="text" class="tut-year-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Year Level" value="${yearLevel.replace(/"/g, '&quot;')}">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <input type="text" class="tut-location-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Location (e.g. D202 / Discord)" value="${location.replace(/"/g, '&quot;')}">
+                    <input type="text" class="tut-schedule-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Available Schedule" value="${schedule.replace(/"/g, '&quot;')}">
+                    <input type="text" class="tut-max-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Max Seats / Tutees" value="${maxStudents}">
+                </div>
+
+                <input type="text" class="tut-contact-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="AdDU Email / Contact Info" value="${contact.replace(/"/g, '&quot;')}">
+
+                <textarea class="tut-focus-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="2" placeholder="Topic Focus / Course Strengths...">${topicFocus}</textarea>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+};
     </script>
 </body>
 </html>
