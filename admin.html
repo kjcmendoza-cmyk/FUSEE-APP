@@ -1175,11 +1175,11 @@ document.querySelectorAll('.com-schedule-item-row').forEach(row => {
 const activityEvents = [];
 document.querySelectorAll('.act-event-item-row').forEach(row => {
     const room = row.querySelector('.act-room-input')?.value || 'both';
+    const eventDate = row.querySelector('.act-date-input')?.value || '';
     const eventTitle = row.querySelector('.act-title-input')?.value?.trim() || '';
     const description = row.querySelector('.act-desc-input')?.value?.trim() || '';
-    if (eventTitle) activityEvents.push({ room, eventTitle, description });
-});
-                const updatedData = {
+    if (eventTitle) activityEvents.push({ room, eventDate, eventTitle, description });
+});           const updatedData = {
                     tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
                     globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
                     events,
@@ -1419,24 +1419,25 @@ function renderActivityEventsAdmin(events = []) {
     const container = document.getElementById('activity-events-container');
     if (!container) return;
     container.innerHTML = '';
-    events.forEach(item => window.addActivityEventRow(item.room, item.eventTitle, item.description));
+    events.forEach(item => window.addActivityEventRow(item.room, item.eventTitle, item.description, item.eventDate));
 }
 
-window.addActivityEventRow = function(room = 'both', eventTitle = '', description = '') {
+window.addActivityEventRow = function(room = 'both', eventTitle = '', description = '', eventDate = '') {
     const container = document.getElementById('activity-events-container');
     if (!container) return;
     const div = document.createElement('div');
     div.className = 'act-event-item-row p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-2 relative';
     div.innerHTML = `
         <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1"><i class="fa-solid fa-trash"></i></button>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-1">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-2 text-xs pt-1">
             <select class="act-room-input p-2 rounded bg-slate-800 text-white border border-slate-700">
                 <option value="both" ${room === 'both' ? 'selected' : ''}>Both Rooms (EE & ComLab)</option>
                 <option value="ee" ${room === 'ee' ? 'selected' : ''}>R202B EE Lab Only</option>
                 <option value="com" ${room === 'com' ? 'selected' : ''}>R202B Computer Lab Only</option>
             </select>
-            <input type="text" class="act-title-input p-2 rounded bg-slate-800 text-white border border-slate-700 md:col-span-2" placeholder="Event Title (e.g. FUSEE Assembly)" value="${eventTitle}">
-            <textarea class="act-desc-input w-full p-2 rounded bg-slate-800 text-white border border-slate-700 md:col-span-3" rows="2" placeholder="Event details / instructions...">${description}</textarea>
+            <input type="date" class="act-date-input p-2 rounded bg-slate-800 text-white border border-slate-700" value="${eventDate || ''}">
+            <input type="text" class="act-title-input p-2 rounded bg-slate-800 text-white border border-slate-700 md:col-span-2" placeholder="Event Title (e.g. FUSEE Assembly)" value="${eventTitle.replace(/"/g, '&quot;')}">
+            <textarea class="act-desc-input w-full p-2 rounded bg-slate-800 text-white border border-slate-700 md:col-span-4" rows="2" placeholder="Event details / instructions...">${description}</textarea>
         </div>
     `;
     container.appendChild(div);

@@ -1880,53 +1880,64 @@ if (data.eeDept) {
         }
 
         window.evaluateLiveRoomStatuses = function() {
-            const now = new Date();
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const curDay = days[now.getDay()];
-            const curMins = now.getHours() * 60 + now.getMinutes();
+    const now = new Date();
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const curDay = days[now.getDay()];
+    const curMins = now.getHours() * 60 + now.getMinutes();
 
-            const isActivityPeriod = (curDay === 'Monday' || curDay === 'Wednesday') && (curMins >= 15 * 60 && curMins < 18 * 60);
+    // Format today as YYYY-MM-DD to match admin date picker
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
 
-            const schedule = window.allWeeklySchedule || { eeLab: [], comLab: [] };
-            const events = window.allActivityEvents || [];
+    const isActivityPeriod = (curDay === 'Monday' || curDay === 'Wednesday') && (curMins >= 15 * 60 && curMins < 18 * 60);
 
-            // Helper to evaluate room state
-            const evaluateRoom = (roomKey, roomName) => {
-                const classes = (schedule[roomKey] || []).filter(c => c.day === curDay);
-                let ongoingClass = null;
+    const schedule = window.allWeeklySchedule || { eeLab: [], comLab: [] };
+    const events = window.allActivityEvents || [];
 
-                for (let c of classes) {
-                    const start = timeStrToMinutes(c.startTime);
-                    const end = timeStrToMinutes(c.endTime);
-                    if (curMins >= start && curMins < end) {
-                        ongoingClass = c;
-                        break;
-                    }
-                }
+    // Helper to evaluate room state
+    const evaluateRoom = (roomKey, roomName) => {
+        const classes = (schedule[roomKey] || []).filter(c => c.day === curDay);
+        let ongoingClass = null;
 
-                if (isActivityPeriod) {
-                    const event = events.find(e => (e.room === roomKey || e.room === 'both'));
-                    if (event) {
-                        return {
-                            type: 'EVENT',
-                            subject: `SPECIAL EVENT: ${event.eventTitle}`,
-                            badge: 'bg-fusee-purple/20 text-fusee-purple border-fusee-purple/40',
-                            badgeText: 'SPECIAL EVENT',
-                            rules: roomKey === 'ee' 
-                                ? `Activity Period Event ongoing: ${event.description || 'Rest & study permitted unless occupied by activity.'}`
-                                : `Activity Period Event ongoing: Strict quiet zone enforced in ComLab during activities.`
-                        };
-                    } else {
-                        return {
-                            type: 'ACTIVITY_FREE',
-                            subject: 'OPEN ACTIVITY PERIOD (3:00 PM - 6:00 PM)',
-                            badge: 'bg-fusee-cyan/20 text-fusee-cyan border-fusee-cyan/40',
-                            badgeText: 'ACTIVITY PERIOD',
-                            rules: roomKey === 'ee'
-                                ? 'Special Activity Period: Free/No class schedule. Students can Rest, Relax, Talk, Study, & do Lab-works.'
-                                : 'Special Activity Period: Free/No class schedule. Silent Study Zone: Noise must be controlled even more.'
-                        };
-                    }
+        for (let c of classes) {
+            const start = timeStrToMinutes(c.startTime);
+            const end = timeStrToMinutes(c.endTime);
+            if (curMins >= start && curMins < end) {
+                ongoingClass = c;
+                break;
+            }
+        }
+
+        if (isActivityPeriod) {
+            // Find event matching today's date (or default if no date set)
+            const event = events.find(e => 
+                (e.room === roomKey || e.room === 'both') && 
+                (!e.eventDate || e.eventDate === todayStr)
+            );
+
+            if (event) {
+                return {
+                    type: 'EVENT',
+                    subject: `SPECIAL EVENT: ${event.eventTitle}`,
+                    badge: 'bg-fusee-purple/20 text-fusee-purple border-fusee-purple/40',
+                    badgeText: 'SPECIAL EVENT',
+                    rules: roomKey === 'ee' 
+                        ? `Activity Period Event ongoing: ${event.description || 'Rest & study permitted unless occupied by activity.'}`
+                        : `Activity Period Event ongoing: Strict quiet zone enforced in ComLab during activities.`
+                };
+            } else {
+                return {
+                    type: 'ACTIVITY_FREE',
+                    subject: 'OPEN ACTIVITY PERIOD (3:00 PM - 6:00 PM)',
+                    badge: 'bg-fusee-cyan/20 text-fusee-cyan border-fusee-cyan/40',
+                    badgeText: 'ACTIVITY PERIOD',
+                    rules: roomKey === 'ee'
+                        ? 'Special Activity Period: Free/No class schedule. Students can Rest, Relax, Talk, Study, & do Lab-works.'
+                        : 'Special Activity Period: Free/No class schedule. Silent Study Zone: Noise must be controlled even more.'
+                };
+            }
                 } else if (ongoingClass) {
                     return {
                         type: 'CLASS',
