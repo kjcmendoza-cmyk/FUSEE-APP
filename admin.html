@@ -550,6 +550,50 @@
     </button>
 </section>
 
+<!-- SECTION 11: Master Weekly Class Timetable Editor -->
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-cyan/30">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-calendar-week text-fusee-cyan"></i>
+                    <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">11. Master Weekly Class Timetable (R202B)</h2>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+                    <h3 class="text-xs font-bold text-fusee-cyan font-techno">R202B - EE Laboratory Weekly Classes</h3>
+                    <div id="ee-schedule-container" class="space-y-2"></div>
+                    <button type="button" onclick="addScheduleRow('ee')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1 transition">
+                        <i class="fa-solid fa-plus text-fusee-cyan"></i> Add EE Lab Class
+                    </button>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+                    <h3 class="text-xs font-bold text-fusee-magenta font-techno">R202B - EE Computer Laboratory Weekly Classes</h3>
+                    <div id="com-schedule-container" class="space-y-2"></div>
+                    <button type="button" onclick="addScheduleRow('com')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1 transition">
+                        <i class="fa-solid fa-plus text-fusee-magenta"></i> Add ComLab Class
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 12: Collapsible Activity Period Event Planner -->
+        <section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-purple/30">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-star text-fusee-yellow"></i>
+                    <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">12. Activity Period Event Planner (3 PM - 6 PM Mon & Wed)</h2>
+                </div>
+            </div>
+
+            <div id="activity-events-container" class="space-y-3"></div>
+
+            <button type="button" onclick="addActivityEventRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-plus text-fusee-yellow"></i> Schedule Activity Period Event
+            </button>
+        </section>
+
     </main>
 
    <!-- Firebase SDK Scripts -->
@@ -580,6 +624,18 @@
         }
 
         const defaultData = {
+            weeklySchedule: {
+                eeLab: [
+                    { day: "Monday", startTime: "08:00 AM", endTime: "11:00 AM", subjectName: "EE 311 - Circuits Lab", instructor: "Engr. Alvarez" },
+                    { day: "Wednesday", startTime: "01:00 PM", endTime: "03:00 PM", subjectName: "EE 412 - Power Systems Lab", instructor: "Dr. Maceren" }
+                ],
+                comLab: [
+                    { day: "Tuesday", startTime: "09:00 AM", endTime: "12:00 PM", subjectName: "EE 221 - MATLAB & Proteus", instructor: "Engr. Rama" }
+                ]
+            },
+            activityEvents: [
+                { room: "both", eventTitle: "FUSEE General Assembly", description: "All EE students non-class activity period." }
+            ],
             labPolicies: [
                 {
                     title: "1. General Safety & Protocol",
@@ -933,7 +989,9 @@ window.addCapstoneRow = function(title = '', advisor = '', authors = '', year = 
             renderOfficers(data.officers || defaultData.officers);
             renderMerchRows(data.merchItems || defaultData.merchItems);
             renderCapstoneRows(data.capstoneItems || []);
-            renderLabPolicies(data.labPolicies || defaultData.labPolicies);    
+            renderLabPolicies(data.labPolicies || defaultData.labPolicies);  
+            renderScheduleAdmin(data.weeklySchedule || defaultData.weeklySchedule);
+            renderActivityEventsAdmin(data.activityEvents || defaultData.activityEvents);  
             const eeDescEl = document.getElementById('ee-dept-desc');
             if (eeDescEl) {
                 eeDescEl.value = data.eeDept?.description || defaultData.eeDept.description;
@@ -1095,6 +1153,32 @@ document.querySelectorAll('.capstone-item-row').forEach(row => {
                     const content = row.querySelector('.policy-content-input')?.value?.trim() || '';
                     if (title || content) labPolicies.push({ title, content });
                 });
+                const weeklySchedule = { eeLab: [], comLab: [] };
+document.querySelectorAll('.ee-schedule-item-row').forEach(row => {
+    const day = row.querySelector('.sch-day-input')?.value || 'Monday';
+    const startTime = row.querySelector('.sch-start-input')?.value?.trim() || '';
+    const endTime = row.querySelector('.sch-end-input')?.value?.trim() || '';
+    const subjectName = row.querySelector('.sch-subject-input')?.value?.trim() || '';
+    const instructor = row.querySelector('.sch-instructor-input')?.value?.trim() || '';
+    if (subjectName) weeklySchedule.eeLab.push({ day, startTime, endTime, subjectName, instructor });
+});
+
+document.querySelectorAll('.com-schedule-item-row').forEach(row => {
+    const day = row.querySelector('.sch-day-input')?.value || 'Monday';
+    const startTime = row.querySelector('.sch-start-input')?.value?.trim() || '';
+    const endTime = row.querySelector('.sch-end-input')?.value?.trim() || '';
+    const subjectName = row.querySelector('.sch-subject-input')?.value?.trim() || '';
+    const instructor = row.querySelector('.sch-instructor-input')?.value?.trim() || '';
+    if (subjectName) weeklySchedule.comLab.push({ day, startTime, endTime, subjectName, instructor });
+});
+
+const activityEvents = [];
+document.querySelectorAll('.act-event-item-row').forEach(row => {
+    const room = row.querySelector('.act-room-input')?.value || 'both';
+    const eventTitle = row.querySelector('.act-title-input')?.value?.trim() || '';
+    const description = row.querySelector('.act-desc-input')?.value?.trim() || '';
+    if (eventTitle) activityEvents.push({ room, eventTitle, description });
+});
                 const updatedData = {
                     tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
                     globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
@@ -1103,6 +1187,8 @@ document.querySelectorAll('.capstone-item-row').forEach(row => {
                     merchItems,
                     labPolicies,
                     capstoneItems,
+                    weeklySchedule,
+                    activityEvents,
                     sys1: {
                         tag: document.getElementById('sys1-tag')?.value?.trim() || '',
                         title: document.getElementById('sys1-title')?.value?.trim() || '',
@@ -1286,6 +1372,71 @@ document.querySelectorAll('.capstone-item-row').forEach(row => {
             <input type="text" class="off-dept-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Department / Office" value="${dept}">
             <input type="email" class="off-email-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Email" value="${email}">
             <input type="text" class="off-img-input md:col-span-3 p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Image URL or Filename (e.g., photo.png or https://...)" value="${imageUrl}">
+        </div>
+    `;
+    container.appendChild(div);
+};
+
+function renderScheduleAdmin(sched = { eeLab: [], comLab: [] }) {
+    const eeContainer = document.getElementById('ee-schedule-container');
+    const comContainer = document.getElementById('com-schedule-container');
+    if (eeContainer) {
+        eeContainer.innerHTML = '';
+        (sched.eeLab || []).forEach(item => window.addScheduleRow('ee', item.day, item.startTime, item.endTime, item.subjectName, item.instructor));
+    }
+    if (comContainer) {
+        comContainer.innerHTML = '';
+        (sched.comLab || []).forEach(item => window.addScheduleRow('com', item.day, item.startTime, item.endTime, item.subjectName, item.instructor));
+    }
+}
+
+window.addScheduleRow = function(type = 'ee', day = 'Monday', startTime = '08:00 AM', endTime = '10:00 AM', subjectName = '', instructor = '') {
+    const container = document.getElementById(type === 'ee' ? 'ee-schedule-container' : 'com-schedule-container');
+    if (!container) return;
+    const div = document.createElement('div');
+    div.className = `${type === 'ee' ? 'ee-schedule-item-row' : 'com-schedule-item-row'} p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2 relative`;
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1"><i class="fa-solid fa-trash"></i></button>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-2 text-xs pt-1">
+            <select class="sch-day-input p-2 rounded bg-slate-800 text-white border border-slate-700">
+                <option value="Monday" ${day === 'Monday' ? 'selected' : ''}>Monday</option>
+                <option value="Tuesday" ${day === 'Tuesday' ? 'selected' : ''}>Tuesday</option>
+                <option value="Wednesday" ${day === 'Wednesday' ? 'selected' : ''}>Wednesday</option>
+                <option value="Thursday" ${day === 'Thursday' ? 'selected' : ''}>Thursday</option>
+                <option value="Friday" ${day === 'Friday' ? 'selected' : ''}>Friday</option>
+                <option value="Saturday" ${day === 'Saturday' ? 'selected' : ''}>Saturday</option>
+            </select>
+            <input type="text" class="sch-start-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Start (e.g. 08:00 AM)" value="${startTime}">
+            <input type="text" class="sch-end-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="End (e.g. 10:00 AM)" value="${endTime}">
+            <input type="text" class="sch-subject-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Subject Name" value="${subjectName}">
+            <input type="text" class="sch-instructor-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Instructor" value="${instructor}">
+        </div>
+    `;
+    container.appendChild(div);
+};
+
+function renderActivityEventsAdmin(events = []) {
+    const container = document.getElementById('activity-events-container');
+    if (!container) return;
+    container.innerHTML = '';
+    events.forEach(item => window.addActivityEventRow(item.room, item.eventTitle, item.description));
+}
+
+window.addActivityEventRow = function(room = 'both', eventTitle = '', description = '') {
+    const container = document.getElementById('activity-events-container');
+    if (!container) return;
+    const div = document.createElement('div');
+    div.className = 'act-event-item-row p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-2 relative';
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1"><i class="fa-solid fa-trash"></i></button>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-1">
+            <select class="act-room-input p-2 rounded bg-slate-800 text-white border border-slate-700">
+                <option value="both" ${room === 'both' ? 'selected' : ''}>Both Rooms (EE & ComLab)</option>
+                <option value="ee" ${room === 'ee' ? 'selected' : ''}>R202B EE Lab Only</option>
+                <option value="com" ${room === 'com' ? 'selected' : ''}>R202B Computer Lab Only</option>
+            </select>
+            <input type="text" class="act-title-input p-2 rounded bg-slate-800 text-white border border-slate-700 md:col-span-2" placeholder="Event Title (e.g. FUSEE Assembly)" value="${eventTitle}">
+            <textarea class="act-desc-input w-full p-2 rounded bg-slate-800 text-white border border-slate-700 md:col-span-3" rows="2" placeholder="Event details / instructions...">${description}</textarea>
         </div>
     `;
     container.appendChild(div);
