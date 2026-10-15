@@ -594,6 +594,23 @@
             </button>
         </section>
 
+<!-- SECTION 13: Lost & Found Management -->
+<section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-rose-500/30">
+    <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-box-open text-rose-400"></i>
+            <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">13. Lost & Found Bulletin Board Management</h2>
+        </div>
+    </div>
+
+    <!-- Container for dynamic Lost & Found rows -->
+    <div id="lost-found-container" class="space-y-4"></div>
+
+    <button type="button" onclick="addLostFoundRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+        <i class="fa-solid fa-plus text-rose-400"></i> Add Custodian / Found Item Record
+    </button>
+</section>
+
     </main>
 
    <!-- Firebase SDK Scripts -->
@@ -624,6 +641,18 @@
         }
 
         const defaultData = {
+            lostAndFound: [
+                {
+                    type: "FOUND",
+                    status: "UNCLAIMED",
+                    title: "TI-84 Plus CE Graphing Calculator",
+                    location: "D202 Computer Lab",
+                    date: "2026-10-15",
+                    description: "Found under Desk 12. Black casing with yellow mark on back.",
+                    contact: "Turned in to D204 Desk",
+                    imageUrl: ""
+                }
+            ],
             weeklySchedule: {
                 eeLab: [
                     { day: "Monday", startTime: "08:00 AM", endTime: "11:00 AM", subjectName: "EE 311 - Circuits Lab", instructor: "Engr. Alvarez" },
@@ -989,7 +1018,8 @@ window.addCapstoneRow = function(title = '', advisor = '', authors = '', year = 
             renderOfficers(data.officers || defaultData.officers);
             renderMerchRows(data.merchItems || defaultData.merchItems);
             renderCapstoneRows(data.capstoneItems || []);
-            renderLabPolicies(data.labPolicies || defaultData.labPolicies);  
+            renderLabPolicies(data.labPolicies || defaultData.labPolicies);
+            renderLostFoundAdmin(data.lostAndFound || defaultData.lostAndFound);  
             renderScheduleAdmin(data.weeklySchedule || defaultData.weeklySchedule);
             renderActivityEventsAdmin(data.activityEvents || defaultData.activityEvents);  
             const eeDescEl = document.getElementById('ee-dept-desc');
@@ -1072,6 +1102,21 @@ window.addCapstoneRow = function(title = '', advisor = '', authors = '', year = 
             saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
 
             try {
+                const lostAndFound = [];
+                document.querySelectorAll('.lost-found-item-row').forEach(row => {
+                    const type = row.querySelector('.lf-type-input')?.value || 'FOUND';
+                    const status = row.querySelector('.lf-status-input')?.value || 'UNCLAIMED';
+                    const title = row.querySelector('.lf-title-input')?.value?.trim() || '';
+                    const location = row.querySelector('.lf-location-input')?.value?.trim() || '';
+                    const date = row.querySelector('.lf-date-input')?.value || '';
+                    const contact = row.querySelector('.lf-contact-input')?.value?.trim() || '';
+                    const description = row.querySelector('.lf-desc-input')?.value?.trim() || '';
+                    const imageUrl = row.querySelector('.lf-image-input')?.value || '';
+
+                    if (title) {
+                        lostAndFound.push({ type, status, title, location, date, contact, description, imageUrl });
+                    }
+                });
                 const capstoneItems = [];
 document.querySelectorAll('.capstone-item-row').forEach(row => {
     const title = row.querySelector('.cap-title-input')?.value?.trim() || '';
@@ -1189,6 +1234,7 @@ document.querySelectorAll('.act-event-item-row').forEach(row => {
                     capstoneItems,
                     weeklySchedule,
                     activityEvents,
+                    lostAndFound,
                     sys1: {
                         tag: document.getElementById('sys1-tag')?.value?.trim() || '',
                         title: document.getElementById('sys1-title')?.value?.trim() || '',
@@ -1456,6 +1502,71 @@ window.addActivityEventRow = function(room = 'both', eventTitle = '', descriptio
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('hidden'), 4500);
         }
+        function renderLostFoundAdmin(list = []) {
+            const container = document.getElementById('lost-found-container');
+            if (!container) return;
+            container.innerHTML = '';
+            list.forEach((item, index) => window.addLostFoundRow(
+                item.type, item.status, item.title, item.location, item.date, item.contact, item.description, item.imageUrl, index
+            ));
+        }
+
+        window.addLostFoundRow = function(type = 'FOUND', status = 'UNCLAIMED', title = '', location = 'D204 Desk', date = '', contact = 'Room D204 Custodian', description = '', imageUrl = '', idx = Date.now()) {
+            const container = document.getElementById('lost-found-container');
+            if (!container) return;
+
+            const previewId = `lf-img-preview-${idx}`;
+            const hiddenId = `lf-img-data-${idx}`;
+
+            const div = document.createElement('div');
+            div.className = 'lost-found-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
+            div.innerHTML = `
+                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Record">
+                    <i class="fa-solid fa-trash"></i> Remove Record
+                </button>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
+                    <div class="space-y-2">
+                        <label class="block text-slate-400 font-semibold">Item Photo (Optional)</label>
+                        <div class="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-700 rounded-xl bg-slate-950/50 text-center space-y-2">
+                            <img id="${previewId}" src="${imageUrl}" class="${imageUrl ? '' : 'hidden'} w-full max-h-32 object-contain rounded-lg border border-slate-700 mb-1">
+                            <input type="file" accept="image/*" onchange="handleMerchImageUpload(this, '${previewId}', '${hiddenId}')" class="text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-semibold file:bg-rose-500/20 file:text-rose-400 cursor-pointer">
+                            <input type="hidden" class="lf-image-input" id="${hiddenId}" value="${imageUrl}">
+                            <span class="text-[9px] text-slate-500">Upload direct photo</span>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 space-y-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <select class="lf-type-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                                <option value="FOUND" ${type === 'FOUND' ? 'selected' : ''}>🟡 Found Item (Turned In)</option>
+                                <option value="LOST" ${type === 'LOST' ? 'selected' : ''}>🔴 Lost Item Report</option>
+                                <option value="OFFICIAL" ${type === 'OFFICIAL' ? 'selected' : ''}>🏢 Official Custodian Inventory</option>
+                            </select>
+
+                            <select class="lf-status-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                                <option value="UNCLAIMED" ${status === 'UNCLAIMED' ? 'selected' : ''}>UNCLAIMED (At D204)</option>
+                                <option value="PENDING" ${status === 'PENDING' ? 'selected' : ''}>VERIFICATION PENDING</option>
+                                <option value="RETURNED" ${status === 'RETURNED' ? 'selected' : ''}>RETURNED / CLAIMED</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <input type="text" class="lf-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 md:col-span-2" placeholder="Item Name / Title" value="${title.replace(/"/g, '&quot;')}">
+                            <input type="date" class="lf-date-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" value="${date}">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <input type="text" class="lf-location-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Room Found / Held" value="${location.replace(/"/g, '&quot;')}">
+                            <input type="text" class="lf-contact-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Contact / Custodian Desk" value="${contact.replace(/"/g, '&quot;')}">
+                        </div>
+
+                        <textarea class="lf-desc-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="2" placeholder="Item description & verification notes...">${description}</textarea>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        };
     </script>
 </body>
 </html>

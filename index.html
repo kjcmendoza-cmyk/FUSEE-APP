@@ -52,7 +52,13 @@
                     window.renderCapstonesUI();
                 }
             }
-
+// 17. Lost & Found Bulletin Board Real-Time Sync
+if (data.lostAndFound && Array.isArray(data.lostAndFound)) {
+    window.allLostFoundData = data.lostAndFound;
+    if (typeof window.renderLostFoundUI === 'function') {
+        window.renderLostFoundUI();
+    }
+}
             // 1. Marquee Announcement Ticker
             if (data.tickerText) {
                 const tickerEl = document.getElementById('announcement-text');
@@ -802,6 +808,14 @@ if (data.eeDept) {
             <p class="text-[10px] text-slate-400">Safety, borrowing & log protocols</p>
         </button>
 
+<button onclick="openModal('lost-found-modal')" class="glass-card p-3 rounded-xl text-left hover:border-rose-400/50 transition group">
+    <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+        <i class="fa-solid fa-box-open text-rose-400"></i>
+    </div>
+    <h4 class="text-xs font-bold text-white mb-0.5">Lost & Found</h4>
+    <p class="text-[10px] text-slate-400">D204 Central Desk & Peer items</p>
+</button>
+
         <button onclick="openModal('merch-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-magenta/50 transition group">
             <div class="w-8 h-8 rounded-lg bg-fusee-magenta/10 text-fusee-magenta flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
                 <i class="fa-solid fa-shirt text-fusee-magenta"></i>
@@ -1243,6 +1257,103 @@ if (data.eeDept) {
                 <p class="text-[9px] text-slate-400">Department of Electrical Engineering • AdDU SEA</p>
             </footer>
 
+<!-- MODAL: Lost & Found Bulletin Board -->
+<div id="lost-found-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-rose-500/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[88vh] shadow-2xl overflow-hidden flex flex-col">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-white/10 pb-3 flex-shrink-0">
+        <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold">
+                <i class="fa-solid fa-box-open text-sm"></i>
+            </div>
+            <div>
+                <h3 class="text-sm md:text-base font-bold text-white font-display">Lost & Found Bulletin Board</h3>
+                <p class="text-[10px] md:text-xs text-slate-400">D204 Custodian Desk & Student Peer Reports</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button onclick="openModal('report-item-modal')" class="px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[10px] font-bold hover:bg-rose-500/30 transition flex items-center gap-1">
+                <i class="fa-solid fa-plus"></i> Post Report
+            </button>
+            <button onclick="closeModal('lost-found-modal')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="space-y-2 flex-shrink-0">
+        <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="lf-search-input" onkeyup="renderLostFoundUI()" placeholder="Search item, room (e.g. D202), category, or reporter..." 
+                   class="w-full pl-8 pr-3 py-2 rounded-xl bg-slate-900/90 text-xs text-white placeholder-slate-500 border border-slate-800 focus:outline-none focus:border-rose-400 transition">
+        </div>
+
+        <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar text-[11px] pb-1">
+            <button onclick="setLostFoundFilter('all', event)" class="lf-pill px-3 py-1 rounded-lg bg-rose-500 text-white font-bold flex-shrink-0">All Items</button>
+            <button onclick="setLostFoundFilter('lost', event)" class="lf-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">🔴 Lost / Looking</button>
+            <button onclick="setLostFoundFilter('found', event)" class="lf-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">🟡 Found / At D204</button>
+            <button onclick="setLostFoundFilter('returned', event)" class="lf-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">🟢 Claimed / Returned</button>
+        </div>
+    </div>
+
+    <!-- Dynamic Container -->
+    <div id="lost-found-display-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-1 flex-1">
+        <!-- Rendered dynamically via JavaScript -->
+    </div>
+</div>
+
+<!-- MODAL: Student Submit Lost/Found Report Form -->
+<div id="report-item-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#130e2e] border-t border-rose-500/40 rounded-t-3xl z-[60] p-5 space-y-3 max-h-[85vh] overflow-y-auto">
+    <div class="flex items-center justify-between border-b border-white/10 pb-2">
+        <h4 class="text-xs font-bold text-white font-techno flex items-center gap-2">
+            <i class="fa-solid fa-pen-to-square text-rose-400"></i> Submit Lost or Found Report
+        </h4>
+        <button onclick="closeModal('report-item-modal')" class="w-6 h-6 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+            <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+    </div>
+
+    <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-[10px] text-slate-300 space-y-1">
+        <p class="font-bold text-rose-400"><i class="fa-solid fa-shield-halved"></i> Verification Guidance:</p>
+        <p>If you found an item, bring it directly to <strong>Room D204 Custodian Desk</strong>. For security, omit 1 specific detail (e.g., serial number or sticker color) so the true owner can verify it.</p>
+    </div>
+
+    <form id="student-report-form" onsubmit="handleStudentReportSubmit(event)" class="space-y-2.5 text-xs">
+        <div>
+            <label class="block text-slate-400 mb-1">Report Type</label>
+            <select id="rpt-type" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 text-white">
+                <option value="LOST">🔴 I Lost Something (Looking For)</option>
+                <option value="FOUND">🟡 I Found Something (Turned in to D204 / Holding)</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-slate-400 mb-1">Item Title / Name</label>
+            <input type="text" id="rpt-title" required placeholder="e.g. TI-84 Plus Calculator, Black Lanyard" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 text-white">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+            <div>
+                <label class="block text-slate-400 mb-1">Room / Location</label>
+                <input type="text" id="rpt-location" required placeholder="e.g. D202 ComLab, D204 Desk" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 text-white">
+            </div>
+            <div>
+                <label class="block text-slate-400 mb-1">Date</label>
+                <input type="date" id="rpt-date" required class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 text-white">
+            </div>
+        </div>
+        <div>
+            <label class="block text-slate-400 mb-1">Description & Verification Notes</label>
+            <textarea id="rpt-desc" rows="2" placeholder="Brief details (omit secret verification marks)..." class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 text-white"></textarea>
+        </div>
+        <div>
+            <label class="block text-slate-400 mb-1">Your Name & Student ID / Contact</label>
+            <input type="text" id="rpt-contact" required placeholder="Juan Dela Cruz • 2023-XXXXXX" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 text-white">
+        </div>
+
+        <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-bold rounded-xl text-xs hover:opacity-90 transition mt-2">
+            Submit Report Notice
+        </button>
+    </form>
+</div>
         </main>
 
         <!-- Fixed Bottom Navigation Bar (Mobile View) -->
@@ -1807,6 +1918,102 @@ if (data.eeDept) {
     </div>
 </div>
     <script>
+    // Lost & Found Bulletin Board JavaScript Engine
+    let currentLFFilter = 'all';
+
+    window.setLostFoundFilter = function(cat, evt) {
+        currentLFFilter = cat;
+        document.querySelectorAll('.lf-pill').forEach(btn => {
+            btn.className = 'lf-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0';
+        });
+        if (evt && evt.target) {
+            evt.target.className = 'lf-pill px-3 py-1 rounded-lg bg-rose-500 text-white font-bold flex-shrink-0';
+        }
+        window.renderLostFoundUI();
+    };
+
+    window.renderLostFoundUI = function() {
+        const container = document.getElementById('lost-found-display-container');
+        if (!container) return;
+
+        const items = window.allLostFoundData || [];
+        const searchVal = (document.getElementById('lf-search-input')?.value || '').toLowerCase();
+
+        const filtered = items.filter(item => {
+            const matchesCat = currentLFFilter === 'all' || 
+                               (currentLFFilter === 'lost' && item.type === 'LOST') ||
+                               (currentLFFilter === 'found' && (item.type === 'FOUND' || item.type === 'OFFICIAL')) ||
+                               (currentLFFilter === 'returned' && item.status === 'RETURNED');
+            const matchesSearch = !searchVal ||
+                (item.title && item.title.toLowerCase().includes(searchVal)) ||
+                (item.location && item.location.toLowerCase().includes(searchVal)) ||
+                (item.description && item.description.toLowerCase().includes(searchVal)) ||
+                (item.contact && item.contact.toLowerCase().includes(searchVal));
+            return matchesCat && matchesSearch;
+        });
+
+        if (filtered.length === 0) {
+            container.innerHTML = '<p class="text-[10px] text-slate-400 italic text-center py-6 col-span-2">No lost or found reports match your search criteria.</p>';
+            return;
+        }
+
+        container.innerHTML = filtered.map(item => {
+            let badgeColor = 'bg-rose-500/20 text-rose-400 border-rose-500/30';
+            let badgeText = '🔴 LOST / LOOKING';
+
+            if (item.status === 'RETURNED') {
+                badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+                badgeText = '🟢 RETURNED';
+            } else if (item.type === 'FOUND' || item.type === 'OFFICIAL') {
+                badgeColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+                badgeText = '🟡 FOUND / AT D204';
+            }
+
+            const photoHtml = item.imageUrl ? `
+                <div class="w-full aspect-video rounded-xl overflow-hidden border border-slate-800 bg-slate-950 relative group flex items-center justify-center">
+                    <img src="${item.imageUrl}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                </div>
+            ` : `
+                <div class="w-full aspect-video rounded-xl border border-slate-800 bg-slate-950 flex flex-col items-center justify-center text-slate-500 text-[10px]">
+                    <i class="fa-solid fa-box-open text-2xl text-rose-400/30 mb-1"></i>
+                    <span>No Photo Provided</span>
+                </div>
+            `;
+
+            return `
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5 hover:border-rose-400/40 transition flex flex-col justify-between">
+                    <div class="space-y-2">
+                        ${photoHtml}
+                        <div class="flex items-center justify-between gap-1">
+                            <span class="px-2 py-0.5 rounded-full text-[8px] font-bold font-techno border ${badgeColor}">
+                                ${badgeText}
+                            </span>
+                            <span class="text-[9px] text-slate-400 font-medium">
+                                <i class="fa-solid fa-location-dot text-rose-400 mr-1"></i>${item.location || 'D204'}
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-white text-xs leading-snug">${item.title || 'Untitled Item'}</h4>
+                        ${item.date ? `<p class="text-[9px] text-slate-400"><i class="fa-regular fa-clock mr-1"></i>Logged: ${item.date}</p>` : ''}
+                        <p class="text-[10px] text-slate-300 leading-relaxed bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">
+                            ${item.description || 'No additional details.'}
+                        </p>
+                    </div>
+
+                    <div class="pt-1 border-t border-slate-800/80 flex items-center justify-between text-[9px] text-slate-400">
+                        <span>Contact: <strong class="text-white">${item.contact || 'Room D204 Desk'}</strong></span>
+                        <span class="text-rose-400 font-bold">Present AdDU ID</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    };
+
+    function handleStudentReportSubmit(e) {
+        e.preventDefault();
+        alert("Report submitted! Please present or drop off physical items at Room D204 Custodian Desk for official logging.");
+        closeModal('report-item-modal');
+    }
+
         // Automatic Operating Hours to OPEN/CLOSED Status Calculator
         function parseTimeStringToMinutes(timeStr) {
             if (!timeStr) return null;
