@@ -305,49 +305,49 @@ if (data.eeDept) {
                             `;
                         }).join('');
                     }
-                // 14. EE Laboratory Policies Real-Time Sync
-            if (data.labPolicies && Array.isArray(data.labPolicies)) {
-                const colors = ['fusee-cyan', 'fusee-yellow', 'fusee-magenta', 'fusee-purple', 'emerald-400'];
-                const icons = ['fa-shield', 'fa-clock', 'fa-pen-to-square', 'fa-circle-info', 'fa-triangle-exclamation'];
+// 14. EE Laboratory Policies Real-Time Sync
+if (data.labPolicies && Array.isArray(data.labPolicies)) {
+    const colors = ['fusee-cyan', 'fusee-yellow', 'fusee-magenta', 'fusee-purple', 'emerald-400'];
+    const icons = ['fa-shield', 'fa-clock', 'fa-pen-to-square', 'fa-circle-info', 'fa-triangle-exclamation'];
 
-                // Sync Guidelines Modal
-                const modalContainer = document.getElementById('lab-policies-display-container');
-                if (modalContainer) {
-                    modalContainer.innerHTML = data.labPolicies.map((item, idx) => {
-                        const color = colors[idx % colors.length];
-                        const icon = icons[idx % icons.length];
-                        return `
-                            <div class="space-y-1.5">
-                                <h4 class="font-bold text-${color} flex items-center gap-1.5">
-                                    <i class="fa-solid ${icon} text-xs"></i> ${item.title || 'Policy Rule'}
-                                </h4>
-                                <p class="text-[11px] leading-relaxed text-slate-300">
-                                    ${item.content || ''}
-                                </p>
-                            </div>
-                        `;
-                    }).join('');
-                }
+    // Sync Guidelines Modal
+    const modalContainer = document.getElementById('lab-policies-display-container');
+    if (modalContainer) {
+        modalContainer.innerHTML = data.labPolicies.map((item, idx) => {
+            const color = colors[idx % colors.length];
+            const icon = icons[idx % icons.length];
+            return `
+                <div class="space-y-1.5">
+                    <h4 class="font-bold text-${color} flex items-center gap-1.5">
+                        <i class="fa-solid ${icon} text-xs"></i> ${item.title || 'Policy Rule'}
+                    </h4>
+                    <p class="text-[11px] leading-relaxed text-slate-300 whitespace-pre-line">
+                        ${item.content || ''}
+                    </p>
+                </div>
+            `;
+        }).join('');
+    }
 
-                // Sync Rules & Info Tab 4
-                const tab4Container = document.getElementById('tab4-lab-policies-container');
-                if (tab4Container) {
-                    tab4Container.innerHTML = data.labPolicies.map((item, idx) => {
-                        const color = colors[idx % colors.length];
-                        const icon = icons[idx % icons.length];
-                        return `
-                            <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-                                <h4 class="font-bold text-white flex items-center gap-1.5">
-                                    <i class="fa-solid ${icon} text-${color} text-xs"></i> ${item.title || 'Policy Rule'}
-                                </h4>
-                                <p class="text-[11px] leading-relaxed text-slate-300">
-                                    ${item.content || ''}
-                                </p>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            }
+    // Sync Rules & Info Tab 4
+    const tab4Container = document.getElementById('tab4-lab-policies-container');
+    if (tab4Container) {
+        tab4Container.innerHTML = data.labPolicies.map((item, idx) => {
+            const color = colors[idx % colors.length];
+            const icon = icons[idx % icons.length];
+            return `
+                <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
+                    <h4 class="font-bold text-white flex items-center gap-1.5">
+                        <i class="fa-solid ${icon} text-${color} text-xs"></i> ${item.title || 'Policy Rule'}
+                    </h4>
+                    <p class="text-[11px] leading-relaxed text-slate-300 whitespace-pre-line">
+                        ${item.content || ''}
+                    </p>
+                </div>
+            `;
+        }).join('');
+    }
+}
                 }
             }
         });
