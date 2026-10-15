@@ -317,11 +317,11 @@ if (data.labPolicies && Array.isArray(data.labPolicies)) {
             const color = colors[idx % colors.length];
             const icon = icons[idx % icons.length];
             return `
-                <div class="space-y-1.5">
-                    <h4 class="font-bold text-${color} flex items-center gap-1.5">
+                <div class="p-4 rounded-xl bg-slate-900/70 border border-slate-800 space-y-2 mb-4">
+                    <h4 class="font-bold text-${color} text-xs md:text-sm flex items-center gap-2 pb-2 border-b border-slate-800/60">
                         <i class="fa-solid ${icon} text-xs"></i> ${item.title || 'Policy Rule'}
                     </h4>
-                    <p class="text-[11px] leading-relaxed text-slate-300 whitespace-pre-line">
+                    <p class="text-[11px] md:text-xs leading-relaxed text-slate-300 whitespace-pre-line pt-1">
                         ${item.content || ''}
                     </p>
                 </div>
@@ -336,11 +336,11 @@ if (data.labPolicies && Array.isArray(data.labPolicies)) {
             const color = colors[idx % colors.length];
             const icon = icons[idx % icons.length];
             return `
-                <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-                    <h4 class="font-bold text-white flex items-center gap-1.5">
+                <div class="p-4 rounded-xl bg-slate-900/70 border border-slate-800 space-y-2 mb-3">
+                    <h4 class="font-bold text-white text-xs md:text-sm flex items-center gap-2 pb-2 border-b border-slate-800/60">
                         <i class="fa-solid ${icon} text-${color} text-xs"></i> ${item.title || 'Policy Rule'}
                     </h4>
-                    <p class="text-[11px] leading-relaxed text-slate-300 whitespace-pre-line">
+                    <p class="text-[11px] md:text-xs leading-relaxed text-slate-300 whitespace-pre-line pt-1">
                         ${item.content || ''}
                     </p>
                 </div>
