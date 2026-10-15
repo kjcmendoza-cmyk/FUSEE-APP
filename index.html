@@ -434,13 +434,88 @@ if (data.eeDept) {
     </script>
 
     <style>
-        /* Custom Stipple / Grain Texture & Brand Styling */
+        /* All 5 Theme Palette Definitions */
+        :root, [data-theme="fusee"] {
+            --bg-dark: #0B081E;
+            --bg-app: rgba(11, 8, 30, 0.85);
+            --bg-panel: rgba(19, 14, 46, 0.85);
+            --bg-card: linear-gradient(135deg, rgba(28, 20, 64, 0.75) 0%, rgba(15, 10, 36, 0.88) 100%);
+            --bg-modal: #130e2e;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-main: #E2E8F0;
+        }
+
+        /* 2. Matrix CRT Theme */
+        [data-theme="matrix"] {
+            --bg-dark: #050505;
+            --bg-app: rgba(5, 11, 5, 0.9);
+            --bg-panel: rgba(10, 26, 10, 0.88);
+            --bg-card: linear-gradient(135deg, rgba(12, 35, 12, 0.8) 0%, rgba(5, 20, 5, 0.9) 100%);
+            --bg-modal: #0A1A0A;
+            --border-color: rgba(0, 255, 102, 0.25);
+            --text-main: #E0FFE0;
+        }
+
+        /* 3. Amber Workstation Theme */
+        [data-theme="amber"] {
+            --bg-dark: #121212;
+            --bg-app: rgba(18, 13, 0, 0.9);
+            --bg-panel: rgba(36, 26, 0, 0.88);
+            --bg-card: linear-gradient(135deg, rgba(48, 34, 0, 0.8) 0%, rgba(20, 14, 0, 0.9) 100%);
+            --bg-modal: #1F1500;
+            --border-color: rgba(255, 176, 0, 0.3);
+            --text-main: #FFFAEC;
+        }
+
+        /* 4. Lab Daylight (High-Contrast Light Theme) */
+        [data-theme="light"] {
+            --bg-dark: #F8FAFC;
+            --bg-app: rgba(241, 245, 249, 0.95);
+            --bg-panel: rgba(255, 255, 255, 0.95);
+            --bg-card: linear-gradient(135deg, #FFFFFF 0%, #F1F5F9 100%);
+            --bg-modal: #FFFFFF;
+            --border-color: rgba(15, 23, 42, 0.15);
+            --text-main: #0F172A;
+        }
+
+        /* 5. Cyber Pink (Kawaii Neon Theme) */
+        [data-theme="cyber-pink"] {
+            --bg-dark: #1A091C;
+            --bg-app: rgba(26, 9, 28, 0.88);
+            --bg-panel: rgba(42, 16, 46, 0.88);
+            --bg-card: linear-gradient(135deg, rgba(58, 20, 64, 0.8) 0%, rgba(30, 10, 34, 0.9) 100%);
+            --bg-modal: #2A102E;
+            --border-color: rgba(255, 102, 196, 0.3);
+            --text-main: #FFF0F8;
+        }
+
+        /* Dynamic Theme Variables Application */
         body {
-            background-color: #0B081E;
+            background-color: var(--bg-dark);
             font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #E2E8F0;
+            color: var(--text-main);
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #app-container {
+            background-color: var(--bg-app) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        .glass-panel {
+            background: var(--bg-panel) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        .glass-card {
+            background: var(--bg-card) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        .bottom-sheet, #ee-dept-modal, #fusee-info-modal {
+            background-color: var(--bg-modal) !important;
         }
 
         /* Stipple Grain Texture Overlay for Brand Authenticity */
@@ -613,10 +688,21 @@ if (data.eeDept) {
                     </p>
                 </div>
                 
-                <!-- Dynamic Time & Greeting Badge -->
-                <div class="text-right flex-shrink-0">
-                    <div id="clock-display" class="font-techno font-bold text-xs md:text-sm text-fusee-yellow">00:00 AM</div>
-                    <div id="greeting-display" class="text-[10px] md:text-xs text-slate-400 font-medium">EE Engineer</div>
+                <!-- Dynamic Time, Greeting Badge & 5-Theme Switcher -->
+                <div class="flex items-center space-x-2.5 flex-shrink-0">
+                    <!-- 5-Theme Selector Strip -->
+                    <div class="flex items-center space-x-1 p-1 rounded-xl bg-slate-900/80 border border-white/10 text-[10px] overflow-x-auto no-scrollbar max-w-[180px] sm:max-w-none">
+                        <button onclick="setTheme('fusee')" id="theme-btn-fusee" title="FUSEE Cyberpunk" class="px-2 py-0.5 rounded-lg font-bold transition text-fusee-cyan bg-fusee-cyan/20 border border-fusee-cyan/40 flex-shrink-0">⚡ Cyber</button>
+                        <button onclick="setTheme('matrix')" id="theme-btn-matrix" title="Matrix CRT" class="px-2 py-0.5 rounded-lg font-bold transition text-slate-400 hover:text-emerald-400 flex-shrink-0">📟 Matrix</button>
+                        <button onclick="setTheme('amber')" id="theme-btn-amber" title="Amber Workstation" class="px-2 py-0.5 rounded-lg font-bold transition text-slate-400 hover:text-amber-400 flex-shrink-0">🟧 Amber</button>
+                        <button onclick="setTheme('light')" id="theme-btn-light" title="Lab Daylight" class="px-2 py-0.5 rounded-lg font-bold transition text-slate-400 hover:text-sky-300 flex-shrink-0">☀️ Light</button>
+                        <button onclick="setTheme('cyber-pink')" id="theme-btn-pink" title="Cyber Pink" class="px-2 py-0.5 rounded-lg font-bold transition text-slate-400 hover:text-pink-300 flex-shrink-0">🌸 Pink</button>
+                    </div>
+
+                    <div class="text-right">
+                        <div id="clock-display" class="font-techno font-bold text-xs md:text-sm text-fusee-yellow">00:00 AM</div>
+                        <div id="greeting-display" class="text-[10px] md:text-xs text-slate-400 font-medium">EE Engineer</div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -2066,7 +2152,31 @@ if (data.eeDept) {
             if (window.evaluateLiveRoomStatuses) window.evaluateLiveRoomStatuses();
         }, 30000);
 
+        // Theme Switcher Engine for 5 Palettes
+        window.setTheme = function(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            localStorage.setItem('fusee_selected_theme', themeName);
+
+            const themeMap = {
+                'fusee': { id: 'theme-btn-fusee', cls: 'text-fusee-cyan bg-fusee-cyan/20 border border-fusee-cyan/40' },
+                'matrix': { id: 'theme-btn-matrix', cls: 'text-emerald-400 bg-emerald-500/20 border border-emerald-500/40' },
+                'amber': { id: 'theme-btn-amber', cls: 'text-amber-400 bg-amber-500/20 border border-amber-500/40' },
+                'light': { id: 'theme-btn-light', cls: 'text-sky-400 bg-sky-500/20 border border-sky-500/40' },
+                'cyber-pink': { id: 'theme-btn-pink', cls: 'text-pink-300 bg-pink-500/20 border border-pink-500/40' }
+            };
+
+            Object.keys(themeMap).forEach(key => {
+                const btn = document.getElementById(themeMap[key].id);
+                if (btn) {
+                    btn.className = "px-2 py-0.5 rounded-lg font-bold transition flex-shrink-0 " + (key === themeName ? themeMap[key].cls : "text-slate-400 hover:text-white");
+                }
+            });
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('fusee_selected_theme') || 'fusee';
+            window.setTheme(savedTheme);
+
             if (window.refreshAllSystemStatuses) window.refreshAllSystemStatuses();
             if (window.evaluateLiveRoomStatuses) window.evaluateLiveRoomStatuses();
         });
