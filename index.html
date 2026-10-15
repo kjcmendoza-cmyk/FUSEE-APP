@@ -45,6 +45,14 @@
             const data = docSnap.data();
             console.log("🔥 Firestore Landing Content Data:", data);
 
+            // 15. EE Capstone Projects Real-Time Sync
+            if (data.capstoneItems && Array.isArray(data.capstoneItems)) {
+                window.allCapstoneData = data.capstoneItems;
+                if (typeof window.renderCapstonesUI === 'function') {
+                    window.renderCapstonesUI();
+                }
+            }
+
             // 1. Marquee Announcement Ticker
             if (data.tickerText) {
                 const tickerEl = document.getElementById('announcement-text');
@@ -319,10 +327,19 @@ if (data.eeDept) {
                             ` : '';
 
                             return `
-                                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 hover:border-fusee-magenta/50 transition flex flex-col justify-between">
-                                    ...
-                                </div>
-                            `;
+        <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 hover:border-fusee-magenta/50 transition flex flex-col justify-between">
+            <div class="space-y-2">
+                ${imgHtml}
+                <div class="flex items-center justify-between gap-1">
+                    <h4 class="font-bold text-white text-xs leading-snug">${item.title || 'EE Merch Item'}</h4>
+                    ${badgeHtml}
+                </div>
+                ${item.price ? `<p class="text-xs font-bold text-fusee-magenta font-techno">${item.price}</p>` : ''}
+                ${descHtml}
+            </div>
+            ${orderBtnHtml}
+        </div>
+    `;
                         }).join('');
                     }
                 }
@@ -697,8 +714,14 @@ if (data.eeDept) {
     <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5 font-techno">
         <i class="fa-solid fa-compass text-fusee-cyan"></i> Quick EE Navigation & Info
     </h2>
-
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+        <button onclick="openModal('capstone-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
+    <div class="w-8 h-8 rounded-lg bg-fusee-cyan/10 text-fusee-cyan flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+        <i class="fa-solid fa-graduation-cap text-fusee-cyan"></i>
+    </div>
+    <h4 class="text-xs font-bold text-white mb-0.5">Thesis Gallery</h4>
+    <p class="text-[10px] text-slate-400">Capstone archives & diagrams</p>
+</button>
         <button onclick="openModal('guidelines-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
             <div class="w-8 h-8 rounded-lg bg-fusee-cyan/10 text-fusee-cyan flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
                 <i class="fa-solid fa-book-open text-fusee-cyan"></i>
@@ -1630,6 +1653,35 @@ if (data.eeDept) {
                 <!-- Merch items populate dynamically from Firebase -->
             </div>
         </div>
+        <!-- MODAL: EE Capstone & Thesis Showcase Gallery -->
+<div id="capstone-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-cyan/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[85vh] shadow-2xl overflow-hidden">
+    <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-fusee-cyan/20 text-fusee-cyan flex items-center justify-center font-bold">
+                <i class="fa-solid fa-graduation-cap text-sm"></i>
+            </div>
+            <div>
+                <h3 class="text-sm md:text-base font-bold text-white font-display">EE Thesis & Capstone Showcase</h3>
+                <p class="text-[10px] md:text-xs text-slate-400">Senior Design Projects, Abstracts & Circuit Diagrams</p>
+            </div>
+        </div>
+        <button onclick="closeModal('capstone-modal')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+        <input type="text" id="capstone-search-input" onkeyup="filterCapstonesUI()" placeholder="Search project title, advisor, authors, or abstract..." 
+               class="w-full pl-8 pr-3 py-2 rounded-xl bg-slate-900/90 text-xs text-white placeholder-slate-500 border border-slate-800 focus:outline-none focus:border-fusee-cyan transition">
+    </div>
+
+    <!-- Dynamic Container -->
+    <div id="capstone-display-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-1">
+        <!-- Dynamic capstone cards render here -->
+    </div>
+</div>
     <script>
         // Automatic Operating Hours to OPEN/CLOSED Status Calculator
         function parseTimeStringToMinutes(timeStr) {
@@ -2061,6 +2113,77 @@ function toggleExpandablePanel(panelId, chevronId) {
         chevron.classList.toggle('rotate-180');
     }
 }
+window.renderCapstonesUI = function() {
+    const capContainer = document.getElementById('capstone-display-container');
+    if (!capContainer) return;
+    const items = window.allCapstoneData || [];
+    const searchVal = (document.getElementById('capstone-search-input')?.value || '').toLowerCase();
+
+    const filtered = items.filter(item => {
+        return !searchVal ||
+            (item.title && item.title.toLowerCase().includes(searchVal)) ||
+            (item.advisor && item.advisor.toLowerCase().includes(searchVal)) ||
+            (item.authors && item.authors.toLowerCase().includes(searchVal)) ||
+            (item.abstract && item.abstract.toLowerCase().includes(searchVal));
+    });
+
+    if (filtered.length === 0) {
+        capContainer.innerHTML = '<p class="text-[10px] text-slate-400 italic text-center py-6 col-span-2">No capstone projects found matching your search.</p>';
+        return;
+    }
+
+    capContainer.innerHTML = filtered.map(item => {
+        const diagramHtml = item.diagramUrl ? `
+            <div class="w-full aspect-video rounded-xl overflow-hidden border border-slate-800 bg-slate-950 relative group flex items-center justify-center">
+                <img src="${item.diagramUrl}" alt="${item.title || 'Block Diagram'}" class="w-full h-full object-contain p-1 group-hover:scale-105 transition duration-300">
+            </div>
+        ` : `
+            <div class="w-full aspect-video rounded-xl border border-slate-800 bg-slate-950 flex flex-col items-center justify-center text-slate-500 text-[10px]">
+                <i class="fa-solid fa-diagram-project text-2xl text-fusee-cyan/30 mb-1"></i>
+                <span>Circuit Block Diagram</span>
+            </div>
+        `;
+
+        const videoBtnHtml = item.videoUrl ? `
+            <a href="${item.videoUrl}" target="_blank" rel="noopener noreferrer" class="block w-full text-center py-2 bg-gradient-to-r from-fusee-cyan to-blue-600 text-slate-950 font-bold rounded-xl text-xs hover:from-cyan-400 hover:to-blue-500 transition shadow-neon-cyan mt-2">
+                <i class="fa-solid fa-circle-play mr-1.5"></i> Watch Video Demo
+            </a>
+        ` : '';
+
+        return `
+            <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 hover:border-fusee-cyan/50 transition flex flex-col justify-between">
+                <div class="space-y-2">
+                    ${diagramHtml}
+                    <div class="flex items-center justify-between gap-1">
+                        <span class="px-2 py-0.5 rounded-full bg-fusee-cyan/15 text-fusee-cyan text-[8px] font-bold font-techno border border-fusee-cyan/30">
+                            ${item.year || 'CAPSTONE'}
+                        </span>
+                        <span class="text-[9px] text-slate-400 font-medium truncate">
+                            <i class="fa-solid fa-user-tie text-fusee-cyan mr-1"></i>${item.advisor || 'Faculty Advisor'}
+                        </span>
+                    </div>
+                    <h4 class="font-bold text-white text-xs leading-snug">${item.title || 'Untitled Project'}</h4>
+                    ${item.authors ? `<p class="text-[10px] text-slate-400"><i class="fa-solid fa-users text-slate-500 mr-1"></i>${item.authors}</p>` : ''}
+                    
+                    <details class="group text-[10px] text-slate-300">
+                        <summary class="cursor-pointer font-semibold text-fusee-cyan hover:underline flex items-center justify-between pt-1">
+                            <span>Read Abstract</span>
+                            <i class="fa-solid fa-chevron-down text-[8px] group-open:rotate-180 transition"></i>
+                        </summary>
+                        <p class="mt-1.5 p-2 rounded bg-slate-950/60 border border-slate-800/80 leading-relaxed text-slate-300">
+                            ${item.abstract || 'No abstract provided.'}
+                        </p>
+                    </details>
+                </div>
+                ${videoBtnHtml}
+            </div>
+        `;
+    }).join('');
+};
+
+window.filterCapstonesUI = function() {
+    window.renderCapstonesUI();
+};
     </script>
 </body>
 </html>

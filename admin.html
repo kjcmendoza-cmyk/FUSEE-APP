@@ -533,6 +533,23 @@
             </button>
         </section>
 
+<!-- SECTION 10: EE Thesis & Capstone Showcase Management -->
+<section class="glass-panel p-5 md:p-6 rounded-2xl space-y-4 border border-fusee-cyan/30">
+    <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-graduation-cap text-fusee-cyan"></i>
+            <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">10. EE Thesis & Capstone Showcase Gallery</h2>
+        </div>
+    </div>
+
+    <!-- Container where dynamic capstone rows are rendered -->
+    <div id="capstone-container" class="space-y-4"></div>
+
+    <button type="button" onclick="addCapstoneRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+        <i class="fa-solid fa-plus text-fusee-cyan"></i> Add New Capstone Project
+    </button>
+</section>
+
     </main>
 
    <!-- Firebase SDK Scripts -->
@@ -799,6 +816,66 @@
             `;
             container.appendChild(div);
         };
+        function renderCapstoneRows(list = []) {
+    const container = document.getElementById('capstone-container');
+    if (!container) return;
+    container.innerHTML = '';
+    list.forEach((item, index) => window.addCapstoneRow(
+        item.title, 
+        item.advisor, 
+        item.authors, 
+        item.year, 
+        item.abstract, 
+        item.videoUrl, 
+        item.diagramUrl, 
+        index
+    ));
+}
+
+window.addCapstoneRow = function(title = '', advisor = '', authors = '', year = 'AY 2025-2026', abstract = '', videoUrl = '', diagramUrl = '', idx = Date.now()) {
+    const container = document.getElementById('capstone-container');
+    if (!container) return;
+
+    const previewId = `cap-img-preview-${idx}`;
+    const hiddenId = `cap-img-data-${idx}`;
+
+    const div = document.createElement('div');
+    div.className = 'capstone-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Project">
+            <i class="fa-solid fa-trash"></i> Remove Project
+        </button>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
+            <div class="space-y-2">
+                <label class="block text-slate-400 font-semibold">Circuit Block Diagram Image</label>
+                <div class="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-700 rounded-xl bg-slate-950/50 text-center space-y-2">
+                    <img id="${previewId}" src="${diagramUrl}" class="${diagramUrl ? '' : 'hidden'} w-full max-h-32 object-contain rounded-lg border border-slate-700 mb-1">
+                    <input type="file" accept="image/*" onchange="handleMerchImageUpload(this, '${previewId}', '${hiddenId}')" class="text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-semibold file:bg-fusee-cyan/20 file:text-fusee-cyan hover:file:bg-fusee-cyan/30 cursor-pointer">
+                    <input type="hidden" class="cap-image-input" id="${hiddenId}" value="${diagramUrl}">
+                    <span class="text-[9px] text-slate-500">Upload circuit diagram (JPG/PNG)</span>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 space-y-2">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <input type="text" class="cap-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 md:col-span-2" placeholder="Project Title" value="${title.replace(/"/g, '&quot;')}">
+                    <input type="text" class="cap-year-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Year / Academic Term" value="${year.replace(/"/g, '&quot;')}">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <input type="text" class="cap-advisor-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Advisor Name (e.g., Dr. Edu Daryl C. Maceren)" value="${advisor.replace(/"/g, '&quot;')}">
+                    <input type="text" class="cap-authors-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Student Authors" value="${authors.replace(/"/g, '&quot;')}">
+                </div>
+
+                <input type="text" class="cap-video-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Video Demo URL (YouTube / Google Drive link)" value="${videoUrl.replace(/"/g, '&quot;')}">
+
+                <textarea class="cap-abstract-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="3" placeholder="Project Abstract...">${abstract}</textarea>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+};
         function populateUI(data) {
             document.getElementById('ticker-text').value = data.tickerText || defaultData.tickerText;
             document.getElementById('global-status-select').value = data.globalStatus || "ALL OPEN";
@@ -855,6 +932,7 @@
             renderFaqs(data.faqs || defaultData.faqs);
             renderOfficers(data.officers || defaultData.officers);
             renderMerchRows(data.merchItems || defaultData.merchItems);
+            renderCapstoneRows(data.capstoneItems || []);
             renderLabPolicies(data.labPolicies || defaultData.labPolicies);    
             const eeDescEl = document.getElementById('ee-dept-desc');
             if (eeDescEl) {
@@ -936,6 +1014,18 @@
             saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
 
             try {
+                const capstoneItems = [];
+document.querySelectorAll('.capstone-item-row').forEach(row => {
+    const title = row.querySelector('.cap-title-input')?.value?.trim() || '';
+    const advisor = row.querySelector('.cap-advisor-input')?.value?.trim() || '';
+    const authors = row.querySelector('.cap-authors-input')?.value?.trim() || '';
+    const year = row.querySelector('.cap-year-input')?.value?.trim() || '';
+    const videoUrl = row.querySelector('.cap-video-input')?.value?.trim() || '';
+    const abstract = row.querySelector('.cap-abstract-input')?.value?.trim() || '';
+    const diagramUrl = row.querySelector('.cap-image-input')?.value || '';
+
+    if (title) capstoneItems.push({ title, advisor, authors, year, videoUrl, abstract, diagramUrl });
+});
                 const events = [];
                 document.querySelectorAll('.event-item-row').forEach(row => {
                     const title = row.querySelector('.event-title-input')?.value?.trim() || '';
@@ -1012,6 +1102,7 @@
                     academicLinks,
                     merchItems,
                     labPolicies,
+                    capstoneItems,
                     sys1: {
                         tag: document.getElementById('sys1-tag')?.value?.trim() || '',
                         title: document.getElementById('sys1-title')?.value?.trim() || '',
