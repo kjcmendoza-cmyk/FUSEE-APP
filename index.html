@@ -70,8 +70,21 @@
                 const studentUrl = document.getElementById('sys1-display-student-url');
                 if (studentUrl && data.sys1.studentUrl) studentUrl.href = data.sys1.studentUrl;
             const sys1Rules = document.getElementById('sys1-display-rules');
-if (sys1Rules && data.sys1.guidelinesContent) sys1Rules.textContent = data.sys1.guidelinesContent;
-            }
+if (sys1Rules && data.sys1.guidelinesContent) {
+    const lines = data.sys1.guidelinesContent.split('\n').filter(l => l.trim().length > 0);
+    sys1Rules.innerHTML = lines.map((line, i) => {
+        const num = String(i + 1).padStart(2, '0');
+        const cleanLine = line.replace(/^[0-9]+\.\s*/, '');
+        const formatted = cleanLine.replace(/^([^:]+:)/, '<strong class="text-white">$1</strong>');
+        return `
+            <li class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-2">
+                <span class="text-fusee-cyan font-bold font-techno text-[10px] bg-fusee-cyan/10 px-1.5 py-0.5 rounded border border-fusee-cyan/30 flex-shrink-0 mt-0.5">${num}</span>
+                <div>${formatted}</div>
+            </li>
+        `;
+    }).join('');
+}
+}
 
             // 4. System 02 Data Sync
             if (data.sys2) {
@@ -87,9 +100,21 @@ if (sys1Rules && data.sys1.guidelinesContent) sys1Rules.textContent = data.sys1.
                 const url = document.getElementById('sys2-display-url');
                 if (url && data.sys2.url) url.href = data.sys2.url;
                 const sys2Rules = document.getElementById('sys2-display-rules');
-            if (sys2Rules && data.sys2.policiesContent) sys2Rules.textContent = data.sys2.policiesContent;
-            }
-
+if (sys2Rules && data.sys2.policiesContent) {
+    const lines = data.sys2.policiesContent.split('\n').filter(l => l.trim().length > 0);
+    sys2Rules.innerHTML = lines.map((line, i) => {
+        const num = String(i + 1).padStart(2, '0');
+        const cleanLine = line.replace(/^[0-9]+\.\s*/, '');
+        const formatted = cleanLine.replace(/^([^:]+:)/, '<strong class="text-white">$1</strong>');
+        return `
+            <li class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-2">
+                <span class="text-fusee-magenta font-bold font-techno text-[10px] bg-fusee-magenta/10 px-1.5 py-0.5 rounded border border-fusee-magenta/30 flex-shrink-0 mt-0.5">${num}</span>
+                <div>${formatted}</div>
+            </li>
+        `;
+    }).join('');
+}
+}
             // 5. System 03 Data Sync
             if (data.sys3) {
                 const loc = document.getElementById('sys3-display-location');
@@ -101,12 +126,22 @@ if (sys1Rules && data.sys1.guidelinesContent) sys1Rules.textContent = data.sys1.
                 const modalHours = document.getElementById('sys3-modal-hours');
                 if (modalHours && data.sys3.hours) modalHours.textContent = data.sys3.hours;
 
-                const sys3Rules = document.getElementById('sys3-display-rules');
-            if (sys3Rules && data.sys3.guidelinesContent) sys3Rules.textContent = data.sys3.guidelinesContent;
-                const url = document.getElementById('sys3-display-url');
-                if (url && data.sys3.url) url.href = data.sys3.url;
-            }
-
+               const sys3Rules = document.getElementById('sys3-display-rules');
+if (sys3Rules && data.sys3.guidelinesContent) {
+    const lines = data.sys3.guidelinesContent.split('\n').filter(l => l.trim().length > 0);
+    sys3Rules.innerHTML = lines.map((line, i) => {
+        const num = String(i + 1).padStart(2, '0');
+        const cleanLine = line.replace(/^[0-9]+\.\s*/, '');
+        const formatted = cleanLine.replace(/^([^:]+:)/, '<strong class="text-white">$1</strong>');
+        return `
+            <li class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-2">
+                <span class="text-fusee-yellow font-bold font-techno text-[10px] bg-fusee-yellow/10 px-1.5 py-0.5 rounded border border-fusee-yellow/30 flex-shrink-0 mt-0.5">${num}</span>
+                <div>${formatted}</div>
+            </li>
+        `;
+    }).join('');
+}
+}
             if (typeof window.refreshAllSystemStatuses === 'function') {
                 window.refreshAllSystemStatuses();
             }
@@ -222,7 +257,7 @@ if (data.eeDept) {
         if (facilContainer) {
             facilContainer.innerHTML = data.eeDept.facilities.map(f => `
                 <li class="flex items-center space-x-2 py-1 border-b border-slate-800/60 last:border-0">
-                    <span class="font-bold text-fusee-cyan font-pixel text-[10px] bg-fusee-cyan/10 px-2 py-0.5 rounded border border-fusee-cyan/30 flex-shrink-0">
+                    <span class="font-bold text-fusee-cyan font-techno text-[10px] tracking-wider bg-fusee-cyan/10 px-2 py-0.5 rounded border border-fusee-cyan/30 flex-shrink-0">
                         ${f.code || ''}
                     </span>
                     <span class="text-slate-300 text-xs font-medium">${f.description || ''}</span>
@@ -285,69 +320,50 @@ if (data.eeDept) {
 
                             return `
                                 <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 hover:border-fusee-magenta/50 transition flex flex-col justify-between">
-                                    <div class="space-y-2.5">
-                                        ${imgHtml}
-                                        <div class="flex justify-between items-start gap-2">
-                                            <div>
-                                                <h4 class="font-bold text-white text-xs md:text-sm leading-snug">
-                                                    ${item.title || 'EE Merch Item'}
-                                                </h4>
-                                                <p class="text-fusee-magenta font-techno font-bold text-xs mt-0.5">
-                                                    ${item.price || ''}
-                                                </p>
-                                            </div>
-                                            ${badgeHtml}
-                                        </div>
-                                        ${descHtml}
-                                    </div>
-                                    ${orderBtnHtml}
+                                    ...
                                 </div>
                             `;
                         }).join('');
                     }
-// 14. EE Laboratory Policies Real-Time Sync
-if (data.labPolicies && Array.isArray(data.labPolicies)) {
-    const colors = ['fusee-cyan', 'fusee-yellow', 'fusee-magenta', 'fusee-purple', 'emerald-400'];
-    const icons = ['fa-shield', 'fa-clock', 'fa-pen-to-square', 'fa-circle-info', 'fa-triangle-exclamation'];
+                }
+            }
 
-    // Sync Guidelines Modal
-    const modalContainer = document.getElementById('lab-policies-display-container');
-    if (modalContainer) {
-        modalContainer.innerHTML = data.labPolicies.map((item, idx) => {
-            const color = colors[idx % colors.length];
-            const icon = icons[idx % icons.length];
-            return `
-                <div class="p-4 rounded-xl bg-slate-900/70 border border-slate-800 space-y-2 mb-4">
-                    <h4 class="font-bold text-${color} text-xs md:text-sm flex items-center gap-2 pb-2 border-b border-slate-800/60">
-                        <i class="fa-solid ${icon} text-xs"></i> ${item.title || 'Policy Rule'}
-                    </h4>
-                    <p class="text-[11px] md:text-xs leading-relaxed text-slate-300 whitespace-pre-line pt-1">
-                        ${item.content || ''}
-                    </p>
-                </div>
-            `;
-        }).join('');
-    }
+            // 14. EE Laboratory Policies Real-Time Sync (Accordion Format)
+            if (data.labPolicies && Array.isArray(data.labPolicies)) {
+                const colors = ['fusee-cyan', 'fusee-yellow', 'fusee-magenta', 'fusee-purple', 'emerald-400'];
+                const icons = ['fa-shield', 'fa-clock', 'fa-pen-to-square', 'fa-circle-info', 'fa-triangle-exclamation'];
 
-    // Sync Rules & Info Tab 4
-    const tab4Container = document.getElementById('tab4-lab-policies-container');
-    if (tab4Container) {
-        tab4Container.innerHTML = data.labPolicies.map((item, idx) => {
-            const color = colors[idx % colors.length];
-            const icon = icons[idx % icons.length];
-            return `
-                <div class="p-4 rounded-xl bg-slate-900/70 border border-slate-800 space-y-2 mb-3">
-                    <h4 class="font-bold text-white text-xs md:text-sm flex items-center gap-2 pb-2 border-b border-slate-800/60">
-                        <i class="fa-solid ${icon} text-${color} text-xs"></i> ${item.title || 'Policy Rule'}
-                    </h4>
-                    <p class="text-[11px] md:text-xs leading-relaxed text-slate-300 whitespace-pre-line pt-1">
-                        ${item.content || ''}
-                    </p>
-                </div>
-            `;
-        }).join('');
-    }
-}
+                const renderAccordionItem = (item, idx, isTab4 = false) => {
+                    const color = colors[idx % colors.length];
+                    const icon = icons[idx % icons.length];
+                    
+                    let formattedContent = item.content || '';
+                    formattedContent = formattedContent.replace(/^([0-9]+\.\s*[^:\n]+:)/gm, '<strong class="text-white">$1</strong>');
+
+                    return `
+                        <details class="group p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 transition hover:border-${color}/40">
+                            <summary class="font-semibold text-white cursor-pointer list-none flex justify-between items-center select-none">
+                                <span class="text-xs md:text-sm flex items-center gap-2 text-${color}">
+                                    <i class="fa-solid ${icon} text-xs"></i> 
+                                    <span class="text-white">${item.title || 'Policy Rule'}</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-open:rotate-180 transition-transform duration-200"></i>
+                            </summary>
+                            <div class="mt-2.5 text-[11px] md:text-xs leading-relaxed text-slate-300 whitespace-pre-line border-t border-slate-800/80 pt-2.5">
+                                ${formattedContent}
+                            </div>
+                        </details>
+                    `;
+                };
+
+                const modalContainer = document.getElementById('lab-policies-display-container');
+                if (modalContainer) {
+                    modalContainer.innerHTML = `<div class="space-y-2.5">${data.labPolicies.map((item, idx) => renderAccordionItem(item, idx)).join('')}</div>`;
+                }
+
+                const tab4Container = document.getElementById('tab4-lab-policies-container');
+                if (tab4Container) {
+                    tab4Container.innerHTML = `<div class="space-y-2.5">${data.labPolicies.map((item, idx) => renderAccordionItem(item, idx, true)).join('')}</div>`;
                 }
             }
         });
@@ -813,7 +829,7 @@ if (data.labPolicies && Array.isArray(data.labPolicies)) {
                                         <i class="fa-solid fa-screwdriver-wrench text-lg"></i>
                                     </div>
                                     <div>
-                                        <span class="text-[10px] font-pixel uppercase tracking-widest text-fusee-cyan">System 01 • Equipment</span>
+                                        <span class="text-[10px] font-techno font-bold uppercase tracking-wider text-fusee-cyan">System 01 • Equipment</span>
                                         <h3 class="text-sm font-bold text-white font-display leading-snug">EE Laboratory Tool Management System</h3>
                                     </div>
                                 </div>
@@ -868,7 +884,7 @@ if (data.labPolicies && Array.isArray(data.labPolicies)) {
                                         <i class="fa-solid fa-desktop text-lg"></i>
                                     </div>
                                     <div>
-                                        <span class="text-[10px] font-pixel uppercase tracking-widest text-fusee-magenta">System 02 • Workstations</span>
+                                        <span class="text-[10px] font-techno font-bold uppercase tracking-wider text-fusee-magenta">System 02 • Workstations</span>
                                         <h3 class="text-sm font-bold text-white font-display leading-snug">EE Computer Lab Digital Logbook</h3>
                                     </div>
                                 </div>
@@ -926,7 +942,7 @@ if (data.labPolicies && Array.isArray(data.labPolicies)) {
                                         <i class="fa-solid fa-microchip text-lg"></i>
                                     </div>
                                     <div>
-                                        <span class="text-[10px] font-pixel uppercase tracking-widest text-fusee-yellow">System 03 • Circuits & Benches</span>
+                                        <span class="text-[10px] font-techno font-bold uppercase tracking-wider text-fusee-yellow">System 03 • Circuits & Benches</span>
                                         <h3 class="text-sm font-bold text-white font-display leading-snug">EE Laboratory Digital Logbook</h3>
                                     </div>
                                 </div>
@@ -1220,10 +1236,9 @@ if (data.labPolicies && Array.isArray(data.labPolicies)) {
             </div>
 
             <div id="lab-policies-display-container" class="space-y-3 text-xs text-slate-300">
-    <!-- Dynamic policies synced live from Firestore -->
-</div>
+                <!-- Dynamic policies synced live from Firestore -->
             </div>
-        </div> 
+        </div>
 
         <!-- MODAL 4: Dynamic Frequently Asked Questions (FAQs) -->
         <div id="faq-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-lg lg:max-w-xl mx-auto bg-[#130e2e] border-t border-fusee-yellow/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[85vh] overflow-y-auto">
@@ -1327,11 +1342,20 @@ if (data.labPolicies && Array.isArray(data.labPolicies)) {
                 </button>
             </div>
             <div class="space-y-2 text-xs text-slate-300">
-                <p id="sys1-display-rules" class="whitespace-pre-line text-xs text-slate-300">
-    1. Always present validated AdDU Student ID before borrowing tools.
-    2. Inspect all equipment and component kits for damage before leaving the bench.
-    3. Return all borrowed tools clean, intact, and on time before lab closing hours.
-</p>
+    <ul id="sys1-display-rules" class="space-y-2 text-xs text-slate-300">
+        <li class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-2">
+            <span class="text-fusee-cyan font-bold font-techno text-[10px] bg-fusee-cyan/10 px-1.5 py-0.5 rounded border border-fusee-cyan/30 flex-shrink-0 mt-0.5">01</span>
+            <div><strong class="text-white">Valid Student ID:</strong> Always present validated AdDU Student ID before borrowing tools.</div>
+        </li>
+        <li class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-2">
+            <span class="text-fusee-cyan font-bold font-techno text-[10px] bg-fusee-cyan/10 px-1.5 py-0.5 rounded border border-fusee-cyan/30 flex-shrink-0 mt-0.5">02</span>
+            <div><strong class="text-white">Pre-Check Kits:</strong> Inspect all equipment and component kits for damage before leaving the bench.</div>
+        </li>
+        <li class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-2">
+            <span class="text-fusee-cyan font-bold font-techno text-[10px] bg-fusee-cyan/10 px-1.5 py-0.5 rounded border border-fusee-cyan/30 flex-shrink-0 mt-0.5">03</span>
+            <div><strong class="text-white">Timely Return:</strong> Return all borrowed tools clean, intact, and on time before lab closing hours.</div>
+        </li>
+    </ul>
                 <a href="https://kjcmendoza-cmyk.github.io/Digital-Borrowing-System/student.html" target="_blank" class="block w-full text-center py-2.5 bg-fusee-cyan text-slate-950 font-bold rounded-xl mt-3">Open Tool Student Portal</a>
             </div>
         </div>
@@ -1353,11 +1377,20 @@ if (data.labPolicies && Array.isArray(data.labPolicies)) {
                 </button>
             </div>
             <div class="space-y-2 text-xs text-slate-300">
-    <p id="sys2-display-rules" class="whitespace-pre-line text-xs text-slate-300">
-        1. Food and open drinks are strictly prohibited near workstation PCs.
-        2. Always log out of your session when finished.
-        3. Unsafe file downloads and unauthorized system changes are strictly monitored.
-    </p>
+    <ul id="sys2-display-rules" class="space-y-2 text-xs text-slate-300">
+        <li class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-2">
+            <span class="text-fusee-magenta font-bold font-techno text-[10px] bg-fusee-magenta/10 px-1.5 py-0.5 rounded border border-fusee-magenta/30 flex-shrink-0 mt-0.5">01</span>
+            <div><strong class="text-white">No Food or Drinks:</strong> Food and open drinks are strictly prohibited near workstation PCs.</div>
+        </li>
+        <li class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-2">
+            <span class="text-fusee-magenta font-bold font-techno text-[10px] bg-fusee-magenta/10 px-1.5 py-0.5 rounded border border-fusee-magenta/30 flex-shrink-0 mt-0.5">02</span>
+            <div><strong class="text-white">Session Logout:</strong> Always log out of your workstation session when finished.</div>
+        </li>
+        <li class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-2">
+            <span class="text-fusee-magenta font-bold font-techno text-[10px] bg-fusee-magenta/10 px-1.5 py-0.5 rounded border border-fusee-magenta/30 flex-shrink-0 mt-0.5">03</span>
+            <div><strong class="text-white">PC Monitoring:</strong> Unsafe file downloads and unauthorized system changes are strictly monitored.</div>
+        </li>
+    </ul>
     <a href="https://kjcmendoza-cmyk.github.io/Digital-Logbook/" target="_blank" class="block w-full text-center py-2.5 bg-fusee-magenta text-white font-bold rounded-xl mt-3">Open Computer Lab Logbook</a>
 </div>
         </div>
@@ -1379,11 +1412,20 @@ if (data.labPolicies && Array.isArray(data.labPolicies)) {
                 </button>
             </div>
             <div class="space-y-2 text-xs text-slate-300">
-    <p id="sys3-display-rules" class="whitespace-pre-line text-xs text-slate-300">
-        1. Power off all bench sources before wiring or modifying circuit breadboards.
-        2. Wear protective equipment (safety glasses) during soldering or high-voltage tests.
-        3. Report faulty electrical outlets, exposed conductors, or bench equipment immediately.
-    </p>
+    <ul id="sys3-display-rules" class="space-y-2 text-xs text-slate-300">
+        <li class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-2">
+            <span class="text-fusee-yellow font-bold font-techno text-[10px] bg-fusee-yellow/10 px-1.5 py-0.5 rounded border border-fusee-yellow/30 flex-shrink-0 mt-0.5">01</span>
+            <div><strong class="text-white">Circuit Power Off:</strong> Power off all bench sources before wiring or modifying circuit breadboards.</div>
+        </li>
+        <li class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-2">
+            <span class="text-fusee-yellow font-bold font-techno text-[10px] bg-fusee-yellow/10 px-1.5 py-0.5 rounded border border-fusee-yellow/30 flex-shrink-0 mt-0.5">02</span>
+            <div><strong class="text-white">Safety Gear:</strong> Wear protective equipment (safety glasses) during soldering or high-voltage tests.</div>
+        </li>
+        <li class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-2">
+            <span class="text-fusee-yellow font-bold font-techno text-[10px] bg-fusee-yellow/10 px-1.5 py-0.5 rounded border border-fusee-yellow/30 flex-shrink-0 mt-0.5">03</span>
+            <div><strong class="text-white">Hazard Reporting:</strong> Report faulty electrical outlets, exposed conductors, or bench equipment immediately.</div>
+        </li>
+    </ul>
     <a href="https://kjcmendoza-cmyk.github.io/EE-Laboratory-Digital-Logbook/login.html" target="_blank" class="block w-full text-center py-2.5 bg-fusee-yellow text-slate-950 font-bold rounded-xl mt-3">Access Hardware Logbook</a>
 </div>
         </div>
@@ -1475,7 +1517,6 @@ if (data.labPolicies && Array.isArray(data.labPolicies)) {
             <span>Return to Home Dashboard</span>
         </button>
     </div>
-</div>
 </div>
 <!-- FULL-SCREEN MODAL 2: FUSEE -->
 <div id="fusee-info-modal" class="bottom-sheet hidden-sheet fixed inset-0 z-[100] bg-[#0B081E] flex flex-col overflow-y-auto">
