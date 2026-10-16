@@ -757,7 +757,27 @@
                 </button>
             </div>
         </details>
+<!-- SECTION 17: Important Events & Academic Calendar Management -->
+<details class="glass-panel rounded-2xl border border-fusee-yellow/30 group transition-all duration-200">
+    <summary class="p-5 md:p-6 cursor-pointer list-none select-none flex items-center justify-between hover:bg-white/5 rounded-2xl transition-colors">
+        <div class="flex items-center space-x-2.5">
+            <i class="fa-solid fa-star text-fusee-yellow"></i>
+            <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">17. Important Events & Academic Calendar</h2>
+        </div>
+        <div class="flex items-center space-x-2 text-slate-400">
+            <span class="text-[10px] font-pixel text-slate-500 uppercase group-open:hidden">Expand</span>
+            <span class="text-[10px] font-pixel text-slate-500 uppercase hidden group-open:inline">Collapse</span>
+            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 text-fusee-yellow"></i>
+        </div>
+    </summary>
+    <div class="px-5 md:px-6 pb-5 md:pb-6 pt-2 space-y-4 border-t border-white/10">
+        <div id="important-events-admin-container" class="space-y-4"></div>
 
+        <button type="button" onclick="addImportantEventRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-plus text-fusee-yellow"></i> Add Important Event Record
+        </button>
+    </div>
+</details>
     </main>
 
     <!-- Firebase SDK Scripts -->
@@ -1099,7 +1119,56 @@
                 index
             ));
         }
+// Render Admin Rows for Section 17
+function renderImportantEventsAdmin(list = []) {
+    const container = document.getElementById('important-events-admin-container');
+    if (!container) return;
+    container.innerHTML = '';
+    list.forEach((item, index) => window.addImportantEventRow(
+        item.title, item.date, item.endDate, item.category, item.description, index
+    ));
+}
 
+// Dynamic Row Generator for Section 17
+window.addImportantEventRow = function(title = '', date = '', endDate = '', category = 'Major Exam', description = '', idx = Date.now()) {
+    const container = document.getElementById('important-events-admin-container');
+    if (!container) return;
+
+    const div = document.createElement('div');
+    div.className = 'important-event-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Record">
+            <i class="fa-solid fa-trash"></i> Remove Record
+        </button>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-2">
+            <input type="text" class="imp-title-input md:col-span-2 p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Event Title (e.g. 1st Sem Midterm Exams)" value="${title.replace(/"/g, '&quot;')}">
+            
+            <select class="imp-category-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                <option value="Major Exam" ${category === 'Major Exam' ? 'selected' : ''}>📝 Major Exam</option>
+                <option value="Ateneo Event" ${category === 'Ateneo Event' ? 'selected' : ''}>🦅 Ateneo Event</option>
+                <option value="Holiday / Suspension" ${category === 'Holiday / Suspension' ? 'selected' : ''}>🏖️ Holiday / Suspension</option>
+                <option value="Departmental" ${category === 'Departmental' ? 'selected' : ''}>⚡ Departmental Milestone</option>
+            </select>
+
+            <div class="space-y-1">
+                <label class="block text-slate-400 text-[10px]">Start Date</label>
+                <input type="date" class="imp-date-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" value="${date}">
+            </div>
+
+            <div class="space-y-1">
+                <label class="block text-slate-400 text-[10px]">End Date (Optional)</label>
+                <input type="date" class="imp-enddate-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" value="${endDate || date}">
+            </div>
+
+            <div class="md:col-span-3 space-y-1">
+                <label class="block text-slate-400 text-[10px]">Event Description & Details</label>
+                <textarea class="imp-desc-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="2" placeholder="Brief event description...">${description}</textarea>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+};
         window.addCapstoneRow = function(title = '', advisor = '', authors = '', year = 'AY 2025-2026', abstract = '', videoUrl = '', diagramUrl = '', idx = Date.now()) {
             const container = document.getElementById('capstone-container');
             if (!container) return;
@@ -1207,6 +1276,7 @@
             renderScheduleAdmin(data.weeklySchedule || defaultData.weeklySchedule);
             renderActivityEventsAdmin(data.activityEvents || defaultData.activityEvents);  
             renderPeerTutoringAdmin(data.peerTutoring || defaultData.peerTutoring);
+            renderImportantEventsAdmin(data.importantEvents || []);
 
             const eeDescEl = document.getElementById('ee-dept-desc');
             if (eeDescEl) {
@@ -1288,6 +1358,19 @@
             saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
 
             try {
+                // Gather Section 17 Important Events
+const importantEvents = [];
+document.querySelectorAll('.important-event-item-row').forEach(row => {
+    const title = row.querySelector('.imp-title-input')?.value?.trim() || '';
+    const category = row.querySelector('.imp-category-input')?.value || 'Major Exam';
+    const date = row.querySelector('.imp-date-input')?.value || '';
+    const endDate = row.querySelector('.imp-enddate-input')?.value || date;
+    const description = row.querySelector('.imp-desc-input')?.value?.trim() || '';
+
+    if (title && date) {
+        importantEvents.push({ title, category, date, endDate, description });
+    }
+});
                 const peerTutoring = [];
                 document.querySelectorAll('.tutoring-item-row').forEach(row => {
                     const type = row.querySelector('.tut-type-input')?.value || 'TUTOR';
@@ -1447,6 +1530,7 @@
                     activityEvents,
                     lostAndFound,
                     peerTutoring,
+                    importantEvents,
                     sys1: {
                         tag: document.getElementById('sys1-tag')?.value?.trim() || '',
                         title: document.getElementById('sys1-title')?.value?.trim() || '',

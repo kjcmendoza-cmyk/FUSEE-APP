@@ -53,17 +53,26 @@
                 }
             }
 // 17. Lost & Found Bulletin Board Real-Time Sync
-if (data.lostAndFound && Array.isArray(data.lostAndFound)) {
-    window.allLostFoundData = data.lostAndFound;
-    if (typeof window.renderLostFoundUI === 'function') {
-        window.renderLostFoundUI();
-    }
-}
-// Real-Time Sync for Peer Tutoring & Study Groups
+            if (data.lostAndFound && Array.isArray(data.lostAndFound)) {
+                window.allLostFoundData = data.lostAndFound;
+                if (typeof window.renderLostFoundUI === 'function') {
+                    window.renderLostFoundUI();
+                }
+            }
+
+            // Real-Time Sync for Peer Tutoring & Study Groups
             if (data.peerTutoring && Array.isArray(data.peerTutoring)) {
                 window.allPeerTutoringData = data.peerTutoring;
                 if (typeof window.renderPeerTutoringUI === 'function') {
                     window.renderPeerTutoringUI();
+                }
+            }
+
+            // 18. Important Events Real-Time Sync
+            if (data.importantEvents && Array.isArray(data.importantEvents)) {
+                window.allImportantEventsData = data.importantEvents;
+                if (typeof window.renderImportantEventsUI === 'function') {
+                    window.renderImportantEventsUI();
                 }
             }
             // 1. Marquee Announcement Ticker
@@ -1313,17 +1322,51 @@ if (data.eeDept) {
     </button>
 </section>
                 
-                <!-- FUSEE Upcoming Events Strip -->
-                <section>
-                    <div class="glass-card p-4 rounded-2xl border border-fusee-purple/30 space-y-2">
-                        <h4 class="text-xs font-bold text-fusee-purple font-techno flex items-center gap-1.5">
-                            <i class="fa-solid fa-calendar-day"></i> Upcoming in FUSEE
-                        </h4>
-                        <div id="events-display-container" class="space-y-2 max-h-[130px] overflow-y-auto pr-1">
-                            <!-- Dynamic events render here -->
-                        </div>
-                    </div>
-                </section>
+                <!-- Events & Calendar Grid (Upcoming in FUSEE + Important Events Today) -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <!-- Left Column: Upcoming in FUSEE -->
+    <div class="glass-card p-4 rounded-2xl border border-fusee-purple/30 space-y-2 flex flex-col justify-between">
+        <div>
+            <h4 class="text-xs font-bold text-fusee-purple font-techno flex items-center justify-between">
+                <span class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-calendar-day"></i> Upcoming in FUSEE
+                </span>
+                <span class="px-1.5 py-0.5 rounded bg-fusee-purple/20 text-fusee-purple border border-fusee-purple/30 font-pixel text-[8px]">ORG EVENTS</span>
+            </h4>
+            <div id="events-display-container" class="space-y-2 max-h-[130px] overflow-y-auto pr-1 mt-2">
+                <!-- Dynamic events render here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Important Events (Daily Auto-Update & Interactive Calendar Trigger) -->
+    <div onclick="openModal('important-events-modal')" class="glass-card p-4 rounded-2xl border border-fusee-yellow/40 space-y-2 hover:border-fusee-yellow transition cursor-pointer group flex flex-col justify-between relative overflow-hidden">
+        <div class="space-y-2">
+            <div class="flex items-center justify-between">
+                <h4 class="text-xs font-bold text-fusee-yellow font-techno flex items-center gap-1.5">
+                    <i class="fa-solid fa-star text-fusee-yellow animate-pulse"></i> Important Events
+                </h4>
+                <span id="today-event-badge" class="px-2 py-0.5 rounded text-[8px] font-bold font-techno bg-fusee-yellow/20 text-fusee-yellow border border-fusee-yellow/30 uppercase">
+                    TODAY'S SCHEDULE
+                </span>
+            </div>
+
+            <!-- Live Daily Event Banner -->
+            <div id="important-events-today-container" class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+                <p class="text-xs font-bold text-white flex items-center gap-1.5">
+                    <i class="fa-solid fa-calendar-check text-fusee-yellow"></i>
+                    <span id="today-event-title">No important event today</span>
+                </p>
+                <p id="today-event-desc" class="text-[10px] text-slate-400">Regular academic schedule in effect.</p>
+            </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-fusee-yellow font-bold group-hover:underline">
+            <span><i class="fa-solid fa-calendar-days mr-1"></i> View Full Event Calendar</span>
+            <i class="fa-solid fa-chevron-right text-[9px] group-hover:translate-x-1 transition-transform"></i>
+        </div>
+    </div>
+</section>
 
                 <!-- Quick Hub Services Grid (Balanced 8-Tile Grid) -->
                 <section class="pt-1">
@@ -3559,6 +3602,60 @@ let currentTutoringSubject = 'all';
     <!-- Dynamic Container synced with Firebase -->
     <div id="academic-drive-display-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-1">
         <!-- Dynamic reference drive links render here -->
+    </div>
+</div>
+
+<!-- MODAL: Important Events Interactive Calendar & Agenda -->
+<div id="important-events-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-yellow/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[88vh] shadow-2xl overflow-hidden flex flex-col">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-white/10 pb-3 flex-shrink-0">
+        <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-fusee-yellow/20 text-fusee-yellow flex items-center justify-center font-bold">
+                <i class="fa-solid fa-calendar-check text-sm"></i>
+            </div>
+            <div>
+                <h3 class="text-sm md:text-base font-bold text-white font-display">Important Events & Academic Calendar</h3>
+                <p class="text-[10px] md:text-xs text-slate-400">Major Exams, Ateneo Events, Holidays & Academic Milestones</p>
+            </div>
+        </div>
+        <button onclick="closeModal('important-events-modal')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+    </div>
+
+    <!-- Calendar Month Navigation & Category Filters -->
+    <div class="space-y-2 flex-shrink-0">
+        <div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-xl border border-slate-800 text-xs">
+            <button onclick="changeCalendarMonth(-1)" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition flex items-center gap-1">
+                <i class="fa-solid fa-chevron-left text-[10px]"></i> Prev
+            </button>
+            <span id="calendar-month-year" class="font-bold text-white font-techno text-xs md:text-sm">October 2026</span>
+            <button onclick="changeCalendarMonth(1)" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition flex items-center gap-1">
+                Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </button>
+        </div>
+
+        <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar text-[10px] pb-1">
+            <button onclick="setImportantEventFilter('all', event)" class="imp-pill px-2.5 py-1 rounded-lg bg-fusee-yellow text-slate-950 font-bold flex-shrink-0">All Events</button>
+            <button onclick="setImportantEventFilter('exam', event)" class="imp-pill px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">📝 Major Exams</button>
+            <button onclick="setImportantEventFilter('ateneo', event)" class="imp-pill px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">🦅 Ateneo Events</button>
+            <button onclick="setImportantEventFilter('holiday', event)" class="imp-pill px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">🏖️ Holidays / No Class</button>
+        </div>
+    </div>
+
+    <!-- Interactive Grid Calendar Display -->
+    <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 flex-shrink-0">
+        <div class="grid grid-cols-7 gap-1 text-center font-bold font-techno text-[10px] text-slate-400 mb-1">
+            <span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span>
+        </div>
+        <div id="calendar-days-grid" class="grid grid-cols-7 gap-1 text-xs">
+            <!-- Rendered dynamically by JS -->
+        </div>
+    </div>
+
+    <!-- Important Events Agenda List -->
+    <div id="important-events-list-container" class="space-y-2 text-xs text-slate-300 max-h-[30vh] overflow-y-auto pr-1 flex-1">
+        <!-- Rendered dynamically via JavaScript -->
     </div>
 </div>
 
