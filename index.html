@@ -1313,89 +1313,97 @@ if (data.eeDept) {
     </button>
 </section>
                 
-                <!-- FUSEE Events & Student Resources Strip -->
-                <section class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <!-- Upcoming Events -->
+                <!-- FUSEE Upcoming Events Strip -->
+                <section>
                     <div class="glass-card p-4 rounded-2xl border border-fusee-purple/30 space-y-2">
                         <h4 class="text-xs font-bold text-fusee-purple font-techno flex items-center gap-1.5">
                             <i class="fa-solid fa-calendar-day"></i> Upcoming in FUSEE
                         </h4>
                         <div id="events-display-container" class="space-y-2 max-h-[130px] overflow-y-auto pr-1">
-    <!-- Dynamic events will be injected here -->
-</div>
-                    </div>
-
-                    <!-- Quick Academic Links -->
-                    <div class="glass-card p-4 rounded-2xl border border-fusee-yellow/30 space-y-2">
-                        <h4 class="text-xs font-bold text-fusee-yellow font-techno flex items-center gap-1.5">
-                            <i class="fa-solid fa-folder-open"></i> EE Academic Drive
-                        </h4>
-                        <div id="academic-drive-display-container" class="grid grid-cols-2 gap-2 text-[11px]">
-                            <!-- Dynamic links render here -->
+                            <!-- Dynamic events render here -->
                         </div>
                     </div>
                 </section>
 
-                <!-- Quick Hub Services Grid -->
-<section class="pt-1">
-    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5 font-techno">
-        <i class="fa-solid fa-compass text-fusee-cyan"></i> Quick EE Navigation & Info
-    </h2>
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-        <button onclick="openModal('capstone-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
-    <div class="w-8 h-8 rounded-lg bg-fusee-cyan/10 text-fusee-cyan flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-        <i class="fa-solid fa-graduation-cap text-fusee-cyan"></i>
-    </div>
-    <h4 class="text-xs font-bold text-white mb-0.5">Thesis Gallery</h4>
-    <p class="text-[10px] text-slate-400">Capstone archives & diagrams</p>
-</button>
-        <button onclick="openModal('guidelines-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
-            <div class="w-8 h-8 rounded-lg bg-fusee-cyan/10 text-fusee-cyan flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                <i class="fa-solid fa-book-open text-fusee-cyan"></i>
-            </div>
-            <h4 class="text-xs font-bold text-white mb-0.5">Lab Policies</h4>
-            <p class="text-[10px] text-slate-400">Safety, borrowing & log protocols</p>
-        </button>
-<button onclick="openModal('peer-tutoring-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
-            <div class="w-8 h-8 rounded-lg bg-fusee-cyan/10 text-fusee-cyan flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                <i class="fa-solid fa-user-graduate text-fusee-cyan"></i>
-            </div>
-            <h4 class="text-xs font-bold text-white mb-0.5">Peer Tutoring</h4>
-            <p class="text-[10px] text-slate-400">Tutors & EE Study Groups</p>
-        </button>
-<button onclick="openModal('lost-found-modal')" class="glass-card p-3 rounded-xl text-left hover:border-rose-400/50 transition group">
-    <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-        <i class="fa-solid fa-box-open text-rose-400"></i>
-    </div>
-    <h4 class="text-xs font-bold text-white mb-0.5">Lost & Found</h4>
-    <p class="text-[10px] text-slate-400">D204 Central Desk & Peer items</p>
-</button>
+                <!-- Quick Hub Services Grid (Balanced 8-Tile Grid) -->
+                <section class="pt-1">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5 font-techno">
+                        <i class="fa-solid fa-compass text-fusee-cyan"></i> Quick EE Navigation & Info
+                    </h2>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+                        <!-- 1. EE Academic Drive Button Tile -->
+                        <button onclick="openModal('academic-drive-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-yellow/50 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-fusee-yellow/10 text-fusee-yellow flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                                <i class="fa-solid fa-folder-open text-fusee-yellow"></i>
+                            </div>
+                            <h4 class="text-xs font-bold text-white mb-0.5">Academic Drive</h4>
+                            <p class="text-[10px] text-slate-400">Reference drives & PDF resources</p>
+                        </button>
 
-        <button onclick="openModal('merch-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-magenta/50 transition group">
-            <div class="w-8 h-8 rounded-lg bg-fusee-magenta/10 text-fusee-magenta flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                <i class="fa-solid fa-shirt text-fusee-magenta"></i>
-            </div>
-            <h4 class="text-xs font-bold text-white mb-0.5">EE Merch</h4>
-            <p class="text-[10px] text-slate-400">Official shirts, lanyards & gear</p>
-        </button>
+                        <!-- 2. Thesis Gallery -->
+                        <button onclick="openModal('capstone-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-fusee-cyan/10 text-fusee-cyan flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                                <i class="fa-solid fa-graduation-cap text-fusee-cyan"></i>
+                            </div>
+                            <h4 class="text-xs font-bold text-white mb-0.5">Thesis Gallery</h4>
+                            <p class="text-[10px] text-slate-400">Capstone archives & diagrams</p>
+                        </button>
 
-        <button onclick="openModal('faq-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-yellow/50 transition group">
-            <div class="w-8 h-8 rounded-lg bg-fusee-yellow/10 text-fusee-yellow flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                <i class="fa-solid fa-circle-question text-fusee-yellow"></i>
-            </div>
-            <h4 class="text-xs font-bold text-white mb-0.5">FAQs & Help</h4>
-            <p class="text-[10px] text-slate-400">Common borrowing questions</p>
-        </button>
+                        <!-- 3. Lab Policies -->
+                        <button onclick="openModal('guidelines-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-fusee-cyan/10 text-fusee-cyan flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                                <i class="fa-solid fa-book-open text-fusee-cyan"></i>
+                            </div>
+                            <h4 class="text-xs font-bold text-white mb-0.5">Lab Policies</h4>
+                            <p class="text-[10px] text-slate-400">Safety, borrowing & log protocols</p>
+                        </button>
 
-        <button onclick="openModal('hours-modal')" class="glass-card p-3 rounded-xl text-left hover:border-emerald-400/50 transition group">
-            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                <i class="fa-solid fa-calendar-days text-emerald-400"></i>
-            </div>
-            <h4 class="text-xs font-bold text-white mb-0.5">Operating Hours</h4>
-            <p class="text-[10px] text-slate-400">Schedules & faculty hours</p>
-        </button>
-    </div>
-</section>
+                        <!-- 4. Peer Tutoring -->
+                        <button onclick="openModal('peer-tutoring-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-fusee-cyan/10 text-fusee-cyan flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                                <i class="fa-solid fa-user-graduate text-fusee-cyan"></i>
+                            </div>
+                            <h4 class="text-xs font-bold text-white mb-0.5">Peer Tutoring</h4>
+                            <p class="text-[10px] text-slate-400">Tutors & EE Study Groups</p>
+                        </button>
+
+                        <!-- 5. Lost & Found -->
+                        <button onclick="openModal('lost-found-modal')" class="glass-card p-3 rounded-xl text-left hover:border-rose-400/50 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                                <i class="fa-solid fa-box-open text-rose-400"></i>
+                            </div>
+                            <h4 class="text-xs font-bold text-white mb-0.5">Lost & Found</h4>
+                            <p class="text-[10px] text-slate-400">D204 Central Desk & Peer items</p>
+                        </button>
+
+                        <!-- 6. EE Merch -->
+                        <button onclick="openModal('merch-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-magenta/50 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-fusee-magenta/10 text-fusee-magenta flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                                <i class="fa-solid fa-shirt text-fusee-magenta"></i>
+                            </div>
+                            <h4 class="text-xs font-bold text-white mb-0.5">EE Merch</h4>
+                            <p class="text-[10px] text-slate-400">Official shirts, lanyards & gear</p>
+                        </button>
+
+                        <!-- 7. FAQs & Help -->
+                        <button onclick="openModal('faq-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-yellow/50 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-fusee-yellow/10 text-fusee-yellow flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                                <i class="fa-solid fa-circle-question text-fusee-yellow"></i>
+                            </div>
+                            <h4 class="text-xs font-bold text-white mb-0.5">FAQs & Help</h4>
+                            <p class="text-[10px] text-slate-400">Common borrowing questions</p>
+                        </button>
+
+                        <!-- 8. Operating Hours -->
+                        <button onclick="openModal('hours-modal')" class="glass-card p-3 rounded-xl text-left hover:border-emerald-400/50 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+                                <i class="fa-solid fa-calendar-days text-emerald-400"></i>
+                            </div>
+                            <h4 class="text-xs font-bold text-white mb-0.5">Operating Hours</h4>
+                            <p class="text-[10px] text-slate-400">Schedules & faculty hours</p>
+                        </button>
+                    </div>
+                </section>
 
                 <!-- Featured Systems CTA Banner -->
 <section class="glass-card rounded-2xl p-4 md:p-5 border border-fusee-cyan/30 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4">
@@ -2766,40 +2774,6 @@ if (data.eeDept) {
             }
         });
 
-// Retractable Theme Dropdown Toggle
-window.toggleThemeDropdown = function(e) {
-    if (e) e.stopPropagation();
-    const menu = document.getElementById('theme-dropdown-menu');
-    const chevron = document.getElementById('theme-dropdown-chevron');
-    if (menu) {
-        const isHidden = menu.classList.contains('hidden');
-        menu.classList.toggle('hidden', !isHidden);
-        if (chevron) {
-            chevron.classList.toggle('rotate-180', isHidden);
-        }
-    }
-};
-
-window.selectTheme = function(themeName) {
-    window.setTheme(themeName);
-    const menu = document.getElementById('theme-dropdown-menu');
-    const chevron = document.getElementById('theme-dropdown-chevron');
-    if (menu) menu.classList.add('hidden');
-    if (chevron) chevron.classList.remove('rotate-180');
-};
-
-// Close Theme Menu when Clicking Outside
-document.addEventListener('click', (e) => {
-    const menu = document.getElementById('theme-dropdown-menu');
-    const btn = document.getElementById('theme-dropdown-btn');
-    if (menu && !menu.classList.contains('hidden')) {
-        if (btn && !btn.contains(e.target) && !menu.contains(e.target)) {
-            menu.classList.add('hidden');
-            const chevron = document.getElementById('theme-dropdown-chevron');
-            if (chevron) chevron.classList.remove('rotate-180');
-        }
-    }
-});
         // Updated Theme Switcher Engine
         window.setTheme = function(themeName) {
             document.documentElement.setAttribute('data-theme', themeName);
@@ -3564,5 +3538,29 @@ let currentTutoringSubject = 'all';
         closeModal('post-tutor-modal');
     }
     </script>
+
+<!-- MODAL: EE Academic Drive -->
+<div id="academic-drive-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-xl lg:max-w-2xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-yellow/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[85vh] shadow-2xl overflow-hidden">
+    <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-fusee-yellow/20 text-fusee-yellow flex items-center justify-center font-bold">
+                <i class="fa-solid fa-folder-open text-sm"></i>
+            </div>
+            <div>
+                <h3 class="text-sm md:text-base font-bold text-white font-display">EE Academic Drive</h3>
+                <p class="text-[10px] md:text-xs text-slate-400">Academic Reference Drives & Learning Materials</p>
+            </div>
+        </div>
+        <button onclick="closeModal('academic-drive-modal')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+    </div>
+
+    <!-- Dynamic Container synced with Firebase -->
+    <div id="academic-drive-display-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-1">
+        <!-- Dynamic reference drive links render here -->
+    </div>
+</div>
+
 </body>
 </html>
