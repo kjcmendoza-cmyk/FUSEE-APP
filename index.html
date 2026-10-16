@@ -1097,82 +1097,76 @@ if (data.eeDept) {
 
         <!-- Header Section -->
         <header class="sticky top-0 z-30 px-4 md:px-6 pt-2.5 pb-2.5 glass-panel border-b border-white/10">
-            <!-- Top Meta Bar: Logo & University Info (Left) | Clock & Theme Switcher (Right) -->
-            <div class="flex items-center justify-between gap-2 mb-2">
-                <div class="flex items-center space-x-2.5 min-w-0">
-                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-tr from-fusee-cyan via-fusee-magenta to-fusee-yellow p-[2px] shadow-neon-cyan flex-shrink-0 overflow-hidden">
-                        <div class="w-full h-full bg-[#0B081E] rounded-[10px] flex items-center justify-center p-0.5">
-                            <img src="fusee-logo.png" alt="FUSEE Logo" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,240,255,0.7)]" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%2300F0FF\'><path d=\'M13 2L3 14h9l-1 8 10-12h-9l1-8z\'/></svg>';">
-                        </div>
-                    </div>
-                    <div class="flex flex-col min-w-0">
-    <!-- 1. Ateneo de Davao University: Official AdDU Seal Blue (#3D47D9) -->
-    <h2 class="text-[10px] md:text-xs tracking-wider text-[#3D47D9] font-bold uppercase font-techno leading-tight truncate">
-        Ateneo de Davao University
-    </h2>
-
-    <!-- 2. School of Engineering and Architecture: Cyber Orange -->
-    <p class="text-[9px] md:text-[10px] text-[#FF8C00] font-medium tracking-tight leading-tight truncate">
-        School of Engineering and Architecture (SEA)
-    </p>
-
-    <!-- 3. Federation of the United Students of Electrical Engineering: Cyber White -->
-    <p class="text-[9px] md:text-[10px] text-white font-semibold tracking-tight leading-tight mt-0.5 truncate">
-        Federation of the United Students of Electrical Engineering
-    </p>
-</div>
-                </div>
-
-                <!-- Right Side: Theme Switcher & Live Clock -->
-                <div class="flex items-center space-x-2 flex-shrink-0">
-                    <!-- Retractable Theme Selector -->
-                    <div class="relative flex-shrink-0">
-                        <button id="theme-dropdown-btn" onclick="toggleThemeDropdown(event)" 
-                                class="px-2 py-1 md:px-2.5 md:py-1.5 rounded-xl bg-slate-900/80 border border-white/10 text-[10px] font-bold text-fusee-cyan flex items-center gap-1 hover:border-white/20 transition shadow-sm">
-                            <span id="theme-active-label" class="flex items-center gap-1">⚡ Cyber</span>
-                            <i id="theme-dropdown-chevron" class="fa-solid fa-chevron-down text-[8px] text-slate-400 transition-transform duration-200"></i>
-                        </button>
-
-                        <div id="theme-dropdown-menu" class="hidden absolute right-0 top-full mt-1.5 z-50 p-1.5 rounded-xl bg-slate-900/95 backdrop-blur-xl border border-white/15 shadow-2xl flex flex-col space-y-1 min-w-[115px] text-[10px]">
-                            <button onclick="selectTheme('fusee')" id="theme-btn-fusee" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-fusee-cyan bg-fusee-cyan/15 border border-fusee-cyan/30">⚡ Cyber</button>
-                            <button onclick="selectTheme('light')" id="theme-btn-light" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/80">☀️ Light</button>
-                            <button onclick="selectTheme('cyber-pink')" id="theme-btn-pink" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/80">🌸 Pink</button>
-                        </div>
-                    </div>
-
-                    <!-- Clock & Greeting Display -->
-                    <div class="text-right flex-shrink-0">
-                        <div id="clock-display" class="font-techno font-bold text-xs md:text-sm text-fusee-yellow whitespace-nowrap">00:00 AM</div>
-                        <div id="greeting-display" class="text-[9px] md:text-xs text-slate-400 font-medium whitespace-nowrap">EE Engineer</div>
-                    </div>
+    <!-- Top Bar: Logo & Fully Spelled Out University Titles (Left) | Theme Switcher (Right) -->
+    <div class="flex items-center justify-between gap-3 mb-2">
+        <div class="flex items-center space-x-2.5 min-w-0 flex-1">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-tr from-fusee-cyan via-fusee-magenta to-fusee-yellow p-[2px] shadow-neon-cyan flex-shrink-0 overflow-hidden">
+                <div class="w-full h-full bg-[#0B081E] rounded-[10px] flex items-center justify-center p-0.5">
+                    <img src="fusee-logo.png" alt="FUSEE Logo" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,240,255,0.7)]" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%2300F0FF\'><path d=\'M13 2L3 14h9l-1 8 10-12h-9l1-8z\'/></svg>';">
                 </div>
             </div>
-
-            <!-- Bottom Brand Bar: FUSEE HUB Title, Badge, Motto & Desktop Navigation -->
-            <div class="flex items-center justify-between pt-1.5 border-t border-white/10 gap-2">
-                <div class="min-w-0">
-                    <div class="flex items-center space-x-2">
-                        <h1 class="text-lg md:text-2xl font-black font-techno tracking-wider text-white flex items-center gap-1.5 whitespace-nowrap">
-                            FUSEE <span class="gradient-text-cyan-pink text-sm md:text-lg font-bold font-pixel">HUB</span>
-                        </h1>
-                        <span class="px-1.5 py-0.5 text-[8px] md:text-[9px] font-pixel rounded bg-fusee-magenta/20 text-fusee-magenta border border-fusee-magenta/30 whitespace-nowrap flex-shrink-0">
-                            OFFICIAL
-                        </span>
-                    </div>
-                    <p class="text-[10px] md:text-xs text-slate-300 font-medium italic mt-0.5 truncate">
-                        "To Infini<span class="text-fusee-cyan font-bold font-pixel">TEE</span> and <span class="text-fusee-magenta font-bold font-pixel">BEEYond</span>"
-                    </p>
-                </div>
-                
-                <!-- Desktop Navigation Links (Hidden on Mobile) -->
-                <nav class="hidden md:flex items-center space-x-5 text-xs font-semibold flex-shrink-0">
-                    <button id="desktop-tab-home" onclick="switchTab('home')" class="desktop-nav-tab text-fusee-cyan hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-house-laptop"></i> Home</button>
-                    <button id="desktop-tab-systems" onclick="switchTab('systems')" class="desktop-nav-tab text-slate-300 hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-layer-group"></i> Systems</button>
-                    <button id="desktop-tab-notices" onclick="switchTab('notices')" class="desktop-nav-tab text-slate-300 hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-bell"></i> Notices</button>
-                    <button id="desktop-tab-info" onclick="switchTab('info')" class="desktop-nav-tab text-slate-300 hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-circle-info"></i> Rules & Info</button>
-                </nav>
+            <div class="flex flex-col min-w-0 flex-1">
+                <h2 class="text-[10px] md:text-xs tracking-wider text-[#3D47D9] font-bold uppercase font-techno leading-tight">
+                    Ateneo de Davao University
+                </h2>
+                <p class="text-[9px] md:text-[10px] text-[#FF8C00] font-medium tracking-tight leading-tight">
+                    School of Engineering and Architecture (SEA)
+                </p>
+                <p class="text-[9px] md:text-[10px] text-white font-semibold tracking-tight leading-tight mt-0.5">
+                    Federation of the United Students of Electrical Engineering
+                </p>
             </div>
-        </header>
+        </div>
+
+        <!-- Right Side: Cyber Theme Switcher Button -->
+        <div class="relative flex-shrink-0">
+            <button id="theme-dropdown-btn" onclick="toggleThemeDropdown(event)" 
+                    class="px-2 py-1 md:px-2.5 md:py-1.5 rounded-xl bg-slate-900/80 border border-white/10 text-[10px] font-bold text-fusee-cyan flex items-center gap-1 hover:border-white/20 transition shadow-sm">
+                <span id="theme-active-label" class="flex items-center gap-1">⚡ Cyber</span>
+                <i id="theme-dropdown-chevron" class="fa-solid fa-chevron-down text-[8px] text-slate-400 transition-transform duration-200"></i>
+            </button>
+
+            <div id="theme-dropdown-menu" class="hidden absolute right-0 top-full mt-1.5 z-50 p-1.5 rounded-xl bg-slate-900/95 backdrop-blur-xl border border-white/15 shadow-2xl flex flex-col space-y-1 min-w-[115px] text-[10px]">
+                <button onclick="selectTheme('fusee')" id="theme-btn-fusee" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-fusee-cyan bg-fusee-cyan/15 border border-fusee-cyan/30">⚡ Cyber</button>
+                <button onclick="selectTheme('light')" id="theme-btn-light" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/80">☀️ Light</button>
+                <button onclick="selectTheme('cyber-pink')" id="theme-btn-pink" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/80">🌸 Pink</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Brand Bar: FUSEE HUB Title & Motto (Left) | Clock & Navigation (Right) -->
+    <div class="flex items-center justify-between pt-1.5 border-t border-white/10 gap-2">
+        <div class="min-w-0">
+            <div class="flex items-center space-x-2">
+                <h1 class="text-lg md:text-2xl font-black font-techno tracking-wider text-white flex items-center gap-1.5 whitespace-nowrap">
+                    FUSEE <span class="gradient-text-cyan-pink text-sm md:text-lg font-bold font-pixel">HUB</span>
+                </h1>
+                <span class="px-1.5 py-0.5 text-[8px] md:text-[9px] font-pixel rounded bg-fusee-magenta/20 text-fusee-magenta border border-fusee-magenta/30 whitespace-nowrap flex-shrink-0">
+                    OFFICIAL
+                </span>
+            </div>
+            <p class="text-[10px] md:text-xs text-slate-300 font-medium italic mt-0.5 truncate">
+                "To Infini<span class="text-fusee-cyan font-bold font-pixel">TEE</span> and <span class="text-fusee-magenta font-bold font-pixel">BEEYond</span>"
+            </p>
+        </div>
+        
+        <div class="flex items-center space-x-4 flex-shrink-0">
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-4 text-xs font-semibold">
+                <button id="desktop-tab-home" onclick="switchTab('home')" class="desktop-nav-tab text-fusee-cyan hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-house-laptop"></i> Home</button>
+                <button id="desktop-tab-systems" onclick="switchTab('systems')" class="desktop-nav-tab text-slate-300 hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-layer-group"></i> Systems</button>
+                <button id="desktop-tab-notices" onclick="switchTab('notices')" class="desktop-nav-tab text-slate-300 hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-bell"></i> Notices</button>
+                <button id="desktop-tab-info" onclick="switchTab('info')" class="desktop-nav-tab text-slate-300 hover:text-fusee-cyan transition flex items-center gap-1.5"><i class="fa-solid fa-circle-info"></i> Rules & Info</button>
+            </nav>
+
+            <!-- Live Clock & Greeting Aligned Right -->
+            <div class="text-right flex-shrink-0">
+                <div id="clock-display" class="font-techno font-bold text-xs md:text-sm text-fusee-yellow whitespace-nowrap">00:00 AM</div>
+                <div id="greeting-display" class="text-[9px] md:text-xs text-slate-400 font-medium whitespace-nowrap">EE Engineer</div>
+            </div>
+        </div>
+    </div>
+</header>
 
         <!-- Live Announcement Ticker Banner (Pause on Hover Enabled) -->
         <section class="px-4 md:px-6 py-2 bg-gradient-to-r from-fusee-magenta/15 via-fusee-purple/20 to-fusee-cyan/15 border-b border-white/10 flex items-center space-x-2 overflow-hidden">
