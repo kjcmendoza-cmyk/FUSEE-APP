@@ -474,26 +474,481 @@ if (data.eeDept) {
             --text-main: #FFFAEC;
         }
 
-        /* 4. Lab Daylight (High-Contrast Light Theme) */
+        /* 4. Lab Daylight (High-Contrast Light Theme - Complete Overhaul) */
         [data-theme="light"] {
-            --bg-dark: #F8FAFC;
-            --bg-app: rgba(241, 245, 249, 0.95);
-            --bg-panel: rgba(255, 255, 255, 0.95);
-            --bg-card: linear-gradient(135deg, #FFFFFF 0%, #F1F5F9 100%);
+            --bg-dark: #F1F5F9;
+            --bg-app: #FFFFFF;
+            --bg-panel: #FFFFFF;
+            --bg-card: #FFFFFF;
             --bg-modal: #FFFFFF;
-            --border-color: rgba(15, 23, 42, 0.15);
+            --border-color: #E2E8F0;
             --text-main: #0F172A;
         }
 
-        /* 5. Cyber Pink (Kawaii Neon Theme) */
+        /* --- LAB DAYLIGHT LIGHT THEME COMPONENT & CONTRAST OVERRIDES --- */
+
+        /* 1. Primary Layout, Panels & Card Surfaces */
+        [data-theme="light"] #app-container {
+            background-color: #FFFFFF !important;
+            border-color: #E2E8F0 !important;
+            box-shadow: 0 10px 40px -10px rgba(15, 23, 42, 0.08) !important;
+        }
+        [data-theme="light"] .glass-panel {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-color: #E2E8F0 !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+        }
+        [data-theme="light"] .glass-card {
+            background: #FFFFFF !important;
+            border-color: #E2E8F0 !important;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04) !important;
+        }
+        [data-theme="light"] .glass-card:hover {
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08) !important;
+            border-color: rgba(2, 132, 199, 0.4) !important;
+        }
+
+        /* 2. Sub-panels, Dark Containers & Inner Guidelines Boxes */
+        [data-theme="light"] .bg-slate-900,
+        [data-theme="light"] .bg-slate-900\/50,
+        [data-theme="light"] .bg-slate-900\/60,
+        [data-theme="light"] .bg-slate-900\/80,
+        [data-theme="light"] .bg-slate-900\/90,
+        [data-theme="light"] .bg-slate-950,
+        [data-theme="light"] .bg-slate-950\/60,
+        [data-theme="light"] .bg-\[\#0B081E\],
+        [data-theme="light"] .bg-\[\#130e2e\],
+        [data-theme="light"] .bg-\[\#130e2e\]\/95 {
+            background-color: #F8FAFC !important;
+        }
+
+        [data-theme="light"] .bg-slate-800,
+        [data-theme="light"] .bg-slate-800\/80 {
+            background-color: #F1F5F9 !important;
+        }
+
+        [data-theme="light"] .border-slate-800,
+        [data-theme="light"] .border-slate-800\/60,
+        [data-theme="light"] .border-slate-800\/80,
+        [data-theme="light"] .border-slate-700,
+        [data-theme="light"] .border-white\/5,
+        [data-theme="light"] .border-white\/10 {
+            border-color: #E2E8F0 !important;
+        }
+
+        /* 3. Typography High-Contrast Overrides */
+        [data-theme="light"] .text-white,
+        [data-theme="light"] .text-slate-100,
+        [data-theme="light"] .text-slate-200 {
+            color: #0F172A !important; /* Deep Royal Navy */
+        }
+        [data-theme="light"] .text-slate-300 {
+            color: #334155 !important; /* Slate Gray */
+        }
+        [data-theme="light"] .text-slate-400 {
+            color: #64748B !important; /* Muted Slate */
+        }
+        [data-theme="light"] .text-slate-500 {
+            color: #475569 !important;
+        }
+
+        /* 4. Brand Accent Color Adaptations for Light Backgrounds */
+        /* Cyan -> Rich Electric Sky Blue (#0284C7) */
+        [data-theme="light"] .text-fusee-cyan,
+        [data-theme="light"] .hover\:text-fusee-cyan:hover {
+            color: #0284C7 !important;
+        }
+        [data-theme="light"] .bg-fusee-cyan {
+            background-color: #0284C7 !important;
+            color: #FFFFFF !important;
+        }
+        [data-theme="light"] .bg-fusee-cyan\/10,
+        [data-theme="light"] .bg-fusee-cyan\/15,
+        [data-theme="light"] .bg-fusee-cyan\/20,
+        [data-theme="light"] .hover\:bg-fusee-cyan\/30:hover {
+            background-color: rgba(2, 132, 199, 0.1) !important;
+        }
+        [data-theme="light"] .border-fusee-cyan,
+        [data-theme="light"] .border-fusee-cyan\/20,
+        [data-theme="light"] .border-fusee-cyan\/30,
+        [data-theme="light"] .border-fusee-cyan\/40,
+        [data-theme="light"] .border-fusee-cyan\/50,
+        [data-theme="light"] .focus\:border-fusee-cyan:focus,
+        [data-theme="light"] .hover\:border-fusee-cyan:hover,
+        [data-theme="light"] .hover\:border-fusee-cyan\/40:hover,
+        [data-theme="light"] .hover\:border-fusee-cyan\/50:hover {
+            border-color: rgba(2, 132, 199, 0.35) !important;
+        }
+
+        /* Yellow -> Warm Deep Amber Gold (#D97706) */
+        [data-theme="light"] .text-fusee-yellow {
+            color: #D97706 !important;
+        }
+        [data-theme="light"] .bg-fusee-yellow {
+            background-color: #D97706 !important;
+            color: #FFFFFF !important;
+        }
+        [data-theme="light"] .bg-fusee-yellow\/10,
+        [data-theme="light"] .bg-fusee-yellow\/20 {
+            background-color: rgba(217, 119, 6, 0.1) !important;
+        }
+        [data-theme="light"] .border-fusee-yellow,
+        [data-theme="light"] .border-fusee-yellow\/20,
+        [data-theme="light"] .border-fusee-yellow\/30,
+        [data-theme="light"] .border-fusee-yellow\/40,
+        [data-theme="light"] .hover\:border-fusee-yellow:hover {
+            border-color: rgba(217, 119, 6, 0.35) !important;
+        }
+
+        /* Magenta -> Deep Fuchsia / Rose (#C026D3) */
+        [data-theme="light"] .text-fusee-magenta,
+        [data-theme="light"] .group-hover\:text-fusee-magenta:group-hover {
+            color: #C026D3 !important;
+        }
+        [data-theme="light"] .bg-fusee-magenta {
+            background-color: #D92672 !important;
+            color: #FFFFFF !important;
+        }
+        [data-theme="light"] .bg-fusee-magenta\/10,
+        [data-theme="light"] .bg-fusee-magenta\/20 {
+            background-color: rgba(217, 38, 114, 0.1) !important;
+        }
+        [data-theme="light"] .border-fusee-magenta\/20,
+        [data-theme="light"] .border-fusee-magenta\/30,
+        [data-theme="light"] .border-fusee-magenta\/40,
+        [data-theme="light"] .border-fusee-magenta\/50,
+        [data-theme="light"] .hover\:border-fusee-magenta:hover {
+            border-color: rgba(217, 38, 114, 0.35) !important;
+        }
+
+        /* Purple -> Deep Royal Violet (#7C3AED) */
+        [data-theme="light"] .text-fusee-purple {
+            color: #7C3AED !important;
+        }
+        [data-theme="light"] .bg-fusee-purple\/10,
+        [data-theme="light"] .bg-fusee-purple\/20 {
+            background-color: rgba(124, 58, 237, 0.1) !important;
+        }
+        [data-theme="light"] .border-fusee-purple\/30,
+        [data-theme="light"] .border-fusee-purple\/40 {
+            border-color: rgba(124, 58, 237, 0.35) !important;
+        }
+
+        /* Status Indicators (Emerald & Rose) */
+        [data-theme="light"] .text-emerald-400 {
+            color: #059669 !important;
+        }
+        [data-theme="light"] .bg-emerald-500\/20 {
+            background-color: rgba(5, 150, 105, 0.1) !important;
+            border-color: rgba(5, 150, 105, 0.3) !important;
+        }
+        [data-theme="light"] .text-rose-400 {
+            color: #E11D48 !important;
+        }
+        [data-theme="light"] .bg-rose-500\/20 {
+            background-color: rgba(225, 29, 72, 0.1) !important;
+            border-color: rgba(225, 29, 72, 0.3) !important;
+        }
+
+        /* 5. Brand Gradients, Form Inputs & Background Details */
+        [data-theme="light"] .gradient-text-cyan-pink {
+            background: linear-gradient(135deg, #0284C7 0%, #C026D3 100%) !important;
+            background-clip: text !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+        }
+        [data-theme="light"] .shadow-neon-cyan {
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25) !important;
+        }
+        [data-theme="light"] .shadow-neon-pink {
+            box-shadow: 0 4px 14px rgba(217, 38, 114, 0.25) !important;
+        }
+
+        [data-theme="light"] input,
+        [data-theme="light"] select,
+        [data-theme="light"] textarea {
+            background-color: #FFFFFF !important;
+            color: #0F172A !important;
+            border-color: #CBD5E1 !important;
+        }
+        [data-theme="light"] input::placeholder,
+        [data-theme="light"] textarea::placeholder {
+            color: #94A3B8 !important;
+        }
+
+        [data-theme="light"] .bg-cosmic-grid {
+            background-image: radial-gradient(rgba(2, 132, 199, 0.12) 1px, transparent 0) !important;
+        }
+        [data-theme="light"] .glow-blob-1 {
+            background: radial-gradient(circle, rgba(2, 132, 199, 0.12) 0%, rgba(248, 250, 252, 0) 70%) !important;
+        }
+        [data-theme="light"] .glow-blob-2 {
+            background: radial-gradient(circle, rgba(217, 38, 114, 0.1) 0%, rgba(248, 250, 252, 0) 70%) !important;
+        }
+        [data-theme="light"] .glow-blob-3 {
+            background: radial-gradient(circle, rgba(217, 119, 6, 0.1) 0%, rgba(248, 250, 252, 0) 70%) !important;
+        }
+
+        [data-theme="light"] header .bg-\[\#0B081E\] {
+            background-color: #F8FAFC !important;
+        }
+        /* --- LIGHT THEME "INSIDE THE BOX" VISUAL ELEVATION --- */
+
+        /* 1. Room Status Cards: Soft Surface Gradients & Colored Borders */
+        [data-theme="light"] #ee-lab-live-card {
+            background: linear-gradient(180deg, #FFFFFF 0%, #F0F9FF 100%) !important;
+            border-color: #BAE6FD !important;
+            box-shadow: 0 4px 16px -2px rgba(2, 132, 199, 0.08) !important;
+        }
+        [data-theme="light"] #com-lab-live-card {
+            background: linear-gradient(180deg, #FFFFFF 0%, #FDF4FF 100%) !important;
+            border-color: #F5D0FE !important;
+            box-shadow: 0 4px 16px -2px rgba(192, 38, 211, 0.08) !important;
+        }
+
+        /* 2. Inner Sub-Boxes: Vertical Accent Pillars & Crisp Backgrounds */
+        [data-theme="light"] #ee-lab-live-card .p-2 {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-left: 3.5px solid #0284C7 !important;
+            border-top: 1px solid #E0F2FE !important;
+            border-right: 1px solid #E0F2FE !important;
+            border-bottom: 1px solid #E0F2FE !important;
+            box-shadow: 0 1px 3px rgba(2, 132, 199, 0.05) !important;
+        }
+        [data-theme="light"] #com-lab-live-card .p-2 {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-left: 3.5px solid #C026D3 !important;
+            border-top: 1px solid #FAE8FF !important;
+            border-right: 1px solid #FAE8FF !important;
+            border-bottom: 1px solid #FAE8FF !important;
+            box-shadow: 0 1px 3px rgba(192, 38, 211, 0.05) !important;
+        }
+
+        /* 3. Event Cards & Academic Drive Link Inner Boxes */
+        [data-theme="light"] #events-display-container > div {
+            background-color: #F8FAFC !important;
+            border-left: 3px solid #7C3AED !important;
+            border-color: #E2E8F0 !important;
+        }
+        [data-theme="light"] #academic-drive-display-container a {
+            background-color: #F8FAFC !important;
+            border-left: 3px solid #D97706 !important;
+            border-color: #E2E8F0 !important;
+            transition: all 0.2s ease !important;
+        }
+        [data-theme="light"] #academic-drive-display-container a:hover {
+            background-color: #FFFBEB !important;
+            border-color: #FDE68A !important;
+            transform: translateY(-1.5px) !important;
+        }
+
+        /* 4. Quick EE Navigation Cards: Top Accent Borders & Hover Depth */
+        [data-theme="light"] main section .grid button.glass-card {
+            background: #FFFFFF !important;
+            border-color: #E2E8F0 !important;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease !important;
+        }
+        [data-theme="light"] main section .grid button.glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #0284C7;
+            opacity: 0.6;
+            transition: opacity 0.2s ease;
+        }
+        [data-theme="light"] main section .grid button.glass-card:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08) !important;
+            border-color: #BAE6FD !important;
+        }
+        [data-theme="light"] main section .grid button.glass-card:hover::before {
+            opacity: 1;
+        }
+
+        /* 5. Hero Banner Contrast Polish for Light Mode */
+        [data-theme="light"] #view-home section .relative.rounded-2xl {
+            border-color: #CBD5E1 !important;
+            box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.12) !important;
+        }
+        [data-theme="light"] #view-home img {
+            filter: contrast(1.05) brightness(0.92) !important;
+        }
+
+        /* 5. Cyber Pink (Overhauled Sakura Cyber / Strawberry Neon Theme) */
         [data-theme="cyber-pink"] {
-            --bg-dark: #1A091C;
-            --bg-app: rgba(26, 9, 28, 0.88);
-            --bg-panel: rgba(42, 16, 46, 0.88);
-            --bg-card: linear-gradient(135deg, rgba(58, 20, 64, 0.8) 0%, rgba(30, 10, 34, 0.9) 100%);
-            --bg-modal: #2A102E;
-            --border-color: rgba(255, 102, 196, 0.3);
-            --text-main: #FFF0F8;
+            --bg-dark: #230825;
+            --bg-app: rgba(38, 10, 42, 0.92);
+            --bg-panel: rgba(62, 16, 68, 0.88);
+            --bg-card: linear-gradient(135deg, rgba(88, 22, 92, 0.85) 0%, rgba(48, 12, 52, 0.92) 100%);
+            --bg-modal: #2E0B33;
+            --border-color: rgba(255, 105, 180, 0.45);
+            --text-main: #FFF0F7;
+        }
+
+        /* --- CYBER PINK MAJOR OVERHAUL ACCENT & COMPONENT OVERRIDES --- */
+
+        /* 1. Background Cosmic Dot Grid & Ambient Glow Blobs */
+        [data-theme="cyber-pink"] .bg-cosmic-grid {
+            background-image: radial-gradient(rgba(255, 105, 180, 0.25) 1px, transparent 0) !important;
+        }
+        [data-theme="cyber-pink"] .glow-blob-1 {
+            background: radial-gradient(circle, rgba(255, 20, 147, 0.45) 0%, rgba(35, 8, 37, 0) 70%) !important;
+        }
+        [data-theme="cyber-pink"] .glow-blob-2 {
+            background: radial-gradient(circle, rgba(255, 105, 180, 0.4) 0%, rgba(35, 8, 37, 0) 70%) !important;
+        }
+        [data-theme="cyber-pink"] .glow-blob-3 {
+            background: radial-gradient(circle, rgba(255, 182, 193, 0.35) 0%, rgba(35, 8, 37, 0) 70%) !important;
+        }
+
+        /* 2. Text Brand Gradients */
+        [data-theme="cyber-pink"] .gradient-text-cyan-pink {
+            background: linear-gradient(135deg, #FF99DD 0%, #FF007A 100%) !important;
+            background-clip: text !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+        }
+
+        /* 3. Cyan Elements -> Hot Strawberry Pink Conversion */
+        [data-theme="cyber-pink"] .text-fusee-cyan,
+        [data-theme="cyber-pink"] .hover\:text-fusee-cyan:hover {
+            color: #FF66C4 !important;
+        }
+        [data-theme="cyber-pink"] .bg-fusee-cyan {
+            background-color: #FF3399 !important;
+            color: #FFFFFF !important;
+        }
+        [data-theme="cyber-pink"] .bg-fusee-cyan\/10,
+        [data-theme="cyber-pink"] .bg-fusee-cyan\/15,
+        [data-theme="cyber-pink"] .bg-fusee-cyan\/20,
+        [data-theme="cyber-pink"] .hover\:bg-fusee-cyan\/30:hover {
+            background-color: rgba(255, 102, 196, 0.22) !important;
+        }
+        [data-theme="cyber-pink"] .border-fusee-cyan,
+        [data-theme="cyber-pink"] .border-fusee-cyan\/20,
+        [data-theme="cyber-pink"] .border-fusee-cyan\/30,
+        [data-theme="cyber-pink"] .border-fusee-cyan\/40,
+        [data-theme="cyber-pink"] .border-fusee-cyan\/50,
+        [data-theme="cyber-pink"] .focus\:border-fusee-cyan:focus,
+        [data-theme="cyber-pink"] .hover\:border-fusee-cyan:hover,
+        [data-theme="cyber-pink"] .hover\:border-fusee-cyan\/40:hover,
+        [data-theme="cyber-pink"] .hover\:border-fusee-cyan\/50:hover {
+            border-color: rgba(255, 102, 196, 0.55) !important;
+        }
+
+        /* 4. Yellow Elements -> Sakura Gold / Peach Rose Conversion */
+        [data-theme="cyber-pink"] .text-fusee-yellow {
+            color: #FFD1DC !important;
+        }
+        [data-theme="cyber-pink"] .bg-fusee-yellow {
+            background-color: #FFB7C5 !important;
+            color: #2A0A2B !important;
+        }
+        [data-theme="cyber-pink"] .bg-fusee-yellow\/10,
+        [data-theme="cyber-pink"] .bg-fusee-yellow\/20 {
+            background-color: rgba(255, 209, 220, 0.22) !important;
+        }
+        [data-theme="cyber-pink"] .border-fusee-yellow,
+        [data-theme="cyber-pink"] .border-fusee-yellow\/20,
+        [data-theme="cyber-pink"] .border-fusee-yellow\/30,
+        [data-theme="cyber-pink"] .border-fusee-yellow\/40,
+        [data-theme="cyber-pink"] .hover\:border-fusee-yellow:hover,
+        [data-theme="cyber-pink"] .hover\:border-fusee-yellow\/50:hover {
+            border-color: rgba(255, 209, 220, 0.55) !important;
+        }
+
+        /* 5. Magenta Elements -> Vivid Neon Fuchsia Conversion */
+        [data-theme="cyber-pink"] .text-fusee-magenta,
+        [data-theme="cyber-pink"] .group-hover\:text-fusee-magenta:group-hover {
+            color: #FF007F !important;
+        }
+        [data-theme="cyber-pink"] .bg-fusee-magenta {
+            background-color: #FF007F !important;
+        }
+        [data-theme="cyber-pink"] .bg-fusee-magenta\/10,
+        [data-theme="cyber-pink"] .bg-fusee-magenta\/20 {
+            background-color: rgba(255, 0, 127, 0.25) !important;
+        }
+        [data-theme="cyber-pink"] .border-fusee-magenta\/20,
+        [data-theme="cyber-pink"] .border-fusee-magenta\/30,
+        [data-theme="cyber-pink"] .border-fusee-magenta\/40,
+        [data-theme="cyber-pink"] .border-fusee-magenta\/50,
+        [data-theme="cyber-pink"] .hover\:border-fusee-magenta:hover,
+        [data-theme="cyber-pink"] .hover\:border-fusee-magenta\/50:hover {
+            border-color: rgba(255, 0, 127, 0.55) !important;
+        }
+
+        /* 6. Dark Slate Sub-panels -> Deep Plum Glass Containers */
+        [data-theme="cyber-pink"] .bg-slate-900,
+        [data-theme="cyber-pink"] .bg-slate-900\/50,
+        [data-theme="cyber-pink"] .bg-slate-900\/60,
+        [data-theme="cyber-pink"] .bg-slate-900\/80,
+        [data-theme="cyber-pink"] .bg-slate-900\/90,
+        [data-theme="cyber-pink"] .bg-slate-950,
+        [data-theme="cyber-pink"] .bg-slate-950\/60 {
+            background-color: rgba(48, 12, 52, 0.85) !important;
+        }
+        [data-theme="cyber-pink"] .border-slate-800,
+        [data-theme="cyber-pink"] .border-slate-800\/60,
+        [data-theme="cyber-pink"] .border-slate-800\/80 {
+            border-color: rgba(255, 105, 180, 0.28) !important;
+        }
+
+        /* 7. Neon Glows & Button Gradients */
+        [data-theme="cyber-pink"] .shadow-neon-cyan {
+            box-shadow: 0 0 20px rgba(255, 102, 196, 0.55) !important;
+        }
+        [data-theme="cyber-pink"] .shadow-neon-pink {
+            box-shadow: 0 0 22px rgba(255, 0, 127, 0.65) !important;
+        }
+
+        [data-theme="cyber-pink"] .from-fusee-cyan {
+            --tw-gradient-from: #FF007F var(--tw-gradient-from-position) !important;
+        }
+        [data-theme="cyber-pink"] .to-blue-600 {
+            --tw-gradient-to: #FF66C4 var(--tw-gradient-to-position) !important;
+        }
+        /* --- CYBER PINK ULTIMATE CONTRAST & VISUAL BLEND POLISH --- */
+
+        /* 1. Hero Banner Pink Blend Filter */
+        [data-theme="cyber-pink"] #view-home img {
+            filter: hue-rotate(270deg) saturate(1.15) brightness(0.92) !important;
+        }
+
+        /* 2. Text Readability & High-Contrast Pink/White Text */
+        [data-theme="cyber-pink"] .text-slate-400 {
+            color: #ECC8E1 !important; /* Soft high-contrast pastel pink */
+        }
+        [data-theme="cyber-pink"] .text-slate-300 {
+            color: #F8EBF4 !important; /* Very crisp light pinkish-white */
+        }
+        [data-theme="cyber-pink"] .text-fusee-magenta {
+            color: #FF85C1 !important; /* Lighter fuchsia for dark background legibility */
+        }
+
+        /* 3. Room & Header Badges Contrast Boost */
+        [data-theme="cyber-pink"] .bg-fusee-magenta\/20 {
+            background-color: rgba(255, 0, 127, 0.38) !important;
+        }
+        [data-theme="cyber-pink"] .border-fusee-magenta\/30 {
+            border-color: rgba(255, 133, 193, 0.6) !important;
+        }
+
+        /* 4. Vacant Status Badge Neon Glow */
+        [data-theme="cyber-pink"] .bg-emerald-500\/20 {
+            background-color: rgba(0, 255, 170, 0.22) !important;
+            border-color: rgba(0, 255, 170, 0.5) !important;
+        }
+        [data-theme="cyber-pink"] .text-emerald-400 {
+            color: #00FFAC !important;
+            text-shadow: 0 0 8px rgba(0, 255, 170, 0.4) !important;
         }
 
         /* Dynamic Theme Variables Application */
