@@ -1091,6 +1091,46 @@ if (data.eeDept) {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
         }
+        /* Highest-Specificity Overrides for Hero Banner Text Legibility */
+html[data-theme] .hero-banner-title,
+html[data-theme="light"] .hero-banner-title,
+.hero-banner-title {
+    color: #FFFFFF !important;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95) !important;
+}
+
+html[data-theme] .hero-banner-badge,
+html[data-theme="light"] .hero-banner-badge,
+.hero-banner-badge {
+    color: #00F0FF !important;
+    background-color: rgba(0, 240, 255, 0.25) !important;
+    border-color: rgba(0, 240, 255, 0.6) !important;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.7) !important;
+}
+/* Preserve Banner Original Artwork Colors & Fix Text Legibility Across All Themes */
+#view-home img,
+[data-theme="cyber-pink"] #view-home img,
+[data-theme="light"] #view-home img {
+    filter: none !important; /* Prevents hue-rotate color distortion on banner images */
+}
+
+html[data-theme] .hero-banner-title,
+html[data-theme="light"] .hero-banner-title,
+html[data-theme="cyber-pink"] .hero-banner-title,
+.hero-banner-title {
+    color: #FFFFFF !important;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95) !important;
+}
+
+html[data-theme] .hero-banner-badge,
+html[data-theme="light"] .hero-banner-badge,
+html[data-theme="cyber-pink"] .hero-banner-badge,
+.hero-banner-badge {
+    color: #00F0FF !important;
+    background-color: rgba(0, 240, 255, 0.25) !important;
+    border-color: rgba(0, 240, 255, 0.6) !important;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.7) !important;
+}
     </style>
 </head>
 <body class="relative min-h-screen text-slate-100 antialiased selection:bg-fusee-cyan selection:text-black">
@@ -1200,30 +1240,34 @@ if (data.eeDept) {
             <!-- TAB 1: HOME VIEW -->
             <div id="view-home" class="tab-view space-y-5">
                 <!-- Brand Visual Hero Banner -->
-                <section>
-                    <div class="relative rounded-2xl overflow-hidden border border-fusee-cyan/30 shadow-neon-cyan group bg-slate-900/80 min-h-[128px]">
-                        <img src="EE BRANDING 1.png" alt="FUSEE Banner Graphic"
-                             class="w-full h-32 md:h-48 object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                             onerror="this.style.display='none'; document.getElementById('hero-fallback-bg').classList.remove('hidden');">
-                        
-                        <!-- Fallback banner style when image is missing -->
-                        <div id="hero-fallback-bg" class="hidden absolute inset-0 bg-gradient-to-r from-fusee-dark via-purple-950 to-indigo-950 flex items-center px-6">
-                            <div class="space-y-1">
-                                <i class="fa-solid fa-bolt text-fusee-cyan text-2xl"></i>
-                            </div>
-                        </div>
+<section>
+    <div class="relative rounded-2xl overflow-hidden border border-fusee-cyan/30 shadow-neon-cyan group bg-slate-900/80 min-h-[128px]">
+        <img src="EE BRANDING 1.png" alt="FUSEE Banner Graphic"
+             class="w-full h-32 md:h-48 object-cover object-center group-hover:scale-105 transition-transform duration-500"
+             onerror="this.style.display='none'; document.getElementById('hero-fallback-bg').classList.remove('hidden');">
+        
+        <!-- Fallback banner style when image is missing -->
+        <div id="hero-fallback-bg" class="hidden absolute inset-0 bg-gradient-to-r from-fusee-dark via-purple-950 to-indigo-950 flex items-center px-6">
+            <div class="space-y-1">
+                <i class="fa-solid fa-bolt text-fusee-cyan text-2xl"></i>
+            </div>
+        </div>
 
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#0B081E] via-transparent to-transparent opacity-80"></div>
-                        <div class="absolute bottom-3 left-4 right-4 flex justify-between items-end">
-                            <div>
-                                <span class="px-2 py-0.5 text-[9px] font-pixel rounded bg-fusee-cyan/20 text-fusee-cyan border border-fusee-cyan/30">
-                                    ADDU SEA • EE
-                                </span>
-                                <h2 class="text-sm md:text-lg font-bold text-white font-display mt-0.5">Electrical Engineering Portal</h2>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+        <!-- Enhanced Dark Gradient for Contrast -->
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent"></div>
+        
+        <div class="absolute bottom-3 left-4 right-4 flex justify-between items-end z-10">
+            <div>
+                <span class="hero-banner-badge px-2 py-0.5 text-[9px] font-pixel rounded bg-fusee-cyan/20 border border-fusee-cyan/30" style="color: #00F0FF !important;">
+                    ADDU SEA • EE
+                </span>
+                <h2 class="hero-banner-title text-sm md:text-lg font-bold font-display mt-1" style="color: #FFFFFF !important; text-shadow: 0 2px 4px rgba(0,0,0,0.9) !important;">
+                    Electrical Engineering Portal
+                </h2>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- Live Interactive Room Vacancy & Status Cards -->
                 <section class="space-y-3 mb-4">
@@ -1462,23 +1506,26 @@ if (data.eeDept) {
 </section>
 
                 <!-- Fused Brand Panorama Showcase (Full Vertical Display) -->
-                <section class="my-6">
-                    <div class="relative rounded-2xl overflow-hidden border-2 border-fusee-cyan/40 shadow-neon-cyan grid grid-cols-2 gap-0 bg-[#0B081E] group">
-                        <!-- Left Artwork: EE BRANDING 3 -->
-                        <div class="relative w-full overflow-hidden flex items-center justify-center">
-                            <img src="EE BRANDING 3.png" alt="EE Branding Left" 
-                                 class="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-500 block"
-                                 onerror="this.onerror=null; this.src='EE BRANDING 3.JPG';">
-                        </div>
+<section class="my-6">
+    <!-- Outer Clip Frame -->
+    <div class="relative rounded-2xl overflow-hidden border-2 border-fusee-cyan/40 shadow-neon-cyan bg-[#0B081E] group">
+        
+        <!-- Inner Unified Zoom Wrapper (Scales BOTH images as 1 solid canvas) -->
+        <div class="flex w-full group-hover:scale-105 transition-transform duration-500 ease-out transform-gpu origin-center">
+            
+            <!-- Left Artwork: EE BRANDING 3 -->
+            <img src="EE BRANDING 3.png" alt="EE Branding Left" 
+                 class="w-1/2 h-auto object-cover block select-none -mr-[0.5px]"
+                 onerror="this.onerror=null; this.src='EE BRANDING 3.JPG';">
 
-                        <!-- Right Artwork: EE BRANDING 2 -->
-                        <div class="relative w-full overflow-hidden flex items-center justify-center">
-                            <img src="EE BRANDING 2.png" alt="EE Branding Right" 
-                                 class="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-500 block"
-                                 onerror="this.onerror=null; this.src='EE BRANDING 2.JPG';">
-                        </div>
-                    </div>
-                </section>
+            <!-- Right Artwork: EE BRANDING 2 -->
+            <img src="EE BRANDING 2.png" alt="EE Branding Right" 
+                 class="w-1/2 h-auto object-cover block select-none"
+                 onerror="this.onerror=null; this.src='EE BRANDING 2.JPG';">
+                 
+        </div>
+    </div>
+</section>
             </div>
 
             <!-- TAB 2: SYSTEMS VIEW -->
