@@ -3494,14 +3494,14 @@ window.renderCapstonesUI = function() {
                     ${item.authors ? `<p class="text-[10px] text-slate-400"><i class="fa-solid fa-users text-slate-500 mr-1"></i>${item.authors}</p>` : ''}
                     
                     <details class="group text-[10px] text-slate-300">
-                        <summary class="cursor-pointer font-semibold text-fusee-cyan hover:underline flex items-center justify-between pt-1">
-                            <span>Read Abstract</span>
-                            <i class="fa-solid fa-chevron-down text-[8px] group-open:rotate-180 transition"></i>
-                        </summary>
-                        <p class="mt-1.5 p-2 rounded bg-slate-950/60 border border-slate-800/80 leading-relaxed text-slate-300">
-                            ${item.abstract || 'No abstract provided.'}
-                        </p>
-                    </details>
+    <summary class="cursor-pointer font-semibold text-fusee-cyan hover:underline flex items-center justify-between pt-1 select-none focus:outline-none">
+        <span>Read Abstract</span>
+        <i class="fa-solid fa-chevron-down text-[8px] group-open:rotate-180 transition"></i>
+    </summary>
+    <div class="mt-2 p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 leading-relaxed text-slate-300 text-[10.5px] whitespace-pre-line max-h-48 overflow-y-auto text-justify">
+        ${item.abstract || 'No abstract provided.'}
+    </div>
+</details>
                 </div>
                 ${videoBtnHtml}
             </div>
