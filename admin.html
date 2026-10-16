@@ -1338,18 +1338,6 @@ window.addImportantEventRow = function(title = '', date = '', endDate = '', cate
             container.appendChild(div);
         };
 
-        // Real-time listener for Firestore edits
-        onSnapshot(docRef, (docSnap) => {
-            if (docSnap.exists()) {
-                populateUI(docSnap.data());
-            } else {
-                populateUI(defaultData);
-            }
-        }, (err) => {
-            console.warn("Firestore listener fallback:", err);
-            populateUI(defaultData);
-        });
-
         window.saveDataToFirebase = async function() {
             const saveBtn = document.getElementById('save-all-btn');
             if (!saveBtn) return;
@@ -1923,6 +1911,16 @@ document.querySelectorAll('.important-event-item-row').forEach(row => {
             `;
             container.appendChild(div);
         };
+        onSnapshot(docRef, (docSnap) => {
+    if (docSnap.exists()) {
+        populateUI(docSnap.data());
+    } else {
+        populateUI(defaultData);
+    }
+}, (err) => {
+    console.warn("Firestore listener fallback:", err);
+    populateUI(defaultData);
+});
     </script>
 </body>
 </html>

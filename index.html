@@ -429,7 +429,8 @@ if (data.eeDept) {
                             purple: '#8B5CF6',
                             yellow: '#FFD600',
                             lime: '#10B981',
-                            pinkGlow: '#EC4899'
+                            pinkGlow: '#EC4899',
+                            orange: '#FF5700'
                         }
                     },
                     fontFamily: {
@@ -2504,10 +2505,10 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
     </ul>
 </div>
         
-        <button onclick="closeModal('ee-dept-modal')" class="w-full py-3 bg-fusee-cyan text-slate-950 font-bold rounded-xl text-xs shadow-neon-cyan flex items-center justify-center space-x-2">
-            <i class="fa-solid fa-house"></i>
-            <span>Return to Home Dashboard</span>
-        </button>
+        <button onclick="closeModal('ee-dept-modal')" class="max-w-xs w-full mx-auto py-2.5 px-4 bg-fusee-cyan/20 hover:bg-fusee-cyan text-fusee-cyan hover:text-slate-950 border border-fusee-cyan/40 font-bold rounded-xl text-xs transition-all duration-200 flex items-center justify-center space-x-2 my-2">
+    <i class="fa-solid fa-house text-xs"></i>
+    <span>Return to Home Dashboard</span>
+</button>
     </div>
 </div>
 <!-- FULL-SCREEN MODAL 2: FUSEE -->
@@ -2564,14 +2565,15 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
             </div>
         </div>
 
-        <!-- Integrated Officers Directory Container (Renders Inline inside FUSEE Tab) -->
-        <div id="fusee-officers-panel" class="hidden glass-card rounded-2xl p-4 md:p-5 border border-fusee-magenta/40 shadow-neon-pink/20 space-y-4 transition-all duration-300">
-            <div class="flex items-center justify-between border-b border-white/10 pb-2">
-                <h4 class="text-xs font-bold text-white font-techno flex items-center gap-2">
-                    <i class="fa-solid fa-id-card text-fusee-purple"></i> FUSEE Officers & Leadership
-                </h4>
-                <span class="text-[10px] text-slate-400">Directory & Officers Structure</span>
-            </div>
+        <!-- Integrated Officers Directory Header -->
+<div class="flex items-center justify-between border-b border-white/10 pb-2">
+    <h4 class="text-xs font-bold text-white font-techno flex items-center gap-2">
+        <i class="fa-solid fa-id-card text-fusee-purple"></i> FUSEE Officers & Leadership
+    </h4>
+    <button onclick="openModal('add-officer-modal')" class="px-2.5 py-1 rounded-lg bg-fusee-purple/20 text-fusee-purple border border-fusee-purple/40 text-[10px] font-bold hover:bg-fusee-purple/30 transition flex items-center gap-1 cursor-pointer">
+        <i class="fa-solid fa-plus"></i> Add Officer Contact
+    </button>
+</div>
 
             <!-- Officers Search & Category Filters -->
             <div class="space-y-2">
@@ -2592,10 +2594,10 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
             </div>
         </div>
 
-        <button onclick="closeModal('fusee-info-modal')" class="w-full py-3 bg-fusee-magenta text-white font-bold rounded-xl text-xs shadow-neon-pink flex items-center justify-center space-x-2">
-            <i class="fa-solid fa-house"></i>
-            <span>Return to Home Dashboard</span>
-        </button>
+        <button onclick="closeModal('fusee-info-modal')" class="max-w-xs w-full mx-auto py-2.5 px-4 bg-fusee-magenta/20 hover:bg-fusee-magenta text-fusee-magenta hover:text-white border border-fusee-magenta/40 font-bold rounded-xl text-xs transition-all duration-200 flex items-center justify-center space-x-2 my-2">
+    <i class="fa-solid fa-house text-xs"></i>
+    <span>Return to Home Dashboard</span>
+</button>
     </div>
 </div>
 
@@ -3340,12 +3342,12 @@ window.renderOfficersUI = function() {
         if (reps.length > 0) {
             html += `
                 <div class="space-y-2">
-                    <h4 class="text-[11px] font-bold font-techno text-fusee-magenta tracking-wider uppercase flex items-center justify-between border-b border-fusee-magenta/20 pb-1">
-                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-user-graduate text-fusee-magenta"></i> Batch & Course Reps</span>
-                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-fusee-magenta/10 border border-fusee-magenta/30 text-fusee-magenta">${reps.length}</span>
+                    <h4 class="text-[11px] font-bold font-techno text-orange-500 tracking-wider uppercase flex items-center justify-between border-b border-orange-500/20 pb-1">
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-user-graduate text-orange-500"></i> Batch & Course Reps</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-orange-500/10 border border-orange-500/30 text-orange-500">${reps.length}</span>
                     </h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        ${reps.map(off => createOfficerCard(off, 'fusee-magenta', 'fa-user-graduate')).join('')}
+                        ${reps.map(off => createOfficerCard(off, 'orange-500', 'fa-user-graduate')).join('')}
                     </div>
                 </div>`;
         }
@@ -3353,13 +3355,13 @@ window.renderOfficersUI = function() {
         // 3. Committees
         if (committees.length > 0) {
             const subCats = [
-                { id: 'academics', name: 'Academics & Scholarship', icon: 'fa-graduation-cap', color: 'text-amber-400', theme: 'fusee-yellow', badgeColor: 'bg-amber-400/10 text-amber-300 border-amber-400/30', match: o => o.subCategory === 'academics' || /academic|scholarship/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
-                { id: 'creatives', name: 'Creatives', icon: 'fa-palette', color: 'text-pink-400', theme: 'fusee-magenta', badgeColor: 'bg-pink-400/10 text-pink-300 border-pink-400/30', match: o => o.subCategory === 'creatives' || /creative/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
-                { id: 'documentations', name: 'Documentations', icon: 'fa-camera', color: 'text-sky-400', theme: 'fusee-cyan', badgeColor: 'bg-sky-400/10 text-sky-300 border-sky-400/30', match: o => o.subCategory === 'documentations' || /docu/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
-                { id: 'communications', name: 'Communications', icon: 'fa-bullhorn', color: 'text-cyan-400', theme: 'fusee-cyan', badgeColor: 'bg-cyan-400/10 text-cyan-300 border-cyan-400/30', match: o => o.subCategory === 'communications' || /comm/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
-                { id: 'logistics', name: 'Logistics', icon: 'fa-boxes-packing', color: 'text-emerald-400', theme: 'emerald-400', badgeColor: 'bg-emerald-400/10 text-emerald-300 border-emerald-400/30', match: o => o.subCategory === 'logistics' || /logi/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
-                { id: 'projects', name: 'FUSEE Projects', icon: 'fa-rocket', color: 'text-purple-400', theme: 'fusee-purple', badgeColor: 'bg-purple-400/10 text-purple-300 border-purple-400/30', match: o => o.subCategory === 'projects' || /project/i.test((o.title || '') + (o.dept || '') + (o.name || '')) }
-            ];
+    { id: 'academics', name: 'Academics & Scholarship', icon: 'fa-graduation-cap', color: 'text-amber-400', theme: 'fusee-yellow', badgeColor: 'bg-amber-400/10 text-amber-300 border-amber-400/30', match: o => o.subCategory === 'academics' || /academic|scholarship/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
+    { id: 'creatives', name: 'Creatives', icon: 'fa-palette', color: 'text-cyan-400', theme: 'fusee-cyan', badgeColor: 'bg-cyan-400/10 text-cyan-300 border-cyan-400/30', match: o => o.subCategory === 'creatives' || /creative/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
+    { id: 'documentations', name: 'Documentations', icon: 'fa-camera', color: 'text-sky-400', theme: 'fusee-cyan', badgeColor: 'bg-sky-400/10 text-sky-300 border-sky-400/30', match: o => o.subCategory === 'documentations' || /docu/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
+    { id: 'communications', name: 'Communications', icon: 'fa-bullhorn', color: 'text-pink-400', theme: 'fusee-magenta', badgeColor: 'bg-pink-400/10 text-pink-300 border-pink-400/30', match: o => o.subCategory === 'communications' || /comm/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
+    { id: 'logistics', name: 'Logistics', icon: 'fa-boxes-packing', color: 'text-emerald-400', theme: 'emerald-400', badgeColor: 'bg-emerald-400/10 text-emerald-300 border-emerald-400/30', match: o => o.subCategory === 'logistics' || /logi/i.test((o.title || '') + (o.dept || '') + (o.name || '')) },
+    { id: 'projects', name: 'FUSEE Projects', icon: 'fa-rocket', color: 'text-purple-400', theme: 'fusee-purple', badgeColor: 'bg-purple-400/10 text-purple-300 border-purple-400/30', match: o => o.subCategory === 'projects' || /project/i.test((o.title || '') + (o.dept || '') + (o.name || '')) }
+];
 
             html += `
                 <div class="space-y-3">
@@ -3381,29 +3383,29 @@ window.renderOfficersUI = function() {
                                 <span class="text-[8px] px-1.5 py-0.2 rounded ${sub.badgeColor} border">${subMembers.length}</span>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                ${subMembers.map(off => createOfficerCard(off, 'fusee-yellow', sub.icon)).join('')}
-                            </div>
+    ${subMembers.map(off => createOfficerCard(off, sub.theme, sub.icon)).join('')}
+</div>
                         </div>
                     `;
                 }
             });
 
             // Fallback for unassigned committee members
-            const unassigned = committees.filter(off => !subCats.some(sub => sub.match(off)));
-            if (unassigned.length > 0) {
-                html += `
-                    <div class="space-y-1.5">
-                        <div class="flex items-center space-x-1.5 text-[10px] font-bold text-slate-400">
-                            <i class="fa-solid fa-users"></i>
-                            <span>General Committee</span>
-                            <span class="text-[8px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700">${unassigned.length}</span>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            ${unassigned.map(off => createOfficerCard(off, 'fusee-yellow', 'fa-user')).join('')}
-                        </div>
-                    </div>
-                `;
-            }
+const unassigned = committees.filter(off => !subCats.some(sub => sub.match(off)));
+if (unassigned.length > 0) {
+    html += `
+        <div class="space-y-1.5">
+            <div class="flex items-center space-x-1.5 text-[10px] font-bold text-slate-400">
+                <i class="fa-solid fa-users"></i>
+                <span>General Committee</span>
+                <span class="text-[8px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700">${unassigned.length}</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                ${unassigned.map(off => createOfficerCard(off, 'slate-400', 'fa-user')).join('')}
+            </div>
+        </div>
+    `;
+}
 
             html += `</div></div>`;
         }
