@@ -1201,20 +1201,20 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
                 </div>
             </div>
 
-            <!-- Cyber Selector Button Aligned Underneath Clock -->
-            <div class="relative">
-                <button id="theme-dropdown-btn" onclick="toggleThemeDropdown(event)" 
-                        class="px-2 py-0.5 md:px-2.5 md:py-1.5 rounded-lg md:rounded-xl bg-slate-900/80 border border-white/10 text-[9px] md:text-[10px] font-bold text-fusee-cyan flex items-center gap-1 hover:border-white/20 transition shadow-sm">
-                    <span id="theme-active-label" class="flex items-center gap-1">⚡ Cyber</span>
-                    <i id="theme-dropdown-chevron" class="fa-solid fa-chevron-down text-[7px] text-slate-400 transition-transform duration-200"></i>
-                </button>
+            <!-- Cyber Switcher Button -->
+<div class="relative">
+    <button id="theme-dropdown-btn" onclick="toggleThemeDropdown(event)" 
+            class="px-2 py-0.5 md:px-2.5 md:py-1.5 rounded-lg md:rounded-xl bg-slate-900/80 border border-white/10 text-[9px] md:text-[10px] font-bold text-fusee-cyan flex items-center gap-1 hover:border-white/20 transition shadow-sm">
+        <span id="theme-active-label" class="flex items-center gap-1">⚡ FUSEE</span>
+        <i id="theme-dropdown-chevron" class="fa-solid fa-chevron-down text-[7px] text-slate-400 transition-transform duration-200"></i>
+    </button>
 
-                <div id="theme-dropdown-menu" class="hidden absolute right-0 top-full mt-1 z-50 p-1.5 rounded-xl bg-slate-900/95 backdrop-blur-xl border border-white/15 shadow-2xl flex flex-col space-y-1 min-w-[110px] text-[10px]">
-                    <button onclick="selectTheme('fusee')" id="theme-btn-fusee" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-fusee-cyan bg-fusee-cyan/15 border border-fusee-cyan/30">⚡ Cyber</button>
-                    <button onclick="selectTheme('light')" id="theme-btn-light" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/80">☀️ Light</button>
-                    <button onclick="selectTheme('cyber-pink')" id="theme-btn-pink" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/80">🌸 Pink</button>
-                </div>
-            </div>
+    <div id="theme-dropdown-menu" class="hidden absolute right-0 top-full mt-1 z-50 p-1.5 rounded-xl bg-slate-900/95 backdrop-blur-xl border border-white/15 shadow-2xl flex flex-col space-y-1 min-w-[110px] text-[10px]">
+        <button onclick="selectTheme('fusee')" id="theme-btn-fusee" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-fusee-cyan bg-fusee-cyan/15 border border-fusee-cyan/30">⚡ FUSEE</button>
+        <button onclick="selectTheme('light')" id="theme-btn-light" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/80">☀️ LIGHT</button>
+        <button onclick="selectTheme('cyber-pink')" id="theme-btn-pink" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/80">🌸 PINK</button>
+    </div>
+</div>
         </div>
     </div>
 </header>
