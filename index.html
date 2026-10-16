@@ -3466,17 +3466,17 @@ window.renderCapstonesUI = function() {
                 <img src="${item.diagramUrl}" alt="${item.title || 'Block Diagram'}" class="w-full h-full object-contain p-1 group-hover:scale-105 transition duration-300">
             </div>
         ` : `
-            <div class="w-full aspect-video rounded-xl border border-slate-800 bg-slate-950 flex flex-col items-center justify-center text-slate-500 text-[10px]">
-                <i class="fa-solid fa-diagram-project text-2xl text-fusee-cyan/30 mb-1"></i>
-                <span>Circuit Block Diagram</span>
-            </div>
-        `;
+    <div class="w-full aspect-video rounded-xl border border-slate-800 bg-slate-950 flex flex-col items-center justify-center text-slate-500 text-[10px]">
+        <i class="fa-solid fa-graduation-cap text-2xl text-fusee-cyan/30 mb-1"></i>
+        <span>Capstone Project</span>
+    </div>
+`;
 
         const videoBtnHtml = item.videoUrl ? `
-            <a href="${item.videoUrl}" target="_blank" rel="noopener noreferrer" class="block w-full text-center py-2 bg-gradient-to-r from-fusee-cyan to-blue-600 text-slate-950 font-bold rounded-xl text-xs hover:from-cyan-400 hover:to-blue-500 transition shadow-neon-cyan mt-2">
-                <i class="fa-solid fa-circle-play mr-1.5"></i> Watch Video Demo
-            </a>
-        ` : '';
+    <a href="${item.videoUrl}" target="_blank" rel="noopener noreferrer" class="block w-full text-center py-2 bg-gradient-to-r from-fusee-cyan to-blue-600 text-slate-950 font-bold rounded-xl text-xs hover:from-cyan-400 hover:to-blue-500 transition shadow-neon-cyan mt-2">
+        <i class="fa-solid fa-arrow-up-right-from-square mr-1.5"></i> View Capstone Project
+    </a>
+` : '';
 
         return `
             <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 hover:border-fusee-cyan/50 transition flex flex-col justify-between">
