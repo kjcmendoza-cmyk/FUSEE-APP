@@ -3580,6 +3580,181 @@ let currentTutoringSubject = 'all';
         alert("Your peer tutoring offer has been submitted! It will appear on the live board shortly.");
         closeModal('post-tutor-modal');
     }
+
+    // ========================================================
+// 18. Important Events & Academic Calendar JavaScript Engine
+// ========================================================
+let currentCalDate = new Date();
+let currentImpFilter = 'all';
+
+// Month Navigation Handler (< Prev / Next >)
+window.changeCalendarMonth = function(delta) {
+    currentCalDate.setMonth(currentCalDate.getMonth() + delta);
+    window.renderImportantEventsUI();
+};
+
+// Filter Category Pills Handler (All / Major Exams / Ateneo Events / Holidays)
+window.setImportantEventFilter = function(cat, evt) {
+    currentImpFilter = cat;
+    document.querySelectorAll('.imp-pill').forEach(btn => {
+        btn.className = 'imp-pill px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0';
+    });
+    if (evt && evt.target) {
+        evt.target.className = 'imp-pill px-2.5 py-1 rounded-lg bg-fusee-yellow text-slate-950 font-bold flex-shrink-0';
+    }
+    window.renderImportantEventsUI();
+};
+
+// Main UI Renderer for Home Banner & Modal Calendar
+window.renderImportantEventsUI = function() {
+    const events = window.allImportantEventsData || [];
+
+    // 1. Update Today's Schedule Banner on Home View
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`; // YYYY-MM-DD
+
+    const todayTitleEl = document.getElementById('today-event-title');
+    const todayDescEl = document.getElementById('today-event-desc');
+
+    if (todayTitleEl && todayDescEl) {
+        // Find events active today (date <= today <= endDate)
+        const todayEvents = events.filter(e => {
+            if (!e.date) return false;
+            const startDate = e.date;
+            const endDate = e.endDate || e.date;
+            return todayStr >= startDate && todayStr <= endDate;
+        });
+
+        if (todayEvents.length > 0) {
+            todayTitleEl.textContent = todayEvents.map(e => e.title).join(' • ');
+            todayDescEl.textContent = todayEvents.map(e => e.description || e.category || 'Event scheduled today').join(' | ');
+        } else {
+            todayTitleEl.textContent = "No important event today";
+            todayDescEl.textContent = "Regular academic schedule in effect.";
+        }
+    }
+
+    // 2. Render Month & Year Header inside Modal
+    const monthYearEl = document.getElementById('calendar-month-year');
+    const monthNames = ["January", "February", "March", "April", "May", "June", 
+                        "July", "August", "September", "October", "November", "December"];
+    const calYear = currentCalDate.getFullYear();
+    const calMonth = currentCalDate.getMonth();
+
+    if (monthYearEl) {
+        monthYearEl.textContent = `${monthNames[calMonth]} ${calYear}`;
+    }
+
+    // Category Filter Helper
+    const filterCategoryMatches = (e) => {
+        if (currentImpFilter === 'all') return true;
+        const cat = (e.category || '').toLowerCase();
+        if (currentImpFilter === 'exam') return cat.includes('exam');
+        if (currentImpFilter === 'ateneo') return cat.includes('ateneo');
+        if (currentImpFilter === 'holiday') return cat.includes('holiday') || cat.includes('suspension');
+        return true;
+    };
+
+    const filteredEvents = events.filter(filterCategoryMatches);
+
+    // 3. Render Calendar Days Grid inside Modal
+    const gridContainer = document.getElementById('calendar-days-grid');
+    if (gridContainer) {
+        const firstDayIndex = new Date(calYear, calMonth, 1).getDay(); // Starting day of week
+        const totalDaysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+        let gridHtml = '';
+
+        // Empty padding cells before Day 1
+        for (let i = 0; i < firstDayIndex; i++) {
+            gridHtml += `<div class="p-2 text-center text-slate-700 font-pixel text-[10px]"></div>`;
+        }
+
+        // Days 1 through N
+        for (let day = 1; day <= totalDaysInMonth; day++) {
+            const dayStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const isToday = dayStr === todayStr;
+
+            const dayEvents = filteredEvents.filter(e => {
+                const start = e.date;
+                const end = e.endDate || e.date;
+                return dayStr >= start && dayStr <= end;
+            });
+
+            const hasEvent = dayEvents.length > 0;
+
+            let dayBg = 'bg-slate-900/60 text-slate-300 border-slate-800';
+            if (isToday) {
+                dayBg = 'bg-fusee-yellow/20 text-fusee-yellow border-fusee-yellow font-bold ring-1 ring-fusee-yellow';
+            } else if (hasEvent) {
+                dayBg = 'bg-slate-800 text-white border-fusee-yellow/50 font-bold';
+            }
+
+            const indicatorDot = hasEvent 
+                ? `<span class="w-1.5 h-1.5 rounded-full bg-fusee-yellow inline-block mt-0.5"></span>`
+                : '';
+
+            gridHtml += `
+                <div class="p-1.5 sm:p-2 rounded-xl border ${dayBg} flex flex-col items-center justify-center min-h-[36px] transition">
+                    <span class="text-[10px] md:text-xs font-techno">${day}</span>
+                    ${indicatorDot}
+                </div>
+            `;
+        }
+
+        gridContainer.innerHTML = gridHtml;
+    }
+
+    // 4. Render Events Agenda List below Calendar inside Modal
+    const listContainer = document.getElementById('important-events-list-container');
+    if (listContainer) {
+        const monthEvents = filteredEvents.filter(e => {
+            if (!e.date) return false;
+            const eYear = parseInt(e.date.substring(0, 4), 10);
+            const eMonth = parseInt(e.date.substring(5, 7), 10) - 1;
+            return eYear === calYear && eMonth === calMonth;
+        });
+
+        monthEvents.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+        if (monthEvents.length === 0) {
+            listContainer.innerHTML = `<p class="text-[10px] text-slate-400 italic text-center py-4">No events scheduled for ${monthNames[calMonth]} ${calYear}.</p>`;
+        } else {
+            listContainer.innerHTML = monthEvents.map(e => {
+                let catBadge = 'bg-fusee-yellow/20 text-fusee-yellow border-fusee-yellow/30';
+                if (e.category && e.category.toLowerCase().includes('exam')) {
+                    catBadge = 'bg-rose-500/20 text-rose-400 border-rose-500/30';
+                } else if (e.category && e.category.toLowerCase().includes('ateneo')) {
+                    catBadge = 'bg-fusee-cyan/20 text-fusee-cyan border-fusee-cyan/30';
+                } else if (e.category && (e.category.toLowerCase().includes('holiday') || e.category.toLowerCase().includes('suspension'))) {
+                    catBadge = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+                }
+
+                const dateDisplay = (e.endDate && e.endDate !== e.date) 
+                    ? `${e.date} to ${e.endDate}` 
+                    : e.date;
+
+                return `
+                    <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1 hover:border-fusee-yellow/40 transition">
+                        <div class="flex items-center justify-between gap-1">
+                            <span class="px-2 py-0.5 rounded text-[8px] font-bold font-techno border ${catBadge}">
+                                ${e.category || 'EVENT'}
+                            </span>
+                            <span class="text-[9px] text-slate-400 font-mono">
+                                <i class="fa-regular fa-calendar mr-1 text-fusee-yellow"></i>${dateDisplay}
+                            </span>
+                        </div>
+                        <h5 class="font-bold text-white text-xs leading-snug">${e.title || 'Untitled Event'}</h5>
+                        ${e.description ? `<p class="text-[10px] text-slate-300 leading-relaxed">${e.description}</p>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+};
     </script>
 
 <!-- MODAL: EE Academic Drive -->
