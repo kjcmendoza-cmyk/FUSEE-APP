@@ -4060,26 +4060,48 @@ window.renderTutorManagementUI = function() {
     }).join('');
 };
 
-window.toggleTutorStatus = function(index) {
+window.toggleTutorStatus = async function(index) {
     if (window.allPeerTutoringData && window.allPeerTutoringData[index]) {
         const currentStatus = window.allPeerTutoringData[index].status;
         window.allPeerTutoringData[index].status = (currentStatus === 'FULL') ? 'AVAILABLE' : 'FULL';
-        window.renderTutorManagementUI();
-        window.renderPeerTutoringUI();
-    }
-};
 
-window.deleteTutorListing = function(index) {
-    if (confirm("Are you sure you want to remove this tutoring listing?")) {
-        if (window.allPeerTutoringData) {
-            window.allPeerTutoringData.splice(index, 1);
+        try {
+            const db = window.db;
+            const docRef = window.doc(db, "fusee_hub", "landing_content");
+            await window.updateDoc(docRef, {
+                peerTutoring: window.allPeerTutoringData
+            });
             window.renderTutorManagementUI();
             window.renderPeerTutoringUI();
+        } catch (err) {
+            console.error("Error updating tutor status:", err);
+            alert("Failed to update status in database: " + err.message);
         }
     }
 };
 
-function handleStudentTutorSubmit(e) {
+window.deleteTutorListing = async function(index) {
+    if (confirm("Are you sure you want to remove this tutoring listing?")) {
+        if (window.allPeerTutoringData) {
+            window.allPeerTutoringData.splice(index, 1);
+
+            try {
+                const db = window.db;
+                const docRef = window.doc(db, "fusee_hub", "landing_content");
+                await window.updateDoc(docRef, {
+                    peerTutoring: window.allPeerTutoringData
+                });
+                window.renderTutorManagementUI();
+                window.renderPeerTutoringUI();
+            } catch (err) {
+                console.error("Error deleting tutor listing:", err);
+                alert("Failed to delete listing from database: " + err.message);
+            }
+        }
+    }
+};
+
+async function handleStudentTutorSubmit(e) {
     if (e) e.preventDefault();
 
     const type = document.getElementById('tut-post-type')?.value || 'TUTOR';
@@ -4100,7 +4122,7 @@ function handleStudentTutorSubmit(e) {
     const newListing = {
         id: Date.now().toString(),
         type,
-        role: type, // 'TUTOR' or 'TUTEE'
+        role: type,
         status: 'AVAILABLE',
         tutorName,
         yearLevel,
@@ -4116,16 +4138,27 @@ function handleStudentTutorSubmit(e) {
     if (!window.allPeerTutoringData) window.allPeerTutoringData = [];
     window.allPeerTutoringData.unshift(newListing);
 
-    if (typeof window.renderPeerTutoringUI === 'function') {
-        window.renderPeerTutoringUI();
-    }
-    if (typeof window.renderTutorManagementUI === 'function') {
-        window.renderTutorManagementUI();
-    }
+    try {
+        const db = window.db;
+        const docRef = window.doc(db, "fusee_hub", "landing_content");
+        await window.updateDoc(docRef, {
+            peerTutoring: window.allPeerTutoringData
+        });
 
-    document.getElementById('student-tutor-form')?.reset();
-    closeModal('post-tutor-modal');
-    alert('Your peer tutoring listing has been published!');
+        if (typeof window.renderPeerTutoringUI === 'function') {
+            window.renderPeerTutoringUI();
+        }
+        if (typeof window.renderTutorManagementUI === 'function') {
+            window.renderTutorManagementUI();
+        }
+
+        document.getElementById('student-tutor-form')?.reset();
+        closeModal('post-tutor-modal');
+        alert('Your peer tutoring listing has been published!');
+    } catch (err) {
+        console.error("Error saving listing to Firestore:", err);
+        alert("Failed to publish listing to the database: " + err.message);
+    }
 }
 
     // ========================================================
