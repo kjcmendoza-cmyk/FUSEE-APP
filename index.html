@@ -3742,38 +3742,46 @@ let currentTutoringSubject = 'all';
                 : '<span class="text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/30 text-[8px] font-bold">🟢 AVAILABLE</span>';
 
             const mailSubject = encodeURIComponent(`[FUSEE Peer Match] Request for ${item.subject} Tutoring`);
-            const mailBody = encodeURIComponent(`Hi ${item.tutorName},\n\nI saw your listing on FUSEE Hub for ${item.subject}. I would like to join/request a tutoring session.\n\nThank you!`);
+        const mailBody = encodeURIComponent(`Hi ${item.tutorName},\n\nI saw your listing on FUSEE Hub for ${item.subject}. I would like to join/request a tutoring session.\n\nThank you!`);
+        const tutorEmail = item.contact || '';
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(tutorEmail)}&su=${mailSubject}&body=${mailBody}`;
 
-            return `
-                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5 hover:border-fusee-cyan/40 transition flex flex-col justify-between">
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between gap-1">
-                            <span class="px-2 py-0.5 rounded-full text-[8px] font-bold font-techno border ${badgeColor} flex items-center gap-1">
-                                <i class="fa-solid ${badgeIcon}"></i> ${badgeText}
-                            </span>
-                            ${statusBadge}
-                        </div>
-
-                        <div>
-                            <h4 class="font-bold text-white text-xs leading-snug">${item.tutorName || 'Peer Tutor'}</h4>
-                            <p class="text-[10px] text-fusee-cyan font-semibold">${item.yearLevel || 'EE Senior'} • <span class="text-white">${item.subject || 'EE Core'}</span></p>
-                        </div>
-
-                        <p class="text-[10px] text-slate-300 leading-relaxed bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">
-                            <strong>Focus:</strong> ${item.topicFocus || 'Core course topics review & problem solving.'}
-                        </p>
-
-                        <div class="grid grid-cols-2 gap-1 text-[9px] text-slate-400 pt-1">
-                            <span><i class="fa-solid fa-location-dot text-fusee-cyan mr-1"></i>${item.location || 'D202 ComLab'}</span>
-                            <span><i class="fa-solid fa-clock text-fusee-yellow mr-1"></i>${item.schedule || 'Flexible'}</span>
-                        </div>
+        return `
+            <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5 hover:border-fusee-cyan/40 transition flex flex-col justify-between">
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between gap-1">
+                        <span class="px-2 py-0.5 rounded-full text-[8px] font-bold font-techno border ${badgeColor} flex items-center gap-1">
+                            <i class="fa-solid ${badgeIcon}"></i> ${badgeText}
+                        </span>
+                        ${statusBadge}
                     </div>
 
-                    <a href="mailto:${item.contact || ''}?subject=${mailSubject}&body=${mailBody}" 
-                       class="block w-full text-center py-2 bg-gradient-to-r from-fusee-cyan to-blue-600 text-slate-950 font-bold rounded-xl text-xs hover:from-cyan-400 hover:to-blue-500 transition shadow-neon-cyan mt-2">
-                        <i class="fa-solid fa-paper-plane mr-1.5"></i> Request Match / Join Group
-                    </a>
+                    <div>
+                        <h4 class="font-bold text-white text-xs leading-snug">${item.tutorName || 'Peer Tutor'}</h4>
+                        <p class="text-[10px] text-fusee-cyan font-semibold">${item.yearLevel || 'EE Senior'} • <span class="text-white">${item.subject || 'EE Core'}</span></p>
+                    </div>
+
+                    <p class="text-[10px] text-slate-300 leading-relaxed bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">
+                        <strong>Focus:</strong> ${item.topicFocus || 'Core course topics review & problem solving.'}
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-1 text-[9px] text-slate-400 pt-1">
+                        <span><i class="fa-solid fa-location-dot text-fusee-cyan mr-1"></i>${item.location || 'D202 ComLab'}</span>
+                        <span><i class="fa-solid fa-clock text-fusee-yellow mr-1"></i>${item.schedule || 'Flexible'}</span>
+                    </div>
                 </div>
+
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <a href="${gmailUrl}" target="_blank" rel="noopener noreferrer" 
+                       class="block w-full text-center py-2 bg-gradient-to-r from-fusee-cyan to-blue-600 text-slate-950 font-bold rounded-xl text-xs hover:from-cyan-400 hover:to-blue-500 transition shadow-neon-cyan">
+                        <i class="fa-solid fa-envelope mr-1"></i> Open Gmail
+                    </a>
+                    <button type="button" onclick="navigator.clipboard.writeText('${tutorEmail}'); alert('Copied tutor email: ${tutorEmail}')" 
+                            class="block w-full text-center py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs transition border border-slate-700">
+                        <i class="fa-solid fa-copy mr-1"></i> Copy Email
+                    </button>
+                </div>
+            </div>
             `;
         }).join('');
     };
