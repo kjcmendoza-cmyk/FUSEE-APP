@@ -41,11 +41,17 @@
         // 2. Initialize Auth & enforce @addu.edu.ph domain restriction
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ hd: "addu.edu.ph" });
+        provider.setCustomParameters({ 
+  hd: "addu.edu.ph",
+  prompt: "select_account" 
+});
 
         window.firebaseApp = app;
         window.firebaseAnalytics = analytics;
         window.currentUser = null;
+        window.loginWithAdDU = async () => {
+  return await signInWithPopup(auth, provider);
+};
 
         // 3. Track active login state
         onAuthStateChanged(auth, (user) => {
