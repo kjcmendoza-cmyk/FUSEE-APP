@@ -3049,52 +3049,146 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
             window.renderMatrixGrid();
         };
 
-        window.renderMatrixGrid = function() {
-            const container = document.getElementById('matrix-slots-container');
-            const selectDay = document.getElementById('matrix-day-select')?.value || 'Monday';
-            if (!container) return;
+        // Helper to convert total minutes back to 12-hour formatted string
+function minutesTo12H(mins) {
+    let h = Math.floor(mins / 60);
+    let m = mins % 60;
+    const period = h >= 12 ? 'PM' : 'AM';
+    h = h % 12;
+    if (h === 0) h = 12;
+    const hStr = String(h).padStart(2, '0');
+    const mStr = String(m).padStart(2, '0');
+    return `${hStr}:${mStr} ${period}`;
+}
 
-            const schedule = window.allWeeklySchedule || { eeLab: [], comLab: [] };
-            const events = window.allActivityEvents || [];
-            const roomKey = activeMatrixRoom === 'ee' ? 'eeLab' : 'comLab';
-            const roomClasses = (schedule[roomKey] || []).filter(c => c.day === selectDay);
+window.renderMatrixGrid = function() {
+    const container = document.getElementById('matrix-slots-container');
+    const selectDay = document.getElementById('matrix-day-select')?.value || 'Monday';
+    if (!container) return;
 
-            let html = '';
-            
-            // Render Activity Period slot if Monday/Wednesday
-            if (selectDay === 'Monday' || selectDay === 'Wednesday') {
-                const actEvent = events.find(e => (e.room === (activeMatrixRoom === 'ee' ? 'ee' : 'com') || e.room === 'both'));
-                html += `
-                    <div class="p-3 rounded-xl bg-gradient-to-r from-fusee-cyan/15 via-purple-500/20 to-fusee-magenta/15 border border-fusee-cyan/40 space-y-1">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold text-fusee-cyan font-techno"><i class="fa-solid fa-star text-fusee-yellow mr-1"></i> 3:00 PM - 6:00 PM</span>
-                            <span class="px-2 py-0.5 rounded bg-fusee-cyan/20 text-fusee-cyan font-bold text-[9px] border border-fusee-cyan/30">ACTIVITY PERIOD</span>
+    const schedule = window.allWeeklySchedule || { eeLab: [], comLab: [] };
+    const events = window.allActivityEvents || [];
+    const roomKey = activeMatrixRoom === 'ee' ? 'eeLab' : 'comLab';
+    const roomClasses = (schedule[roomKey] || []).filter(c => c.day === selectDay);
+
+    let occupied = [];
+
+    // 1. Gather all logged classes
+    roomClasses.forEach(c => {
+        const start = timeStrToMinutes(c.startTime);
+        const end = timeStrToMinutes(c.endTime);
+        if (end > start) {
+            occupied.push({
+                type: 'CLASS',
+                start,
+                end,
+                startTimeStr: c.startTime,
+                endTimeStr: c.endTime,
+                subjectName: c.subjectName,
+                instructor: c.instructor
+            });
+        }
+    });
+
+    // 2. Add Activity Period on Mondays and Wednesdays
+    if (selectDay === 'Monday' || selectDay === 'Wednesday') {
+        const actEvent = events.find(e => (e.room === (activeMatrixRoom === 'ee' ? 'ee' : 'com') || e.room === 'both'));
+        occupied.push({
+            type: 'ACTIVITY',
+            start: 900,  // 3:00 PM
+            end: 1080,   // 6:00 PM
+            startTimeStr: '03:00 PM',
+            endTimeStr: '06:00 PM',
+            actEvent
+        });
+    }
+
+    // 3. Sort chronologically by start time
+    occupied.sort((a, b) => a.start - b.start);
+
+    // 4. Fill timeline from 7:30 AM (450m) to 7:00 PM (1140m)
+    const LAB_START = 450;
+    const LAB_END = 1140;
+
+    let timeline = [];
+    let cursor = LAB_START;
+
+    occupied.forEach(block => {
+        if (block.start > cursor) {
+            timeline.push({
+                type: 'FREE',
+                start: cursor,
+                end: block.start,
+                startTimeStr: minutesTo12H(cursor),
+                endTimeStr: minutesTo12H(block.start)
+            });
+        }
+
+        if (block.end > cursor) {
+            const adjustedStart = Math.max(block.start, cursor);
+            timeline.push({
+                ...block,
+                start: adjustedStart,
+                startTimeStr: minutesTo12H(adjustedStart)
+            });
+            cursor = Math.max(cursor, block.end);
+        }
+    });
+
+    if (cursor < LAB_END) {
+        timeline.push({
+            type: 'FREE',
+            start: cursor,
+            end: LAB_END,
+            startTimeStr: minutesTo12H(cursor),
+            endTimeStr: minutesTo12H(LAB_END)
+        });
+    }
+
+    // 5. Render HTML
+    let html = '';
+    timeline.forEach(slot => {
+        if (slot.type === 'CLASS') {
+            html += `
+                <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-bold font-techno text-fusee-yellow">${slot.startTimeStr} - ${slot.endTimeStr}</span>
+                            <span class="px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-400 text-[8px] font-bold border border-amber-500/30">CLASS</span>
                         </div>
-                        <p class="font-bold text-white text-xs">${actEvent ? `⚡ SPECIAL EVENT: ${actEvent.eventTitle}` : 'FREE / NO CLASS SCHEDULE (Activity Window)'}</p>
-                        <p class="text-[10px] text-slate-300">${actEvent ? (actEvent.description || 'Scheduled FUSEE activity') : 'Open activity window for officers and students.'}</p>
+                        <h4 class="font-bold text-white text-xs mt-0.5">${slot.subjectName}</h4>
+                        <p class="text-[10px] text-slate-400">${slot.instructor || 'Faculty Instructor'}</p>
                     </div>
-                `;
-            }
-
-            if (roomClasses.length === 0) {
-                html += `<div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center text-slate-400 text-xs italic">No regular class schedules logged for ${selectDay}. Room is open for free study.</div>`;
-            } else {
-                html += roomClasses.map(c => `
-                    <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
-                        <div>
-                            <div class="flex items-center space-x-2">
-                                <span class="text-xs font-bold font-techno text-fusee-yellow">${c.startTime} - ${c.endTime}</span>
-                                <span class="px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-400 text-[8px] font-bold border border-amber-500/30">CLASS</span>
-                            </div>
-                            <h4 class="font-bold text-white text-xs mt-0.5">${c.subjectName}</h4>
-                            <p class="text-[10px] text-slate-400">${c.instructor || 'Faculty Instructor'}</p>
+                </div>
+            `;
+        } else if (slot.type === 'ACTIVITY') {
+            html += `
+                <div class="p-3 rounded-xl bg-gradient-to-r from-fusee-cyan/15 via-purple-500/20 to-fusee-magenta/15 border border-fusee-cyan/40 space-y-1">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-fusee-cyan font-techno"><i class="fa-solid fa-star text-fusee-yellow mr-1"></i> ${slot.startTimeStr} - ${slot.endTimeStr}</span>
+                        <span class="px-2 py-0.5 rounded bg-fusee-cyan/20 text-fusee-cyan font-bold text-[9px] border border-fusee-cyan/30">ACTIVITY PERIOD</span>
+                    </div>
+                    <p class="font-bold text-white text-xs">${slot.actEvent ? `⚡ SPECIAL EVENT: ${slot.actEvent.eventTitle}` : 'FREE / NO CLASS SCHEDULE (Activity Window)'}</p>
+                    <p class="text-[10px] text-slate-300">${slot.actEvent ? (slot.actEvent.description || 'Scheduled FUSEE activity') : 'Open activity window for officers and students.'}</p>
+                </div>
+            `;
+        } else if (slot.type === 'FREE') {
+            html += `
+                <div class="p-3 rounded-xl bg-slate-900/40 border border-slate-800/60 flex items-center justify-between opacity-80">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-bold font-techno text-emerald-400">${slot.startTimeStr} - ${slot.endTimeStr}</span>
+                            <span class="px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 text-[8px] font-bold border border-emerald-500/30">FREE TIME</span>
                         </div>
+                        <p class="font-medium text-slate-300 text-xs mt-0.5"><i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> Vacant / Open for Free Study</p>
                     </div>
-                `).join('');
-            }
+                </div>
+            `;
+        }
+    });
 
-            container.innerHTML = html;
-        };
+    container.innerHTML = html;
+};
 
         // Real-Time Clock & Dynamic Greeting Script
         function updateClockAndGreeting() {
