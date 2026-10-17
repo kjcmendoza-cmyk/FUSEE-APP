@@ -3741,11 +3741,15 @@ let currentTutoringSubject = 'all';
                 ? '<span class="text-rose-400 bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/30 text-[8px] font-bold">🔴 FULL</span>'
                 : '<span class="text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/30 text-[8px] font-bold">🟢 AVAILABLE</span>';
 
-            const mailSubject = encodeURIComponent(`[FUSEE Peer Match] Request for ${item.subject} Tutoring`);
-        const mailBody = encodeURIComponent(`Hi ${item.tutorName},\n\nI saw your listing on FUSEE Hub for ${item.subject}. I would like to join/request a tutoring session.\n\nThank you!`);
+            const subjectText = `[FUSEE Peer Match] Request for ${item.subject} Tutoring`;
+        const bodyText = `Hi ${item.tutorName},\n\nI saw your listing on FUSEE Hub for ${item.subject}. I would like to join/request a tutoring session.\n\nThank you!`;
         const tutorEmail = item.contact || '';
-        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(tutorEmail)}&su=${mailSubject}&body=${mailBody}`;
 
+        // Device Auto-Detection Logic
+        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const requestUrl = isMobileDevice 
+            ? `mailto:${tutorEmail}?subject=${encodeURIComponent(subjectText)}&body=${encodeURIComponent(bodyText)}`
+            : `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(tutorEmail)}&su=${encodeURIComponent(subjectText)}&body=${encodeURIComponent(bodyText)}`;
         return `
             <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5 hover:border-fusee-cyan/40 transition flex flex-col justify-between">
                 <div class="space-y-2">
@@ -3772,9 +3776,9 @@ let currentTutoringSubject = 'all';
                 </div>
 
                 <div class="grid grid-cols-2 gap-2 mt-2">
-                    <a href="${gmailUrl}" target="_blank" rel="noopener noreferrer" 
+                    <a href="${requestUrl}" ${isMobileDevice ? '' : 'target="_blank" rel="noopener noreferrer"'} 
                        class="block w-full text-center py-2 bg-gradient-to-r from-fusee-cyan to-blue-600 text-slate-950 font-bold rounded-xl text-xs hover:from-cyan-400 hover:to-blue-500 transition shadow-neon-cyan">
-                        <i class="fa-solid fa-envelope mr-1"></i> Open Gmail
+                        <i class="fa-solid fa-paper-plane mr-1"></i> Request Match
                     </a>
                     <button type="button" onclick="navigator.clipboard.writeText('${tutorEmail}'); alert('Copied tutor email: ${tutorEmail}')" 
                             class="block w-full text-center py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs transition border border-slate-700">
@@ -3782,8 +3786,9 @@ let currentTutoringSubject = 'all';
                     </button>
                 </div>
             </div>
-            `;
-        }).join('');
+            </div>
+        `;
+    }).join('');
     };
 
     function handleStudentTutorSubmit(e) {
