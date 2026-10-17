@@ -20,7 +20,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
-        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
         // 1. Add Firebase Auth import
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
@@ -37,19 +37,23 @@
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
+        window.db = db;
+window.doc = doc;
+window.updateDoc = updateDoc;
 
-        // 2. Initialize Auth & enforce @addu.edu.ph domain restriction
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ 
+// 2. Initialize Auth & enforce @addu.edu.ph domain restriction
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({
   hd: "addu.edu.ph",
-  prompt: "select_account" 
+  prompt: "select_account"
 });
 
-        window.firebaseApp = app;
-        window.firebaseAnalytics = analytics;
-        window.currentUser = null;
-        window.loginWithAdDU = async () => {
+window.firebaseApp = app;
+window.firebaseAnalytics = analytics;
+window.currentUser = null;
+
+window.loginWithAdDU = async () => {
   return await signInWithPopup(auth, provider);
 };
 
