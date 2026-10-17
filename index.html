@@ -1269,6 +1269,20 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
         </div>
     </div>
 </section>
+<!-- Daily Quote / Featured Announcement Banner -->
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-fusee-purple/30 via-slate-900 to-slate-900 border border-fusee-purple/30 p-4 shadow-xl">
+    <div class="relative z-10 space-y-1">
+        <span class="inline-block px-2.5 py-0.5 rounded-full bg-fusee-purple/20 text-fusee-purple text-[10px] font-bold uppercase tracking-wider border border-fusee-purple/40">
+            Daily Quote & Announcement
+        </span>
+        <h3 id="banner-display-title" class="text-sm md:text-base font-bold text-white font-techno">
+            Welcome to FUSEE Portal
+        </h3>
+        <p id="banner-display-body" class="text-xs text-slate-300 leading-relaxed">
+            Stay tuned for daily announcements, quotes, and department updates.
+        </p>
+    </div>
+</div>
 
 <!-- Live Interactive Room Vacancy & Status Cards -->
                 <section class="space-y-3 mb-4">
@@ -2569,33 +2583,35 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
             </div>
         </div>
 
-        <!-- Integrated Officers Directory Header -->
-<div class="flex items-center justify-between border-b border-white/10 pb-2">
-    <h4 class="text-xs font-bold text-white font-techno flex items-center gap-2">
-        <i class="fa-solid fa-id-card text-fusee-purple"></i> FUSEE Officers & Leadership
-    </h4>
-    <button onclick="openModal('add-officer-modal')" class="px-2.5 py-1 rounded-lg bg-fusee-purple/20 text-fusee-purple border border-fusee-purple/40 text-[10px] font-bold hover:bg-fusee-purple/30 transition flex items-center gap-1 cursor-pointer">
-        <i class="fa-solid fa-plus"></i> Add Officer Contact
-    </button>
-</div>
+        <!-- Expandable Officers Panel Container -->
+<div id="fusee-officers-panel" class="hidden space-y-3 pt-2">
 
-            <!-- Officers Search & Category Filters -->
-            <div class="space-y-2">
-                <input type="text" id="officer-search" onkeyup="filterOfficers()" placeholder="Search officer or position..." 
-                       class="w-full px-3 py-2 rounded-xl bg-slate-900/90 text-xs text-white placeholder-slate-500 border border-slate-800 focus:outline-none focus:border-fusee-purple transition">
-                
-                <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar text-[11px] pb-1">
-                    <button onclick="setOfficerCategory('all', event)" class="off-pill px-3 py-1 rounded-lg bg-fusee-purple text-white font-bold flex-shrink-0">All</button>
-                    <button onclick="setOfficerCategory('exec', event)" class="off-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">Exec Board</button>
-                    <button onclick="setOfficerCategory('reps', event)" class="off-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">Reps</button>
-                    <button onclick="setOfficerCategory('cmte', event)" class="off-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">Committees</button>
-                </div>
-            </div>
+    <!-- Integrated Officers Directory Header -->
+    <div class="flex items-center justify-between border-b border-white/10 pb-2">
+        <h4 class="text-xs font-bold text-white font-techno flex items-center gap-2">
+            <i class="fa-solid fa-id-card text-fusee-purple"></i> FUSEE Officers & Leadership
+        </h4>
+    </div>
 
-            <!-- Dynamic Officers Target Container -->
-            <div class="officers-display-container space-y-4 pt-1 text-xs max-h-[390px] overflow-y-auto pr-2">
-                <!-- Rendered dynamically via Firestore sync -->
-            </div>
+    <!-- Officers Search & Category Filters -->
+    <div class="space-y-2">
+        <input type="text" id="officer-search" onkeyup="filterOfficers()" placeholder="Search officer or position..." 
+               class="w-full px-3 py-2 rounded-xl bg-slate-900/90 text-xs text-white placeholder-slate-500 border border-slate-800 focus:outline-none focus:border-fusee-purple transition">
+        
+        <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar text-[11px] pb-1">
+            <button onclick="setOfficerCategory('all', event)" class="off-pill px-3 py-1 rounded-lg bg-fusee-purple text-white font-bold flex-shrink-0">All</button>
+            <button onclick="setOfficerCategory('exec', event)" class="off-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">Exec Board</button>
+            <button onclick="setOfficerCategory('reps', event)" class="off-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">Reps</button>
+            <button onclick="setOfficerCategory('cmte', event)" class="off-pill px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium flex-shrink-0">Committees</button>
+        </div>
+    </div>
+
+    <!-- Dynamic Officers Target Container -->
+    <div class="officers-display-container space-y-4 pt-1 text-xs max-h-[390px] overflow-y-auto pr-2">
+        <!-- Rendered dynamically via Firestore sync -->
+    </div>
+
+</div> <!-- Closing #fusee-officers-panel -->
         </div>
 
         <button onclick="closeModal('fusee-info-modal')" class="max-w-xs w-full mx-auto py-2.5 px-4 bg-fusee-magenta/20 hover:bg-fusee-magenta text-fusee-magenta hover:text-white border border-fusee-magenta/40 font-bold rounded-xl text-xs transition-all duration-200 flex items-center justify-center space-x-2 my-2">
@@ -2749,10 +2765,48 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
     };
 
     function handleStudentReportSubmit(e) {
-        e.preventDefault();
-        alert("Report submitted! Please present or drop off physical items at Room D204 Custodian Desk for official logging.");
-        closeModal('report-item-modal');
+    if (e) e.preventDefault();
+
+    // 1. Get values using exact form IDs
+    const typeSelect = document.getElementById('rpt-type');
+    const rawType = typeSelect ? typeSelect.value : 'LOST';
+    const reportType = rawType.toUpperCase().includes('FOUND') ? 'FOUND' : 'LOST';
+
+    const title = document.getElementById('rpt-title')?.value.trim() || 'Untitled Item';
+    const location = document.getElementById('rpt-location')?.value.trim() || 'N/A';
+    const date = document.getElementById('rpt-date')?.value || new Date().toISOString().split('T')[0];
+    const description = document.getElementById('rpt-desc')?.value.trim() || '';
+    const contact = document.getElementById('rpt-contact')?.value.trim() || 'N/A';
+
+    // 2. Build report object matching renderLostFoundUI
+    const newReport = {
+        id: Date.now(),
+        type: reportType,
+        status: 'UNCLAIMED',
+        title: title,
+        location: location,
+        description: description,
+        contact: contact,
+        date: date
+    };
+
+    // 3. Add to live data store & trigger UI render
+    if (!window.allLostFoundData) {
+        window.allLostFoundData = [];
     }
+    window.allLostFoundData.unshift(newReport);
+
+    if (typeof window.renderLostFoundUI === 'function') {
+        window.renderLostFoundUI();
+    }
+
+    // 4. Reset form fields & close modal
+    const form = document.getElementById('student-report-form');
+    if (form) form.reset();
+
+    closeModal('report-item-modal');
+    alert("Report submitted successfully! Please present physical items at Room D204 Custodian Desk for official logging.");
+}
 
         // Automatic Operating Hours to OPEN/CLOSED Status Calculator
         function parseTimeStringToMinutes(timeStr) {
@@ -3725,10 +3779,47 @@ let currentTutoringSubject = 'all';
     };
 
     function handleStudentTutorSubmit(e) {
-        e.preventDefault();
-        alert("Your peer tutoring offer has been submitted! It will appear on the live board shortly.");
-        closeModal('post-tutor-modal');
+    if (e) e.preventDefault();
+
+    const type = document.getElementById('tut-post-type')?.value || 'TUTOR';
+    const tutorName = document.getElementById('tut-post-name')?.value.trim() || '';
+    const yearLevel = document.getElementById('tut-post-year')?.value.trim() || '';
+    const subject = document.getElementById('tut-post-subject')?.value.trim() || '';
+    const maxStudents = document.getElementById('tut-post-max')?.value || '3';
+    const topicFocus = document.getElementById('tut-post-focus')?.value.trim() || '';
+    const location = document.getElementById('tut-post-location')?.value.trim() || '';
+    const schedule = document.getElementById('tut-post-schedule')?.value.trim() || '';
+    const contact = document.getElementById('tut-post-contact')?.value.trim() || '';
+
+    if (!tutorName || !subject || !contact) {
+        alert('Please fill out all required fields.');
+        return;
     }
+
+    const newListing = {
+        type,
+        status: 'AVAILABLE',
+        tutorName,
+        yearLevel,
+        subject,
+        maxStudents,
+        topicFocus,
+        location,
+        schedule,
+        contact
+    };
+
+    if (!window.allPeerTutoringData) window.allPeerTutoringData = [];
+    window.allPeerTutoringData.unshift(newListing);
+
+    if (typeof window.renderPeerTutoringUI === 'function') {
+        window.renderPeerTutoringUI();
+    }
+
+    document.getElementById('student-tutor-form')?.reset();
+    closeModal('post-tutor-modal');
+    alert('Your peer tutoring listing has been published!');
+}
 
     // ========================================================
 // 18. Important Events & Academic Calendar JavaScript Engine
@@ -3904,6 +3995,45 @@ window.renderImportantEventsUI = function() {
         }
     }
 };
+function handleStudentReportSubmit(e) {
+    if (e) e.preventDefault();
+
+    const rawType = document.getElementById('rpt-type')?.value || 'LOST';
+    const reportType = rawType.toUpperCase().includes('FOUND') ? 'FOUND' : 'LOST';
+    const title = document.getElementById('rpt-title')?.value.trim() || '';
+    const location = document.getElementById('rpt-location')?.value.trim() || '';
+    const date = document.getElementById('rpt-date')?.value || new Date().toISOString().split('T')[0];
+    const description = document.getElementById('rpt-desc')?.value.trim() || '';
+    const contact = document.getElementById('rpt-contact')?.value.trim() || '';
+
+    if (!title || !location || !contact) {
+        alert('Please fill out all required fields.');
+        return;
+    }
+
+    const newReport = {
+        id: Date.now(),
+        type: reportType,
+        status: 'UNCLAIMED',
+        title: title,
+        location: location,
+        date: date,
+        description: description,
+        contact: contact,
+        imageUrl: ''
+    };
+
+    if (!window.allLostFoundData) window.allLostFoundData = [];
+    window.allLostFoundData.unshift(newReport);
+
+    if (typeof window.renderLostFoundUI === 'function') {
+        window.renderLostFoundUI();
+    }
+
+    document.getElementById('student-report-form')?.reset();
+    closeModal('report-item-modal');
+    alert("Report submitted successfully!");
+}
     </script>
 
 <!-- MODAL: EE Academic Drive -->
