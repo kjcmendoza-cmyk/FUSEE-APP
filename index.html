@@ -2931,18 +2931,44 @@ window.renderTutorUI = function() {
     }).join('');
 };
 
-window.removeTutorListing = function(itemId) {
-    const item = (window.allPeerTutoringData || []).find(i => i.id === itemId);
+window.removeTutorListing = async function(itemId) {
+    const list = window.allPeerTutoringData || [];
+    const item = list.find(
+        i => i.id === itemId || i.id == itemId
+    );
     if (!item) return;
 
-    if (!window.currentUser || item.ownerEmail !== window.currentUser.email) {
+    // Check ownership if an owner email exists
+    const user = window.currentUser;
+    if (user && item.ownerEmail && item.ownerEmail !== user.email) {
         alert("Only the owner can remove this listing.");
         return;
     }
 
     if (confirm("Are you sure you want to delete this tutor request?")) {
-        window.allPeerTutoringData = window.allPeerTutoringData.filter(i => i.id !== itemId);
-        window.renderTutorUI();
+        // Filter out item locally
+        window.allPeerTutoringData = list.filter(
+            i => i.id !== itemId && i.id != itemId
+        );
+
+        // Save updated array to Firestore database
+        try {
+            const db = window.db;
+            const docRef = window.doc(db, "fusee_hub", "landing_content");
+            await window.updateDoc(docRef, {
+                peerTutoring: window.allPeerTutoringData
+            });
+
+            if (typeof window.renderTutorUI === 'function') {
+                window.renderTutorUI();
+            }
+            if (typeof window.renderPeerTutoringUI === 'function') {
+                window.renderPeerTutoringUI();
+            }
+        } catch (err) {
+            console.error("Error updating Firestore:", err);
+            alert("Failed to sync deletion with server.");
+        }
     }
 };
     function handleStudentReportSubmit(e) {
