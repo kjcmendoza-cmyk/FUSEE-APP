@@ -21,6 +21,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+        // 1. Add Firebase Auth import
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCoydIWpV6ujbc9q-COWxFr9SyAyU7I7D0",
@@ -36,8 +38,36 @@
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
+        // 2. Initialize Auth & enforce @addu.edu.ph domain restriction
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ hd: "addu.edu.ph" });
+
         window.firebaseApp = app;
         window.firebaseAnalytics = analytics;
+        window.currentUser = null;
+
+        // 3. Track active login state
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email.endsWith("@addu.edu.ph")) {
+                window.currentUser = user;
+                console.log("Logged in as:", user.email);
+            } else if (user) {
+                alert("Please sign in using your official @addu.edu.ph student email.");
+                signOut(auth);
+                window.currentUser = null;
+            } else {
+                window.currentUser = null;
+            }
+            if (typeof window.renderLostFoundUI === 'function') {
+                window.renderLostFoundUI();
+            }
+        });
+
+        // 4. Global trigger for Google Sign-In
+        window.loginWithAdDU = function() {
+            return signInWithPopup(auth, provider);
+        };
 
         // Real-Time Listener for Cloud Firestore Content Updates
         onSnapshot(doc(db, "fusee_hub", "landing_content"), (docSnap) => {
@@ -1479,7 +1509,7 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
                                 <i class="fa-solid fa-box-open text-rose-400"></i>
                             </div>
                             <h4 class="text-xs font-bold text-white mb-0.5">Lost & Found</h4>
-                            <p class="text-[10px] text-slate-400">D204 Central Desk & Peer items</p>
+                            <p class="text-[10px] text-slate-400">R202B Storage Room/R202C Lost & Found Desk</p>
                         </button>
 
                         <!-- 6. EE Merch -->
@@ -1910,7 +1940,7 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
             </div>
             <div>
                 <h3 class="text-sm md:text-base font-bold text-white font-display">Lost & Found Bulletin Board</h3>
-                <p class="text-[10px] md:text-xs text-slate-400">D204 Custodian Desk & Student Peer Reports</p>
+                <p class="text-[10px] md:text-xs text-slate-400">R202B Storage Room & R202C Lost & Found Desk</p>
             </div>
         </div>
         <div class="flex items-center space-x-2">
@@ -2081,13 +2111,13 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
             </div>
         </div>
         <div class="flex items-center space-x-2">
-            <button onclick="openModal('post-tutor-modal')" class="px-2.5 py-1 rounded-lg bg-fusee-cyan/20 text-fusee-cyan border border-fusee-cyan/30 text-[10px] font-bold hover:bg-fusee-cyan/30 transition flex items-center gap-1">
-                <i class="fa-solid fa-plus"></i> Offer Tutoring / Group
-            </button>
-            <button onclick="closeModal('peer-tutoring-modal')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">
-                <i class="fa-solid fa-xmark text-xs"></i>
-            </button>
-        </div>
+    <button onclick="openModal('post-tutor-modal')" class="px-2.5 py-1 rounded-lg bg-fusee-cyan/20 text-fusee-cyan border border-fusee-cyan/30 text-[10px] font-bold hover:bg-fusee-cyan/30 transition flex items-center gap-1">
+        <i class="fa-solid fa-plus"></i> Offer Tutoring / Group
+    </button>
+    <button onclick="closeModal('peer-tutoring-modal')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">
+        <i class="fa-solid fa-xmark text-xs"></i>
+    </button>
+</div>
     </div>
 
     <!-- Search & Subject Filter Bar -->
@@ -2837,7 +2867,19 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
     function handleStudentReportSubmit(e) {
     if (e) e.preventDefault();
 
-    // 1. Get values using exact form IDs
+    // 1. Require AdDU Google Login before posting
+    if (!window.currentUser || !window.currentUser.email) {
+        alert("Please sign in with your official @addu.edu.ph Google Account to submit a report.");
+        if (typeof window.loginWithAdDU === 'function') {
+            window.loginWithAdDU().then(() => {
+                alert("Sign-in successful! Please click 'Submit Report Notice' again.");
+            }).catch(err => {
+                console.error("Login cancelled or failed:", err);
+            });
+        }
+        return;
+    }
+
     const typeSelect = document.getElementById('rpt-type');
     const rawType = typeSelect ? typeSelect.value : 'LOST';
     const reportType = rawType.toUpperCase().includes('FOUND') ? 'FOUND' : 'LOST';
@@ -2846,9 +2888,9 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
     const location = document.getElementById('rpt-location')?.value.trim() || 'N/A';
     const date = document.getElementById('rpt-date')?.value || new Date().toISOString().split('T')[0];
     const description = document.getElementById('rpt-desc')?.value.trim() || '';
-    const contact = document.getElementById('rpt-contact')?.value.trim() || 'N/A';
+    const contact = document.getElementById('rpt-contact')?.value.trim() || window.currentUser.email;
 
-    // 2. Build report object matching renderLostFoundUI
+    // 2. Build report object with ownerEmail security tag
     const newReport = {
         id: Date.now(),
         type: reportType,
@@ -2857,25 +2899,22 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
         location: location,
         description: description,
         contact: contact,
+        ownerEmail: window.currentUser.email, // Binds post ownership to logged-in user
         date: date
     };
 
-    // 3. Add to live data store & trigger UI render
-    if (!window.allLostFoundData) {
-        window.allLostFoundData = [];
-    }
+    if (!window.allLostFoundData) window.allLostFoundData = [];
     window.allLostFoundData.unshift(newReport);
 
     if (typeof window.renderLostFoundUI === 'function') {
         window.renderLostFoundUI();
     }
 
-    // 4. Reset form fields & close modal
     const form = document.getElementById('student-report-form');
     if (form) form.reset();
 
     closeModal('report-item-modal');
-    alert("Report submitted successfully! Please present physical items at Room D204 Custodian Desk for official logging.");
+    alert("Report submitted successfully! Linked to " + window.currentUser.email);
 }
 
         // Automatic Operating Hours to OPEN/CLOSED Status Calculator
@@ -4153,45 +4192,6 @@ window.renderImportantEventsUI = function() {
         }
     }
 };
-function handleStudentReportSubmit(e) {
-    if (e) e.preventDefault();
-
-    const rawType = document.getElementById('rpt-type')?.value || 'LOST';
-    const reportType = rawType.toUpperCase().includes('FOUND') ? 'FOUND' : 'LOST';
-    const title = document.getElementById('rpt-title')?.value.trim() || '';
-    const location = document.getElementById('rpt-location')?.value.trim() || '';
-    const date = document.getElementById('rpt-date')?.value || new Date().toISOString().split('T')[0];
-    const description = document.getElementById('rpt-desc')?.value.trim() || '';
-    const contact = document.getElementById('rpt-contact')?.value.trim() || '';
-
-    if (!title || !location || !contact) {
-        alert('Please fill out all required fields.');
-        return;
-    }
-
-    const newReport = {
-        id: Date.now(),
-        type: reportType,
-        status: 'UNCLAIMED',
-        title: title,
-        location: location,
-        date: date,
-        description: description,
-        contact: contact,
-        imageUrl: ''
-    };
-
-    if (!window.allLostFoundData) window.allLostFoundData = [];
-    window.allLostFoundData.unshift(newReport);
-
-    if (typeof window.renderLostFoundUI === 'function') {
-        window.renderLostFoundUI();
-    }
-
-    document.getElementById('student-report-form')?.reset();
-    closeModal('report-item-modal');
-    alert("Report submitted successfully!");
-}
     </script>
 
 <!-- MODAL: EE Academic Drive -->
