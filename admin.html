@@ -1721,29 +1721,30 @@ document.querySelectorAll('.important-event-item-row').forEach(row => {
         }
 
         window.addScheduleRow = function(type = 'ee', day = 'Monday', startTime = '08:00 AM', endTime = '10:00 AM', subjectName = '', instructor = '') {
-            const container = document.getElementById(type === 'ee' ? 'ee-schedule-container' : 'com-schedule-container');
-            if (!container) return;
-            const div = document.createElement('div');
-            div.className = `${type === 'ee' ? 'ee-schedule-item-row' : 'com-schedule-item-row'} p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2 relative`;
-            div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1"><i class="fa-solid fa-trash"></i></button>
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-2 text-xs pt-1">
-                    <select class="sch-day-input p-2 rounded bg-slate-800 text-white border border-slate-700">
-                        <option value="Monday" ${day === 'Monday' ? 'selected' : ''}>Monday</option>
-                        <option value="Tuesday" ${day === 'Tuesday' ? 'selected' : ''}>Tuesday</option>
-                        <option value="Wednesday" ${day === 'Wednesday' ? 'selected' : ''}>Wednesday</option>
-                        <option value="Thursday" ${day === 'Thursday' ? 'selected' : ''}>Thursday</option>
-                        <option value="Friday" ${day === 'Friday' ? 'selected' : ''}>Friday</option>
-                        <option value="Saturday" ${day === 'Saturday' ? 'selected' : ''}>Saturday</option>
-                    </select>
-                    <input type="text" class="sch-start-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Start (e.g. 08:00 AM)" value="${startTime}">
-                    <input type="text" class="sch-end-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="End (e.g. 10:00 AM)" value="${endTime}">
-                    <input type="text" class="sch-subject-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Subject Name" value="${subjectName}">
-                    <input type="text" class="sch-instructor-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Instructor" value="${instructor}">
-                </div>
-            `;
-            container.appendChild(div);
-        };
+    const container = document.getElementById(type === 'ee' ? 'ee-schedule-container' : 'com-schedule-container');
+    if (!container) return;
+    const div = document.createElement('div');
+    div.className = `${type === 'ee' ? 'ee-schedule-item-row' : 'com-schedule-item-row'} p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2 relative`;
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1"><i class="fa-solid fa-trash"></i></button>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-2 text-xs pt-1">
+            <select class="sch-day-input p-2 rounded bg-slate-800 text-white border border-slate-700">
+                <option value="Sunday" ${day === 'Sunday' ? 'selected' : ''}>Sunday</option>
+                <option value="Monday" ${day === 'Monday' ? 'selected' : ''}>Monday</option>
+                <option value="Tuesday" ${day === 'Tuesday' ? 'selected' : ''}>Tuesday</option>
+                <option value="Wednesday" ${day === 'Wednesday' ? 'selected' : ''}>Wednesday</option>
+                <option value="Thursday" ${day === 'Thursday' ? 'selected' : ''}>Thursday</option>
+                <option value="Friday" ${day === 'Friday' ? 'selected' : ''}>Friday</option>
+                <option value="Saturday" ${day === 'Saturday' ? 'selected' : ''}>Saturday</option>
+            </select>
+            <input type="text" class="sch-start-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Start (e.g. 08:00 AM)" value="${startTime}">
+            <input type="text" class="sch-end-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="End (e.g. 10:00 AM)" value="${endTime}">
+            <input type="text" class="sch-subject-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Subject Name" value="${subjectName}">
+            <input type="text" class="sch-instructor-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Instructor" value="${instructor}">
+        </div>
+    `;
+    container.appendChild(div);
+};
 
         function renderActivityEventsAdmin(events = []) {
             const container = document.getElementById('activity-events-container');
