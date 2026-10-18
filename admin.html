@@ -1681,10 +1681,15 @@ function saveLocalDraft() {
     const data = gatherFormData();
     localStorage.setItem('fusee_admin_draft', JSON.stringify(data));
 }
-
-// Listen for form inputs globally
+// Listen for form inputs and row modifications globally
 document.addEventListener('input', saveLocalDraft);
 document.addEventListener('change', saveLocalDraft);
+document.addEventListener('click', (e) => {
+    // If a button inside a section is clicked (e.g. Add Row or Delete Row), update local draft after DOM updates
+    if (e.target.closest('button')) {
+        setTimeout(saveLocalDraft, 100);
+    }
+});
 
 // Publish to Firebase function
 window.saveDataToFirebase = async function() {
