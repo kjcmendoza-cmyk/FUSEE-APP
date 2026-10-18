@@ -1109,8 +1109,10 @@ appId: "1:1027948046459:web:549cc5e4d6e47dd7e89ade",
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Compress to lightweight JPEG Base64
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+                    // Compress to WebP or PNG with Transparency preserved
+                    ctx.clearRect(0, 0, width, height);
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const compressedDataUrl = canvas.toDataURL('image/webp', 0.85);
                     document.getElementById(hiddenInputId).value = compressedDataUrl;
                     const preview = document.getElementById(previewId);
                     preview.src = compressedDataUrl;
