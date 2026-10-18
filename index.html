@@ -384,31 +384,31 @@ if (data.merchItems && Array.isArray(data.merchItems)) {
                 const hasBack = Boolean(item.backImageUrl);
                 
                 let imgHtml = '';
-                if (item.imageUrl) {
-                    imgHtml = `
-    <div class="w-full aspect-square rounded-2xl overflow-hidden relative border border-white/10 bg-[radial-gradient(ellipse_at_center,_#2d2232_0%,_#140e17_100%)] shadow-2xl flex items-center justify-center group" 
+    if (item.imageUrl) {
+        imgHtml = `
+    <div class="w-full aspect-square rounded-2xl overflow-hidden relative border border-fusee-cyan/50 bg-[radial-gradient(circle_at_center,_rgba(0,240,255,0.35)_0%,_rgba(139,92,246,0.2)_50%,_rgba(11,8,30,0.98)_90%)] shadow-[0_0_30px_rgba(0,240,255,0.25)] flex items-center justify-center group" 
          ${hasBack ? `onclick="toggleMerchCardImage(this)" style="cursor: pointer;"` : ''}>
         
         <!-- Front Image Cutout -->
         <img src="${item.imageUrl}" 
              alt="${item.title || 'EE Merch'} - Front" 
-             class="merch-front-img relative z-10 w-full h-full object-contain p-3 filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.85)] transition-transform duration-300 opacity-100 group-hover:scale-105">
+             class="merch-front-img relative z-10 w-full h-full object-contain p-4 filter drop-shadow-[0_12px_24px_rgba(0,240,255,0.3)] transition-transform duration-300 opacity-100 group-hover:scale-105">
         
         ${hasBack ? `
             <!-- Back Image Cutout -->
             <img src="${item.backImageUrl}" 
                  alt="${item.title || 'EE Merch'} - Back" 
-                 class="merch-back-img absolute inset-0 z-10 w-full h-full object-contain p-3 filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.85)] transition-transform duration-300 opacity-0 group-hover:scale-105">
+                 class="merch-back-img absolute inset-0 z-10 w-full h-full object-contain p-4 filter drop-shadow-[0_12px_24px_rgba(0,240,255,0.3)] transition-transform duration-300 opacity-0 group-hover:scale-105">
             
             <!-- Flip Hint Badge -->
-            <div class="absolute top-2.5 left-2.5 z-20 px-2 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-[9px] font-bold text-slate-200 flex items-center gap-1 shadow-md">
+            <div class="absolute top-2.5 left-2.5 z-20 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-[9px] font-bold text-slate-200 flex items-center gap-1.5 shadow-md">
                 <i class="fa-solid fa-rotate text-fusee-cyan"></i>
                 <span class="merch-badge-text">Front — Tap for Back</span>
             </div>
         ` : ''}
     </div>
 `;
-                } else {
+    } else {
                     imgHtml = `
                         <div class="w-full aspect-square rounded-xl border border-slate-800 bg-slate-950 flex items-center justify-center">
                             <i class="fa-solid fa-shirt text-3xl text-fusee-magenta/40"></i>
