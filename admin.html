@@ -1562,14 +1562,15 @@ function gatherFormData() {
 
     const merchItems = [];
     document.querySelectorAll('.merch-item-row').forEach(row => {
-        const title = row.querySelector('.merch-title-input')?.value?.trim() || '';
+        const title = row.querySelector('.merch-title-input')?.value?.trim() || 'EE Merchandise Item';
         const price = row.querySelector('.merch-price-input')?.value?.trim() || '';
         const badge = row.querySelector('.merch-badge-input')?.value || 'Pre-Orders';
         const description = row.querySelector('.merch-desc-input')?.value?.trim() || '';
         const orderUrl = row.querySelector('.merch-url-input')?.value?.trim() || '';
         const imageUrl = row.querySelector('.merch-image-input')?.value || '';
         const backImageUrl = row.querySelector('.merch-back-image-input')?.value || '';
-        if (title) merchItems.push({ title, price, badge, description, orderUrl, imageUrl, backImageUrl });
+        
+        merchItems.push({ title, price, badge, description, orderUrl, imageUrl, backImageUrl });
     });
 
     const labPolicies = [];

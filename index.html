@@ -364,115 +364,119 @@ if (data.eeDept) {
                 if (fuseeEmail && data.fuseeInfo.email) fuseeEmail.textContent = data.fuseeInfo.email;
            }    
                 // 13. EE Merch Catalog & Payment Info Real-Time Sync
-if (data.merchItems && Array.isArray(data.merchItems)) {
-    window.currentMerchItems = data.merchItems;
-}
-
-// Sync GCash / Maya Payment Receiver Settings from admin
-if (data.paymentInfo) {
-    window.paymentInfo = {
-        name: data.paymentInfo.name || "FUSEE Treasurer",
-        number: data.paymentInfo.number || "N/A",
-        qrUrl: data.paymentInfo.qr || ""
-    };
-}
-    const merchContainer = document.getElementById('merch-display-container');
-    if (merchContainer) {
-        if (!data.merchItems || data.merchItems.length === 0) {
-            merchContainer.innerHTML = 
-                '<p class="text-[10px] text-slate-400 italic text-center py-6 col-span-2">' +
-                'No merchandise items available at the moment.</p>';
-        } else {
-            merchContainer.innerHTML = data.merchItems.map((item, itemIdx) => {
-                const hasBack = Boolean(item.backImageUrl);
-                
-                let imgHtml = '';
-    if (item.imageUrl) {
-        imgHtml = `
-    <div class="w-full aspect-square rounded-2xl overflow-hidden relative border border-fusee-cyan/50 bg-[radial-gradient(circle_at_center,_rgba(0,240,255,0.35)_0%,_rgba(139,92,246,0.2)_50%,_rgba(11,8,30,0.98)_90%)] shadow-[0_0_30px_rgba(0,240,255,0.25)] flex items-center justify-center group" 
-         ${hasBack ? `onclick="toggleMerchCardImage(this)" style="cursor: pointer;"` : ''}>
-        
-        <!-- Front Image Cutout -->
-<img src="${item.imageUrl}" 
-     alt="${item.title || 'EE Merch'} - Front" 
-     class="merch-front-img relative z-10 w-full h-full object-contain p-0 scale-110 filter drop-shadow-[0_12px_24px_rgba(0,240,255,0.3)] transition-transform duration-300 opacity-100 group-hover:scale-115">
-
-${hasBack ? `
-    <!-- Back Image Cutout -->
-    <img src="${item.backImageUrl}" 
-         alt="${item.title || 'EE Merch'} - Back" 
-         class="merch-back-img absolute inset-0 z-10 w-full h-full object-contain p-0 scale-110 filter drop-shadow-[0_12px_24px_rgba(0,240,255,0.3)] transition-transform duration-300 opacity-0 group-hover:scale-115">
-    
-    <!-- Flip Hint Badge -->
-    <div class="absolute top-2.5 left-2.5 z-20 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-[9px] font-bold text-slate-200 flex items-center gap-1.5 shadow-md">
-        <i class="fa-solid fa-rotate text-fusee-cyan"></i>
-        <span class="merch-badge-text">Front - Tap for Back</span>
-    </div>
-` : ''}
-
-    <!-- Zoom Icon Button (Top Right) -->
-    <button onclick="event.stopPropagation(); openImageZoomModal('${item.imageUrl}', '${item.backImageUrl || ''}', this)" 
-            class="absolute top-2.5 right-2.5 z-20 w-7 h-7 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-slate-200 flex items-center justify-center text-xs shadow-md active:scale-95 transition-transform">
-        <i class="fa-solid fa-magnifying-glass-plus text-fusee-cyan"></i>
-    </button>
-</div>
-`;
-    } else {
-                    imgHtml = `
-                        <div class="w-full aspect-square rounded-xl border border-slate-800 bg-slate-950 flex items-center justify-center">
-                            <i class="fa-solid fa-shirt text-3xl text-fusee-magenta/40"></i>
-                        </div>
-                    `;
+            try {
+                if (data.merchItems && Array.isArray(data.merchItems)) {
+                    window.currentMerchItems = data.merchItems;
                 }
 
-                const badgeHtml = item.badge ? `
-                    <span class="px-2 py-0.5 rounded-full bg-fusee-magenta/20 text-fusee-magenta text-[8px] font-bold font-techno border border-fusee-magenta/30">
-                        ${item.badge}
-                    </span>
-                ` : '';
+                // Sync GCash / Maya Payment Receiver Settings from admin
+                if (data.paymentInfo) {
+                    window.paymentInfo = {
+                        name: data.paymentInfo.name || "FUSEE Treasurer",
+                        number: data.paymentInfo.number || "N/A",
+                        qrUrl: data.paymentInfo.qr || ""
+                    };
+                }
 
-                const descHtml = item.description ? `
-                    <p class="text-[11px] text-slate-300 leading-relaxed mt-1">
-                        ${item.description}
-                    </p>
-                ` : '';
+                const merchContainer = document.getElementById('merch-display-container');
+                if (merchContainer) {
+                    if (!data.merchItems || !Array.isArray(data.merchItems) || data.merchItems.length === 0) {
+                        merchContainer.innerHTML = 
+                            '<p class="text-[10px] text-slate-400 italic text-center py-6 col-span-2">' +
+                            'No merchandise items available at the moment.</p>';
+                    } else {
+                        merchContainer.innerHTML = data.merchItems.map((item, itemIdx) => {
+                            const hasBack = Boolean(item.backImageUrl);
+                            
+                            let imgHtml = '';
+                            if (item.imageUrl) {
+                                imgHtml = `
+                            <div class="w-full aspect-square rounded-2xl overflow-hidden relative border border-fusee-cyan/50 bg-[radial-gradient(circle_at_center,_rgba(0,240,255,0.35)_0%,_rgba(139,92,246,0.2)_50%,_rgba(11,8,30,0.98)_90%)] shadow-[0_0_30px_rgba(0,240,255,0.25)] flex items-center justify-center group" 
+                                 ${hasBack ? `onclick="toggleMerchCardImage(this)" style="cursor: pointer;"` : ''}>
+                                
+                                <!-- Front Image Cutout -->
+                                <img src="${item.imageUrl}" 
+                                     alt="${item.title || 'EE Merch'} - Front" 
+                                     class="merch-front-img relative z-10 w-full h-full object-contain p-0 scale-110 filter drop-shadow-[0_12px_24px_rgba(0,240,255,0.3)] transition-transform duration-300 opacity-100 group-hover:scale-115">
 
-                const isSoldOut = item.badge?.toLowerCase() === 'sold out';
+                                ${hasBack ? `
+                                    <!-- Back Image Cutout -->
+                                    <img src="${item.backImageUrl}" 
+                                         alt="${item.title || 'EE Merch'} - Back" 
+                                         class="merch-back-img absolute inset-0 z-10 w-full h-full object-contain p-0 scale-110 filter drop-shadow-[0_12px_24px_rgba(0,240,255,0.3)] transition-transform duration-300 opacity-0 group-hover:scale-115">
+                                    
+                                    <!-- Flip Hint Badge -->
+                                    <div class="absolute top-2.5 left-2.5 z-20 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-[9px] font-bold text-slate-200 flex items-center gap-1.5 shadow-md">
+                                        <i class="fa-solid fa-rotate text-fusee-cyan"></i>
+                                        <span class="merch-badge-text">Front - Tap for Back</span>
+                                    </div>
+                                ` : ''}
 
-const orderBtnHtml = isSoldOut ? `
-    <button type="button"
-            disabled
-            class="block w-full text-center py-2 bg-slate-800/80 text-slate-500 font-bold rounded-xl text-xs cursor-not-allowed border border-slate-700/80 opacity-60 mt-2">
-        <i class="fa-solid fa-ban mr-1.5"></i> Sold Out
-    </button>
-` : `
-    <button type="button"
-            onclick="openMerchOrderModal(${itemIdx})"
-            class="block w-full text-center py-2 bg-gradient-to-r from-fusee-magenta to-pink-600 text-white font-bold rounded-xl text-xs hover:from-pink-500 hover:to-purple-500 transition shadow-neon-pink mt-2">
-        <i class="fa-solid fa-cart-shopping mr-1.5"></i> Order Now
-    </button>
-`;
+                                    <!-- Zoom Icon Button (Top Right) -->
+                                    <button onclick="event.stopPropagation(); openImageZoomModal('${item.imageUrl}', '${item.backImageUrl || ''}', this)" 
+                                            class="absolute top-2.5 right-2.5 z-20 w-7 h-7 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-slate-200 flex items-center justify-center text-xs shadow-md active:scale-95 transition-transform">
+                                        <i class="fa-solid fa-magnifying-glass-plus text-fusee-cyan"></i>
+                                    </button>
+                                </div>
+                                `;
+                            } else {
+                                imgHtml = `
+                                    <div class="w-full aspect-square rounded-xl border border-slate-800 bg-slate-950 flex items-center justify-center">
+                                        <i class="fa-solid fa-shirt text-3xl text-fusee-magenta/40"></i>
+                                    </div>
+                                `;
+                            }
 
-                return `
-                    <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 hover:border-fusee-magenta/50 transition flex flex-col justify-between group">
-                        <div class="space-y-2">
-                            ${imgHtml}
-                            <div class="flex items-start justify-between gap-2 pt-1">
-    <h4 class="font-bold text-white text-[11px] sm:text-xs leading-tight line-clamp-2 flex-1">${item.title || 'EE Merchandise'}</h4>
-    ${badgeHtml}
-</div>
-                            ${item.price ? `<p class="text-xs font-bold text-fusee-magenta font-techno">${item.price.startsWith('₱') ? item.price : `₱${item.price}`}</p>` : ''}
-                            ${descHtml}
-                        </div>
-                        <div>
-                            ${orderBtnHtml}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-    }
-}
+                            const badgeHtml = item.badge ? `
+                                <span class="px-2 py-0.5 rounded-full bg-fusee-magenta/20 text-fusee-magenta text-[8px] font-bold font-techno border border-fusee-magenta/30">
+                                    ${item.badge}
+                                </span>
+                            ` : '';
+
+                            const descHtml = item.description ? `
+                                <p class="text-[11px] text-slate-300 leading-relaxed mt-1">
+                                    ${item.description}
+                                </p>
+                            ` : '';
+
+                            const isSoldOut = item.badge?.toLowerCase() === 'sold out';
+
+                            const orderBtnHtml = isSoldOut ? `
+                                <button type="button"
+                                        disabled
+                                        class="block w-full text-center py-2 bg-slate-800/80 text-slate-500 font-bold rounded-xl text-xs cursor-not-allowed border border-slate-700/80 opacity-60 mt-2">
+                                    <i class="fa-solid fa-ban mr-1.5"></i> Sold Out
+                                </button>
+                            ` : `
+                                <button type="button"
+                                        onclick="openMerchOrderModal(${itemIdx})"
+                                        class="block w-full text-center py-2 bg-gradient-to-r from-fusee-magenta to-pink-600 text-white font-bold rounded-xl text-xs hover:from-pink-500 hover:to-purple-500 transition shadow-neon-pink mt-2">
+                                    <i class="fa-solid fa-cart-shopping mr-1.5"></i> Order Now
+                                </button>
+                            `;
+
+                            return `
+                                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 hover:border-fusee-magenta/50 transition flex flex-col justify-between group">
+                                    <div class="space-y-2">
+                                        ${imgHtml}
+                                        <div class="flex items-start justify-between gap-2 pt-1">
+                                            <h4 class="font-bold text-white text-[11px] sm:text-xs leading-tight line-clamp-2 flex-1">${item.title || 'EE Merchandise'}</h4>
+                                            ${badgeHtml}
+                                        </div>
+                                        ${item.price ? `<p class="text-xs font-bold text-fusee-magenta font-techno">${item.price.startsWith('₱') ? item.price : `₱${item.price}`}</p>` : ''}
+                                        ${descHtml}
+                                    </div>
+                                    <div>
+                                        ${orderBtnHtml}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                }
+            } catch (err) {
+                console.error("Error rendering merch catalog:", err);
+            }
 
             // 14. EE Laboratory Policies Real-Time Sync (Accordion Format)
             if (data.labPolicies && Array.isArray(data.labPolicies)) {
