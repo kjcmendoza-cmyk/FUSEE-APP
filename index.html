@@ -4973,6 +4973,7 @@ window.handleMerchOrderSubmit = async function(event) {
     }
 };
 
+// --- Enhanced Lightbox Zoom Engine (Mouse + Touch + Wheel + Double-Click) ---
 let currentScale = 1;
 let initialPinchDistance = 0;
 let initialScale = 1;
@@ -4983,13 +4984,17 @@ let translateX = 0, translateY = 0;
 window.openImageZoomModal = function(frontUrl, backUrl, btnElement) {
     const modal = document.getElementById('imageZoomModal');
     const zoomedImg = document.getElementById('zoomedImage');
+    if (!modal || !zoomedImg) return;
     
-    // Check if back image is visible
-    const card = btnElement.closest('div');
-    const backImg = card ? card.querySelector('.merch-back-img') : null;
-    const isShowingBack = backImg && window.getComputedStyle(backImg).opacity === '1';
+    let targetUrl = frontUrl;
+    if (btnElement) {
+        const card = btnElement.closest('.group') || btnElement.closest('div');
+        const backImg = card ? card.querySelector('.merch-back-img') : null;
+        const isShowingBack = backImg && window.getComputedStyle(backImg).opacity === '1';
+        targetUrl = (isShowingBack && backUrl) ? backUrl : frontUrl;
+    }
 
-    zoomedImg.src = (isShowingBack && backUrl) ? backUrl : frontUrl;
+    zoomedImg.src = targetUrl;
     
     // Reset transforms
     currentScale = 1;
@@ -5003,6 +5008,7 @@ window.openImageZoomModal = function(frontUrl, backUrl, btnElement) {
 
 window.closeImageZoomModal = function() {
     const modal = document.getElementById('imageZoomModal');
+    if (!modal) return;
     modal.classList.add('opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 };
@@ -5011,37 +5017,82 @@ function updateImageTransform() {
     const zoomedImg = document.getElementById('zoomedImage');
     if (zoomedImg) {
         zoomedImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-    
     }
 }
 
-// Touch & Mouse Event Listeners
 const zoomedImg = document.getElementById('zoomedImage');
 
 if (zoomedImg) {
-    // Prevent default browser ghost image dragging
     zoomedImg.addEventListener('dragstart', (e) => e.preventDefault());
-    // Touch Start (Pinch or Pan)
+
+    // 1. Mouse Wheel Zooming
+    const zoomContainer = zoomedImg.parentElement;
+    if (zoomContainer) {
+        zoomContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
+            currentScale = Math.min(Math.max(1, currentScale * zoomFactor), 5);
+            if (currentScale === 1) { translateX = 0; translateY = 0; }
+            updateImageTransform();
+        }, { passive: false });
+    }
+
+    // 2. Double Click / Double Tap Toggle Zoom
+    zoomedImg.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+        if (currentScale > 1) {
+            currentScale = 1;
+            translateX = 0;
+            translateY = 0;
+        } else {
+            currentScale = 2.5;
+        }
+        updateImageTransform();
+    });
+
+    // 3. Mouse Dragging (Desktop)
+    zoomedImg.addEventListener('mousedown', (e) => {
+        if (currentScale > 1) {
+            isDragging = true;
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
+            zoomedImg.style.cursor = 'grabbing';
+        }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            e.preventDefault();
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            updateImageTransform();
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            if (zoomedImg) zoomedImg.style.cursor = 'grab';
+        }
+    });
+
+    // 4. Touch Drag & Pinch Gestures (Mobile)
     zoomedImg.addEventListener('touchstart', (e) => {
         if (e.touches.length === 2) {
-            // Start Pinch
             initialPinchDistance = Math.hypot(
                 e.touches[0].clientX - e.touches[1].clientX,
                 e.touches[0].clientY - e.touches[1].clientY
             );
             initialScale = currentScale;
         } else if (e.touches.length === 1 && currentScale > 1) {
-            // Start Drag/Pan
             isDragging = true;
             startX = e.touches[0].clientX - translateX;
             startY = e.touches[0].clientY - translateY;
         }
     });
 
-    // Touch Move
     zoomedImg.addEventListener('touchmove', (e) => {
         if (e.touches.length === 2) {
-            // Handle Pinch Zoom
             e.preventDefault();
             const currentDistance = Math.hypot(
                 e.touches[0].clientX - e.touches[1].clientX,
@@ -5049,11 +5100,10 @@ if (zoomedImg) {
             );
             if (initialPinchDistance > 0) {
                 const delta = currentDistance / initialPinchDistance;
-                currentScale = Math.min(Math.max(1, initialScale * delta), 4); // Min 1x, Max 4x
+                currentScale = Math.min(Math.max(1, initialScale * delta), 5);
                 updateImageTransform();
             }
         } else if (e.touches.length === 1 && isDragging) {
-            // Handle Drag/Pan
             e.preventDefault();
             translateX = e.touches[0].clientX - startX;
             translateY = e.touches[0].clientY - startY;
@@ -5061,12 +5111,10 @@ if (zoomedImg) {
         }
     }, { passive: false });
 
-    // Touch End
     zoomedImg.addEventListener('touchend', (e) => {
         if (e.touches.length < 2) initialPinchDistance = 0;
         if (e.touches.length === 0) {
             isDragging = false;
-            // Snap back translation if zoomed out back to 1x
             if (currentScale <= 1) {
                 translateX = 0;
                 translateY = 0;
@@ -5079,26 +5127,30 @@ if (zoomedImg) {
 
 </script>
 
-<!-- Zoom Lightbox Modal -->
+<!-- Fully Functional Lightbox Container -->
 <div id="imageZoomModal" 
+     onclick="if(event.target === this || event.target.id === 'zoomModalViewport') closeImageZoomModal()"
      class="fixed inset-0 z-50 hidden bg-slate-950/95 backdrop-blur-lg flex flex-col items-center justify-center p-4 transition-opacity duration-300 opacity-0 touch-none">
     
     <!-- Close Button -->
     <button onclick="closeImageZoomModal()" 
-            class="absolute top-5 right-5 z-50 w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center text-lg shadow-lg active:scale-90 transition-transform">
+            type="button"
+            class="absolute top-5 right-5 z-50 w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center text-lg shadow-lg active:scale-90 transition-transform hover:border-cyan-400">
         <i class="fa-solid fa-xmark"></i>
     </button>
 
-    <!-- Zoomed Image Viewport -->
-<div class="relative w-full max-w-lg h-[75vh] flex items-center justify-center overflow-hidden touch-none select-none">
-    <img id="zoomedImage" 
-         src="" 
-         alt="Zoomed View" 
-         draggable="false"
-         class="max-w-full max-h-full object-contain filter drop-shadow-[0_20px_40px_rgba(0,240,255,0.4)] will-change-transform cursor-grab active:cursor-grabbing select-none">
-</div>
+    <!-- Image Viewport -->
+    <div id="zoomModalViewport" class="relative w-full max-w-lg h-[75vh] flex items-center justify-center overflow-hidden touch-none select-none">
+        <img id="zoomedImage" 
+             src="" 
+             alt="Zoomed View" 
+             draggable="false"
+             class="max-w-full max-h-full object-contain filter drop-shadow-[0_20px_40px_rgba(0,240,255,0.4)] will-change-transform cursor-grab active:cursor-grabbing select-none">
+    </div>
 
-    <p class="text-xs text-slate-400 mt-4 select-none"><i class="fa-solid fa-hand-pointer mr-1 text-fusee-cyan"></i> Pinch to zoom • Drag to move</p>
+    <p class="text-xs text-slate-400 mt-4 select-none pointer-events-none">
+        <i class="fa-solid fa-hand-pointer mr-1 text-cyan-400"></i> Double-click or scroll wheel to zoom • Drag when zoomed • Click black background to close
+    </p>
 </div>
 
 </body>
