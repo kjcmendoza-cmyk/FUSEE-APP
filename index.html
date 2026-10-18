@@ -20,7 +20,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
-        import { getFirestore, doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, updateDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
         // 1. Add Firebase Auth import
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
@@ -40,6 +40,9 @@
         window.db = db;
 window.doc = doc;
 window.updateDoc = updateDoc;
+window.collection = collection;
+window.addDoc = addDoc;
+window.serverTimestamp = serverTimestamp;
 
 // 2. Initialize Auth & enforce @addu.edu.ph domain restriction
 const auth = getAuth(app);
@@ -362,6 +365,14 @@ if (data.eeDept) {
            }    
                 // 13. EE Merch Catalog Real-Time Sync
 if (data.merchItems && Array.isArray(data.merchItems)) {
+    // Store globally for checkout modal access
+    window.currentMerchItems = data.merchItems;
+    window.paymentInfo = {
+        name: data.paymentName || "FUSEE Treasurer",
+        number: data.paymentNumber || "N/A",
+        qrUrl: data.paymentQrUrl || ""
+    };
+
     const merchContainer = document.getElementById('merch-display-container');
     if (merchContainer) {
         if (data.merchItems.length === 0) {
@@ -369,29 +380,28 @@ if (data.merchItems && Array.isArray(data.merchItems)) {
                 '<p class="text-[10px] text-slate-400 italic text-center py-6 col-span-2">' +
                 'No merchandise items available at the moment.</p>';
         } else {
-            merchContainer.innerHTML = data.merchItems.map(item => {
+            merchContainer.innerHTML = data.merchItems.map((item, itemIdx) => {
                 const hasBack = Boolean(item.backImageUrl);
-
+                
                 let imgHtml = '';
                 if (item.imageUrl) {
                     imgHtml = `
-                        <div class="w-full aspect-square rounded-xl overflow-hidden border border-slate-800 bg-slate-950 relative group select-none ${hasBack ? 'cursor-pointer' : ''}"
-                             ${hasBack ? `onclick="toggleMerchCardImage(this)" data-showing="front"` : ''}>
+                        <div class="w-full aspect-square rounded-xl overflow-hidden relative bg-slate-950 border border-slate-800" 
+                             ${hasBack ? `onclick="toggleMerchCardImage(this)" cursor-pointer` : ''}>
                             <!-- Front Image -->
                             <img src="${item.imageUrl}" 
                                  alt="${item.title || 'EE Merch'} - Front" 
-                                 class="merch-front-img absolute inset-0 w-full h-full object-cover transition-opacity duration-300 opacity-100">
-                            
+                                 class="merch-front-img absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-10 opacity-100">
                             ${hasBack ? `
                                 <!-- Back Image (Crossfade Layer) -->
                                 <img src="${item.backImageUrl}" 
                                      alt="${item.title || 'EE Merch'} - Back" 
-                                     class="merch-back-img absolute inset-0 w-full h-full object-cover transition-opacity duration-300 opacity-0">
+                                     class="merch-back-img absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0 opacity-0">
                                 
                                 <!-- Flip Hint Badge -->
-                                <div class="absolute top-2 left-2 z-10 px-2 py-1 rounded-md bg-slate-950/80 backdrop-blur-md border border-white/20 text-[9px] font-bold text-white flex items-center gap-1 shadow-lg pointer-events-none transition-all duration-200">
-                                    <i class="fa-solid fa-rotate text-fusee-cyan animate-pulse"></i>
-                                    <span class="merch-badge-text">Front — Tap for Back</span>
+                                <div class="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-[9px] font-bold text-slate-300 flex items-center gap-1 shadow-md">
+                                    <i class="fa-solid fa-rotate text-fusee-cyan"></i>
+                                    <span class="merch-badge-text">Front</span>
                                 </div>
                             ` : ''}
                         </div>
@@ -405,38 +415,39 @@ if (data.merchItems && Array.isArray(data.merchItems)) {
                 }
 
                 const badgeHtml = item.badge ? `
-                    <span class="px-2 py-0.5 rounded-full bg-fusee-magenta/20 text-fusee-magenta text-[9px] font-bold border border-fusee-magenta/30 flex-shrink-0">
+                    <span class="px-2 py-0.5 rounded-full bg-fusee-magenta/20 text-fusee-magenta text-[8px] font-bold font-techno border border-fusee-magenta/30">
                         ${item.badge}
                     </span>
                 ` : '';
 
                 const descHtml = item.description ? `
-                    <p class="text-[11px] text-slate-300 leading-relaxed">
+                    <p class="text-[11px] text-slate-300 leading-relaxed mt-1">
                         ${item.description}
                     </p>
                 ` : '';
 
-                const orderBtnHtml = item.orderUrl ? `
-                    <a href="${item.orderUrl}"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="block w-full text-center py-2 bg-gradient-to-r from-fusee-magenta to-pink-600 text-white font-bold rounded-xl text-xs hover:from-pink-500 hover:to-purple-500 transition shadow-neon-pink mt-2">
+                const orderBtnHtml = `
+                    <button type="button"
+                            onclick="openMerchOrderModal(${itemIdx})"
+                            class="block w-full text-center py-2 bg-gradient-to-r from-fusee-magenta to-pink-600 text-white font-bold rounded-xl text-xs hover:from-pink-500 hover:to-purple-500 transition shadow-neon-pink mt-2">
                         <i class="fa-solid fa-cart-shopping mr-1.5"></i> Order Now
-                    </a>
-                ` : '';
+                    </button>
+                `;
 
                 return `
-                    <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 hover:border-fusee-magenta/50 transition flex flex-col justify-between">
+                    <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 hover:border-fusee-magenta/50 transition flex flex-col justify-between">
                         <div class="space-y-2">
                             ${imgHtml}
-                            <div class="flex items-center justify-between gap-1">
-                                <h4 class="font-bold text-white text-xs leading-snug">${item.title || 'EE Merch Item'}</h4>
+                            <div class="flex items-center justify-between gap-2 pt-1">
+                                <h4 class="font-bold text-white text-xs leading-snug line-clamp-1">${item.title || 'EE Merchandise'}</h4>
                                 ${badgeHtml}
                             </div>
-                            ${item.price ? `<p class="text-xs font-bold text-fusee-magenta font-techno">${item.price}</p>` : ''}
+                            ${item.price ? `<p class="text-xs font-bold text-fusee-magenta font-techno">${item.price.startsWith('₱') ? item.price : `₱${item.price}`}</p>` : ''}
                             ${descHtml}
                         </div>
-                        ${orderBtnHtml}
+                        <div>
+                            ${orderBtnHtml}
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -2780,6 +2791,145 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
                 <!-- Merch items populate dynamically from Firebase -->
             </div>
         </div>
+
+<!-- MODAL: In-App Merch Checkout Drawer -->
+<div id="merch-order-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-magenta/50 rounded-t-3xl z-[70] p-5 md:p-6 space-y-4 max-h-[92vh] shadow-2xl overflow-y-auto">
+    
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between border-b border-white/10 pb-3 flex-shrink-0">
+        <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-fusee-magenta/20 text-fusee-magenta flex items-center justify-center font-bold">
+                <i class="fa-solid fa-bag-shopping text-sm"></i>
+            </div>
+            <div>
+                <h3 class="text-sm md:text-base font-bold text-white font-display">EE Merch Checkout</h3>
+                <p class="text-[10px] md:text-xs text-slate-400">Complete your in-app pre-order</p>
+            </div>
+        </div>
+        <button type="button" onclick="closeModal('merch-order-modal')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+    </div>
+
+    <!-- Product Summary Banner -->
+    <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center gap-3">
+        <div id="checkout-item-img-container" class="w-16 h-16 rounded-xl bg-slate-950 border border-slate-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
+            <img id="checkout-item-img" src="" alt="Merch Item" class="w-full h-full object-cover hidden">
+            <i id="checkout-item-icon" class="fa-solid fa-shirt text-2xl text-fusee-magenta/40"></i>
+        </div>
+        <div class="min-w-0 flex-1 space-y-1">
+            <span id="checkout-item-badge" class="px-2 py-0.5 rounded-full bg-fusee-magenta/20 text-fusee-magenta text-[8px] font-bold font-techno border border-fusee-magenta/30 inline-block">
+                PRE-ORDER
+            </span>
+            <h4 id="checkout-item-title" class="font-bold text-white text-xs truncate">EE Merchandise Title</h4>
+            <p id="checkout-item-unit-price" class="text-xs font-bold text-fusee-magenta font-techno">₱0.00</p>
+        </div>
+    </div>
+
+    <!-- Checkout Form -->
+    <form id="merch-checkout-form" onsubmit="handleMerchOrderSubmit(event)" class="space-y-4 text-xs">
+        
+        <!-- Size Selection -->
+        <div id="checkout-size-container" class="space-y-1.5">
+            <label class="block font-bold text-slate-300">
+                Select Size <span class="text-rose-400">*</span>
+            </label>
+            <div class="grid grid-cols-6 gap-1.5" id="size-pill-group">
+                <button type="button" onclick="selectMerchSize('S')" class="size-pill py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-center hover:border-fusee-magenta transition" data-size="S">S</button>
+                <button type="button" onclick="selectMerchSize('M')" class="size-pill py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-center hover:border-fusee-magenta transition" data-size="M">M</button>
+                <button type="button" onclick="selectMerchSize('L')" class="size-pill py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-center hover:border-fusee-magenta transition" data-size="L">L</button>
+                <button type="button" onclick="selectMerchSize('XL')" class="size-pill py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-center hover:border-fusee-magenta transition" data-size="XL">XL</button>
+                <button type="button" onclick="selectMerchSize('2XL')" class="size-pill py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-center hover:border-fusee-magenta transition" data-size="2XL">2XL</button>
+                <button type="button" onclick="selectMerchSize('N/A')" class="size-pill py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-center hover:border-fusee-magenta transition" data-size="N/A">N/A</button>
+            </div>
+            <input type="hidden" id="checkout-selected-size" value="">
+        </div>
+
+        <!-- Quantity & Total Price Bar -->
+        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+            <div>
+                <label class="block font-bold text-slate-300">Quantity</label>
+                <p class="text-[10px] text-slate-400">Adjust items count</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center border border-slate-700 rounded-xl bg-slate-950 overflow-hidden">
+                    <button type="button" onclick="updateMerchQty(-1)" class="px-3 py-1.5 text-slate-300 hover:bg-slate-800 font-bold transition">-</button>
+                    <span id="checkout-qty-display" class="px-3 text-white font-bold font-techno">1</span>
+                    <button type="button" onclick="updateMerchQty(1)" class="px-3 py-1.5 text-slate-300 hover:bg-slate-800 font-bold transition">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Calculation Box -->
+        <div class="p-3 rounded-xl bg-fusee-magenta/10 border border-fusee-magenta/30 flex items-center justify-between">
+            <span class="font-bold text-white uppercase font-techno text-[11px]">Total Amount Due:</span>
+            <span id="checkout-total-price" class="text-sm md:text-base font-extrabold text-fusee-magenta font-techno">₱0.00</span>
+        </div>
+
+        <!-- Student Information Fields -->
+        <div class="space-y-2.5 pt-1">
+            <h5 class="font-bold text-white font-techno text-[11px] uppercase tracking-wider text-fusee-cyan flex items-center gap-1.5">
+                <i class="fa-solid fa-id-card"></i> Student Information
+            </h5>
+
+            <div>
+                <label class="block text-slate-400 mb-1">Full Name <span class="text-rose-400">*</span></label>
+                <input type="text" id="checkout-student-name" required placeholder="Juan Dela Cruz" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-fusee-magenta transition">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-slate-400 mb-1">AdDU Student Email <span class="text-rose-400">*</span></label>
+                    <input type="email" id="checkout-student-email" required placeholder="username@addu.edu.ph" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-fusee-magenta transition">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Student ID Number <span class="text-rose-400">*</span></label>
+                    <input type="text" id="checkout-student-id" required placeholder="2023-XXXXXX" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-fusee-magenta transition">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-slate-400 mb-1">Course / Year & Section <span class="text-rose-400">*</span></label>
+                <input type="text" id="checkout-student-course" required placeholder="BS EE - 3A" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-fusee-magenta transition">
+            </div>
+        </div>
+
+        <!-- Payment Details Section -->
+        <div class="space-y-2.5 pt-1">
+            <h5 class="font-bold text-white font-techno text-[11px] uppercase tracking-wider text-fusee-yellow flex items-center gap-1.5">
+                <i class="fa-solid fa-wallet"></i> GCash / Maya Payment Verification
+            </h5>
+
+            <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2">
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-slate-400">Receiver Name:</span>
+                    <strong id="checkout-payment-name" class="text-white">FUSEE Treasurer</strong>
+                </div>
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-slate-400">GCash / Maya Number:</span>
+                    <strong id="checkout-payment-number" class="text-fusee-yellow font-techno">09XX-XXX-XXXX</strong>
+                </div>
+                
+                <div id="checkout-qr-container" class="hidden text-center pt-2 border-t border-slate-800">
+                    <p class="text-[10px] text-slate-400 mb-1">Scan QR Code to Pay:</p>
+                    <img id="checkout-qr-img" src="" alt="Payment QR Code" class="w-32 h-32 object-contain mx-auto rounded-lg border border-slate-700">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-slate-400 mb-1">13-Digit GCash / Maya Reference Number <span class="text-rose-400">*</span></label>
+                <input type="text" id="checkout-gcash-ref" required maxlength="13" minlength="10" placeholder="e.g. 1002345678901" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-techno tracking-wider focus:outline-none focus:border-fusee-yellow transition">
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="submit-order-btn" class="w-full py-3 bg-gradient-to-r from-fusee-magenta to-pink-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold rounded-xl text-xs transition shadow-neon-pink mt-3 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>Confirm & Submit Order</span>
+        </button>
+    </form>
+</div>
+
         <!-- MODAL: EE Capstone & Thesis Showcase Gallery -->
 <div id="capstone-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-cyan/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[85vh] shadow-2xl overflow-hidden">
     <div class="flex items-center justify-between border-b border-white/10 pb-3">
@@ -3147,33 +3297,38 @@ window.removeTutorListing = async function(itemId) {
         });
 
         // Updated Theme Switcher Engine
-        window.setTheme = function(themeName) {
-            document.documentElement.setAttribute('data-theme', themeName);
-            localStorage.setItem('fusee_selected_theme', themeName);
+window.setTheme = function(themeName) {
+    const themeMap = {
+        'fusee': { id: 'theme-btn-fusee', label: '⚡ Cyber', cls: "bg-cyan-500/10 text-cyan-400 font-semibold border border-cyan-500/20" },
+        'light': { id: 'theme-btn-light', label: '☀️ Light', cls: "bg-amber-500/10 text-amber-500 font-semibold border border-amber-500/20" },
+        'cyber-pink': { id: 'theme-btn-pink', label: '🌸 Pink', cls: "bg-pink-500/10 text-pink-400 font-semibold border border-pink-500/20" }
+    };
 
-            const themeMap = {
-                'fusee': { id: 'theme-btn-fusee', label: '⚡ Cyber', cls: 'text-fusee-cyan bg-fusee-cyan/15 border border-fusee-cyan/30' },
-                'light': { id: 'theme-btn-light', label: '☀️ Light', cls: 'text-sky-400 bg-sky-500/15 border border-sky-500/30' },
-                'cyber-pink': { id: 'theme-btn-pink', label: '🌸 Pink', cls: 'text-pink-300 bg-pink-500/15 border border-pink-500/30' }
-            };
+    // Fallback if themeName is null, undefined, or not in themeMap
+    if (!themeName || !themeMap[themeName]) {
+        themeName = 'fusee';
+    }
 
-            // Update active label on the closed trigger button
-            const activeLabel = document.getElementById('theme-active-label');
-            if (themeMap[themeName] && activeLabel) {
-                activeLabel.innerHTML = themeMap[themeName].label;
-            }
+    document.documentElement.setAttribute('data-theme', themeName);
+    localStorage.setItem('fusee_selected_theme', themeName);
 
-            Object.keys(themeMap).forEach(key => {
-                const btn = document.getElementById(themeMap[key].id);
-                if (btn) {
-                    btn.className = "w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 " + 
-                        (key === themeName ? themeMap[key].cls : "text-slate-300 hover:bg-slate-800/80");
-                }
-            });
-        };
+    // Update active label on the closed trigger button
+    const activeLabel = document.getElementById('theme-active-label');
+    if (activeLabel) {
+        activeLabel.innerHTML = themeMap[themeName].label;
+    }
 
-        document.addEventListener('DOMContentLoaded', () => {
-    const savedTheme = localStorage.getItem('fusee_selected_theme');
+    Object.keys(themeMap).forEach(key => {
+        const btn = document.getElementById(themeMap[key].id);
+        if (btn) {
+            btn.className = "w-full px-2.5 py-1.5 rounded-lg font-medium transition-colors " +
+                (key === themeName ? themeMap[key].cls : "text-slate-400 hover:text-white hover:bg-slate-800/50");
+        }
+    });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('fusee_selected_theme') || 'fusee';
     window.setTheme(savedTheme);
 
     if (window.refreshAllSystemStatuses) window.refreshAllSystemStatuses();
@@ -4636,5 +4791,179 @@ function debounce(func, delay = 250) {
 <div id="toast-container" class="fixed top-5 left-1/2 -translate-x-1/2 z-[200] flex flex-col items-center gap-2.5 max-w-sm w-full pointer-events-none px-4">
 </div>
 
+<script>
+// ===================================================
+// IN-APP MERCH CHECKOUT SYSTEM ENGINE
+// ===================================================
+let activeCheckoutItem = null;
+let currentQuantity = 1;
+let unitNumericPrice = 0;
+
+// 1. Open Order Modal
+window.openMerchOrderModal = function(index) {
+    if (!window.currentMerchItems || !window.currentMerchItems[index]) {
+        alert("Item data unavailable. Please try again.");
+        return;
+    }
+
+    activeCheckoutItem = window.currentMerchItems[index];
+    currentQuantity = 1;
+
+    const rawPrice = activeCheckoutItem.price ? activeCheckoutItem.price.replace(/[^0-9.]/g, '') : '0';
+    unitNumericPrice = parseFloat(rawPrice) || 0;
+
+    const imgEl = document.getElementById('checkout-item-img');
+    const iconEl = document.getElementById('checkout-item-icon');
+    if (activeCheckoutItem.imageUrl) {
+        imgEl.src = activeCheckoutItem.imageUrl;
+        imgEl.classList.remove('hidden');
+        iconEl.classList.add('hidden');
+    } else {
+        imgEl.classList.add('hidden');
+        iconEl.classList.remove('hidden');
+    }
+
+    document.getElementById('checkout-item-title').innerText = activeCheckoutItem.title || "EE Merchandise";
+    document.getElementById('checkout-item-badge').innerText = activeCheckoutItem.badge || "PRE-ORDER";
+    document.getElementById('checkout-item-unit-price').innerText = `₱${unitNumericPrice.toFixed(2)}`;
+
+    if (window.paymentInfo) {
+        document.getElementById('checkout-payment-name').innerText = window.paymentInfo.name || "FUSEE Treasurer";
+        document.getElementById('checkout-payment-number').innerText = window.paymentInfo.number || "N/A";
+        
+        const qrContainer = document.getElementById('checkout-qr-container');
+        const qrImg = document.getElementById('checkout-qr-img');
+        if (window.paymentInfo.qrUrl) {
+            qrImg.src = window.paymentInfo.qrUrl;
+            qrContainer.classList.remove('hidden');
+        } else {
+            qrContainer.classList.add('hidden');
+        }
+    }
+
+    const sizeContainer = document.getElementById('checkout-size-container');
+    const selectedSizeInput = document.getElementById('checkout-selected-size');
+    selectedSizeInput.value = "";
+    
+    document.querySelectorAll('#size-pill-group .size-pill').forEach(btn => {
+        btn.classList.remove('border-fusee-magenta', 'bg-fusee-magenta/20', 'text-fusee-magenta');
+        btn.classList.add('border-slate-700', 'bg-slate-900', 'text-white');
+    });
+
+    if (activeCheckoutItem.requiresSize === false) {
+        sizeContainer.classList.add('hidden');
+        selectedSizeInput.value = "N/A";
+    } else {
+        sizeContainer.classList.remove('hidden');
+    }
+
+    if (window.currentUser) {
+        if (window.currentUser.displayName) {
+            document.getElementById('checkout-student-name').value = window.currentUser.displayName;
+        }
+        if (window.currentUser.email) {
+            document.getElementById('checkout-student-email').value = window.currentUser.email;
+        }
+    }
+
+    updateMerchQty(0);
+
+    if (typeof window.openModal === 'function') {
+        window.openModal('merch-order-modal');
+    } else {
+        document.getElementById('merch-order-modal').classList.remove('hidden-sheet');
+    }
+};
+
+// 2. Select Size Pill Handler
+window.selectMerchSize = function(size) {
+    document.getElementById('checkout-selected-size').value = size;
+    document.querySelectorAll('#size-pill-group .size-pill').forEach(btn => {
+        if (btn.getAttribute('data-size') === size) {
+            btn.classList.remove('border-slate-700', 'bg-slate-900', 'text-white');
+            btn.classList.add('border-fusee-magenta', 'bg-fusee-magenta/20', 'text-fusee-magenta');
+        } else {
+            btn.classList.remove('border-fusee-magenta', 'bg-fusee-magenta/20', 'text-fusee-magenta');
+            btn.classList.add('border-slate-700', 'bg-slate-900', 'text-white');
+        }
+    });
+};
+
+// 3. Quantity Handler
+window.updateMerchQty = function(change) {
+    currentQuantity += change;
+    if (currentQuantity < 1) currentQuantity = 1;
+    
+    document.getElementById('checkout-qty-display').innerText = currentQuantity;
+    const grandTotal = unitNumericPrice * currentQuantity;
+    document.getElementById('checkout-total-price').innerText = `₱${grandTotal.toFixed(2)}`;
+};
+
+// 4. Handle Order Submission to Firestore
+window.handleMerchOrderSubmit = async function(event) {
+    event.preventDefault();
+
+    const submitBtn = document.getElementById('submit-order-btn');
+    const selectedSize = document.getElementById('checkout-selected-size').value;
+
+    if (activeCheckoutItem.requiresSize !== false && !selectedSize) {
+        alert("Please select a size before placing your order.");
+        return;
+    }
+
+    const studentName = document.getElementById('checkout-student-name').value.trim();
+    const studentEmail = document.getElementById('checkout-student-email').value.trim();
+    const studentId = document.getElementById('checkout-student-id').value.trim();
+    const courseYearSec = document.getElementById('checkout-student-course').value.trim();
+    const gcashRefNo = document.getElementById('checkout-gcash-ref').value.trim();
+
+    if (!studentName || !studentEmail || !studentId || !courseYearSec || !gcashRefNo) {
+        alert("Please fill in all required fields.");
+        return;
+    }
+
+    if (gcashRefNo.length < 10) {
+        alert("Please enter a valid GCash / Maya Reference Number (at least 10–13 digits).");
+        return;
+    }
+
+    const grandTotal = unitNumericPrice * currentQuantity;
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting Order...`;
+
+    try {
+        await addDoc(collection(db, "merch_orders"), {
+            itemTitle: activeCheckoutItem.title || "EE Merch",
+            itemPrice: activeCheckoutItem.price || `₱${unitNumericPrice.toFixed(2)}`,
+            size: selectedSize || "N/A",
+            quantity: currentQuantity,
+            totalAmount: grandTotal,
+            studentName: studentName,
+            studentEmail: studentEmail,
+            studentId: studentId,
+            courseYearSec: courseYearSec,
+            gcashRefNo: gcashRefNo,
+            status: "PENDING",
+            createdAt: serverTimestamp()
+        });
+
+        alert("🎉 Order submitted successfully! FUSEE officers will verify your payment reference shortly.");
+
+        document.getElementById('merch-checkout-form').reset();
+        if (typeof window.closeModal === 'function') {
+            window.closeModal('merch-order-modal');
+        } else {
+            document.getElementById('merch-order-modal').classList.add('hidden-sheet');
+        }
+    } catch (err) {
+        console.error("Error placing order:", err);
+        alert("Failed to submit order: " + err.message);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>Confirm & Submit Order</span>`;
+    }
+};
+</script>
 </body>
 </html>
