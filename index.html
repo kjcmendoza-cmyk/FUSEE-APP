@@ -363,19 +363,22 @@ if (data.eeDept) {
                 const fuseeEmail = document.getElementById('fusee-info-display-email');
                 if (fuseeEmail && data.fuseeInfo.email) fuseeEmail.textContent = data.fuseeInfo.email;
            }    
-                // 13. EE Merch Catalog Real-Time Sync
+                // 13. EE Merch Catalog & Payment Info Real-Time Sync
 if (data.merchItems && Array.isArray(data.merchItems)) {
-    // Store globally for checkout modal access
     window.currentMerchItems = data.merchItems;
-    window.paymentInfo = {
-        name: data.paymentName || "FUSEE Treasurer",
-        number: data.paymentNumber || "N/A",
-        qrUrl: data.paymentQrUrl || ""
-    };
+}
 
+// Sync GCash / Maya Payment Receiver Settings from admin
+if (data.paymentInfo) {
+    window.paymentInfo = {
+        name: data.paymentInfo.name || "FUSEE Treasurer",
+        number: data.paymentInfo.number || "N/A",
+        qrUrl: data.paymentInfo.qr || ""
+    };
+}
     const merchContainer = document.getElementById('merch-display-container');
     if (merchContainer) {
-        if (data.merchItems.length === 0) {
+        if (!data.merchItems || data.merchItems.length === 0) {
             merchContainer.innerHTML = 
                 '<p class="text-[10px] text-slate-400 italic text-center py-6 col-span-2">' +
                 'No merchandise items available at the moment.</p>';
@@ -434,13 +437,21 @@ ${hasBack ? `
                     </p>
                 ` : '';
 
-                const orderBtnHtml = `
-                    <button type="button"
-                            onclick="openMerchOrderModal(${itemIdx})"
-                            class="block w-full text-center py-2 bg-gradient-to-r from-fusee-magenta to-pink-600 text-white font-bold rounded-xl text-xs hover:from-pink-500 hover:to-purple-500 transition shadow-neon-pink mt-2">
-                        <i class="fa-solid fa-cart-shopping mr-1.5"></i> Order Now
-                    </button>
-                `;
+                const isSoldOut = item.badge?.toLowerCase() === 'sold out';
+
+const orderBtnHtml = isSoldOut ? `
+    <button type="button"
+            disabled
+            class="block w-full text-center py-2 bg-slate-800/80 text-slate-500 font-bold rounded-xl text-xs cursor-not-allowed border border-slate-700/80 opacity-60 mt-2">
+        <i class="fa-solid fa-ban mr-1.5"></i> Sold Out
+    </button>
+` : `
+    <button type="button"
+            onclick="openMerchOrderModal(${itemIdx})"
+            class="block w-full text-center py-2 bg-gradient-to-r from-fusee-magenta to-pink-600 text-white font-bold rounded-xl text-xs hover:from-pink-500 hover:to-purple-500 transition shadow-neon-pink mt-2">
+        <i class="fa-solid fa-cart-shopping mr-1.5"></i> Order Now
+    </button>
+`;
 
                 return `
                     <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 hover:border-fusee-magenta/50 transition flex flex-col justify-between group">
