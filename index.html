@@ -5011,6 +5011,7 @@ function updateImageTransform() {
     const zoomedImg = document.getElementById('zoomedImage');
     if (zoomedImg) {
         zoomedImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+    
     }
 }
 
@@ -5018,6 +5019,8 @@ function updateImageTransform() {
 const zoomedImg = document.getElementById('zoomedImage');
 
 if (zoomedImg) {
+    // Prevent default browser ghost image dragging
+    zoomedImg.addEventListener('dragstart', (e) => e.preventDefault());
     // Touch Start (Pinch or Pan)
     zoomedImg.addEventListener('touchstart', (e) => {
         if (e.touches.length === 2) {
@@ -5087,12 +5090,13 @@ if (zoomedImg) {
     </button>
 
     <!-- Zoomed Image Viewport -->
-    <div class="relative w-full max-w-lg h-[75vh] flex items-center justify-center overflow-hidden touch-none select-none">
-        <img id="zoomedImage" 
-             src="" 
-             alt="Zoomed View" 
-             class="max-w-full max-h-full object-contain filter drop-shadow-[0_20px_40px_rgba(0,240,255,0.4)] will-change-transform cursor-grab active:cursor-grabbing">
-    </div>
+<div class="relative w-full max-w-lg h-[75vh] flex items-center justify-center overflow-hidden touch-none select-none">
+    <img id="zoomedImage" 
+         src="" 
+         alt="Zoomed View" 
+         draggable="false"
+         class="max-w-full max-h-full object-contain filter drop-shadow-[0_20px_40px_rgba(0,240,255,0.4)] will-change-transform cursor-grab active:cursor-grabbing select-none">
+</div>
 
     <p class="text-xs text-slate-400 mt-4 select-none"><i class="fa-solid fa-hand-pointer mr-1 text-fusee-cyan"></i> Pinch to zoom • Drag to move</p>
 </div>
