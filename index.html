@@ -2803,80 +2803,130 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
     };
 
     window.renderLostFoundUI = function() {
-        const container = document.getElementById('lost-found-display-container');
-        if (!container) return;
+    const container = document.getElementById('lost-found-display-container');
+    if (!container) return;
 
-        const items = window.allLostFoundData || [];
-        const searchVal = (document.getElementById('lf-search-input')?.value || '').toLowerCase();
+    const items = window.allLostFoundData || [];
+    const searchVal = (document.getElementById('lf-search-input')?.value || '').toLowerCase();
 
-        const filtered = items.filter(item => {
-            const matchesCat = currentLFFilter === 'all' || 
-                               (currentLFFilter === 'lost' && item.type === 'LOST') ||
-                               (currentLFFilter === 'found' && (item.type === 'FOUND' || item.type === 'OFFICIAL')) ||
-                               (currentLFFilter === 'returned' && item.status === 'RETURNED');
-            const matchesSearch = !searchVal ||
-                (item.title && item.title.toLowerCase().includes(searchVal)) ||
-                (item.location && item.location.toLowerCase().includes(searchVal)) ||
-                (item.description && item.description.toLowerCase().includes(searchVal)) ||
-                (item.contact && item.contact.toLowerCase().includes(searchVal));
-            return matchesCat && matchesSearch;
-        });
+    const filtered = items.filter(item => {
+        const matchesCat = currentLFFilter === 'all' || 
+                           (currentLFFilter === 'lost' && item.type === 'LOST') ||
+                           (currentLFFilter === 'found' && (item.type === 'FOUND' || item.type === 'OFFICIAL')) ||
+                           (currentLFFilter === 'returned' && item.status === 'RETURNED');
+        const matchesSearch = !searchVal ||
+            (item.title && item.title.toLowerCase().includes(searchVal)) ||
+            (item.location && item.location.toLowerCase().includes(searchVal)) ||
+            (item.description && item.description.toLowerCase().includes(searchVal)) ||
+            (item.contact && item.contact.toLowerCase().includes(searchVal));
+        return matchesCat && matchesSearch;
+    });
 
-        if (filtered.length === 0) {
-            container.innerHTML = '<p class="text-[10px] text-slate-400 italic text-center py-6 col-span-2">No lost or found reports match your search criteria.</p>';
-            return;
+    if (filtered.length === 0) {
+        container.innerHTML = '<p class="text-[10px] text-slate-400 italic text-center py-6 col-span-2">No lost or found reports match your search criteria.</p>';
+        return;
+    }
+
+    container.innerHTML = filtered.map(item => {
+        let badgeColor = 'bg-rose-500/20 text-rose-400 border-rose-500/30';
+        let badgeText = '🔴 LOST / LOOKING';
+
+        if (item.status === 'RETURNED') {
+            badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+            badgeText = '🟢 RETURNED / CLAIMED';
+        } else if (item.type === 'FOUND' || item.type === 'OFFICIAL') {
+            badgeColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+            badgeText = '🟡 FOUND / AT R202B';
         }
 
-        container.innerHTML = filtered.map(item => {
-            let badgeColor = 'bg-rose-500/20 text-rose-400 border-rose-500/30';
-            let badgeText = '🔴 LOST / LOOKING';
+        const photoHtml = item.imageUrl ? `
+            <div class="w-full aspect-video rounded-xl overflow-hidden border border-slate-800 bg-slate-950 relative group flex items-center justify-center">
+                <img src="${item.imageUrl}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            </div>
+        ` : `
+            <div class="w-full aspect-video rounded-xl border border-slate-800 bg-slate-950 flex flex-col items-center justify-center text-slate-500 text-[10px]">
+                <i class="fa-solid fa-box-open text-2xl text-rose-400/30 mb-1"></i>
+                <span>No Photo Provided</span>
+            </div>
+        `;
 
-            if (item.status === 'RETURNED') {
-                badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-                badgeText = '🟢 RETURNED';
-            } else if (item.type === 'FOUND' || item.type === 'OFFICIAL') {
-                badgeColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
-                badgeText = '🟡 FOUND / AT R202B';
-            }
+        // Check ownership and status
+        const isOwner = window.currentUser && item.ownerEmail && window.currentUser.email === item.ownerEmail;
+        const isReturned = item.status === 'RETURNED';
 
-            const photoHtml = item.imageUrl ? `
-                <div class="w-full aspect-video rounded-xl overflow-hidden border border-slate-800 bg-slate-950 relative group flex items-center justify-center">
-                    <img src="${item.imageUrl}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                </div>
-            ` : `
-                <div class="w-full aspect-video rounded-xl border border-slate-800 bg-slate-950 flex flex-col items-center justify-center text-slate-500 text-[10px]">
-                    <i class="fa-solid fa-box-open text-2xl text-rose-400/30 mb-1"></i>
-                    <span>No Photo Provided</span>
-                </div>
-            `;
-
-            return `
-                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5 hover:border-rose-400/40 transition flex flex-col justify-between">
-                    <div class="space-y-2">
-                        ${photoHtml}
-                        <div class="flex items-center justify-between gap-1">
-                            <span class="px-2 py-0.5 rounded-full text-[8px] font-bold font-techno border ${badgeColor}">
-                                ${badgeText}
-                            </span>
-                            <span class="text-[9px] text-slate-400 font-medium">
-                                <i class="fa-solid fa-location-dot text-rose-400 mr-1"></i>${item.location || 'R202B'}
-                            </span>
-                        </div>
-                        <h4 class="font-bold text-white text-xs leading-snug">${item.title || 'Untitled Item'}</h4>
-                        ${item.date ? `<p class="text-[9px] text-slate-400"><i class="fa-regular fa-clock mr-1"></i>Logged: ${item.date}</p>` : ''}
-                        <p class="text-[10px] text-slate-300 leading-relaxed bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">
-                            ${item.description || 'No additional details.'}
-                        </p>
+        return `
+            <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5 hover:border-rose-400/40 transition flex flex-col justify-between">
+                <div class="space-y-2">
+                    ${photoHtml}
+                    <div class="flex items-center justify-between gap-1">
+                        <span class="px-2 py-0.5 rounded-full text-[8px] font-bold font-techno border ${badgeColor}">
+                            ${badgeText}
+                        </span>
+                        <span class="text-[9px] text-slate-400 font-medium">
+                            <i class="fa-solid fa-location-dot text-rose-400 mr-1"></i>${item.location || 'R202B'}
+                        </span>
                     </div>
+                    <h4 class="font-bold text-white text-xs leading-snug">${item.title || 'Untitled Item'}</h4>
+                    ${item.date ? `<p class="text-[9px] text-slate-400"><i class="fa-regular fa-clock mr-1"></i>Logged: ${item.date}</p>` : ''}
+                    <p class="text-[10px] text-slate-300 leading-relaxed bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">
+                        ${item.description || 'No additional details.'}
+                    </p>
+                </div>
 
-                    <div class="pt-1 border-t border-slate-800/80 flex items-center justify-between text-[9px] text-slate-400">
-                        <span>Contact: <strong class="text-white">${item.contact || 'Room R202B Desk'}</strong></span>
+                <div class="pt-1 border-t border-slate-800/80 flex items-center justify-between text-[9px] text-slate-400">
+                    <span>Contact: <strong class="text-white">${item.contact || 'Room R202B Desk'}</strong></span>
+                    <div class="flex items-center gap-2">
+                        ${isOwner ? (
+                            isReturned ? `
+                                <span class="text-emerald-400 font-bold flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-check"></i> Claimed
+                                </span>
+                            ` : `
+                                <button onclick="markLostFoundClaimed('${item.id}')" class="text-emerald-400 hover:text-emerald-300 font-bold transition flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-check"></i> Mark as Claimed
+                                </button>
+                            `
+                        ) : ''}
                         <span class="text-rose-400 font-bold">Present AdDU ID</span>
                     </div>
                 </div>
-            `;
-        }).join('');
-    };
+            </div>
+        `;
+    }).join('');
+};
+window.markLostFoundClaimed = async function(itemId) {
+    const list = window.allLostFoundData || [];
+    const item = list.find(i => i.id == itemId);
+    if (!item) return;
+
+    const user = window.currentUser;
+    if (!user || (item.ownerEmail && item.ownerEmail !== user.email)) {
+        alert("Only the user who posted this report can mark it as claimed/returned.");
+        return;
+    }
+
+    if (confirm("Are you sure you want to mark this item as claimed / returned?")) {
+        // Update local status
+        item.status = 'RETURNED';
+
+        // Sync change with Cloud Firestore
+        try {
+            const db = window.db;
+            const docRef = window.doc(db, "fusee_hub", "landing_content");
+            await window.updateDoc(docRef, {
+                lostAndFound: window.allLostFoundData
+            });
+
+            if (typeof window.renderLostFoundUI === 'function') {
+                window.renderLostFoundUI();
+            }
+            alert("Report successfully marked as Claimed / Returned!");
+        } catch (err) {
+            console.error("Error updating report status:", err);
+            alert("Failed to update status on server: " + err.message);
+        }
+    }
+};
 window.renderTutorUI = function() {
     const container = document.getElementById('tutoring-display-container');
     if (!container) return;
