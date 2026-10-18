@@ -1472,250 +1472,245 @@ document.getElementById('admin-payment-qr').value = data.paymentInfo?.qr || '';
             container.appendChild(div);
         };
 
-        window.saveDataToFirebase = async function() {
-            const saveBtn = document.getElementById('save-all-btn');
-            if (!saveBtn) return;
+        // Helper to collect all form fields and dynamic rows across all 17 sections
+function gatherFormData() {
+    const importantEvents = [];
+    document.querySelectorAll('.important-event-item-row').forEach(row => {
+        const title = row.querySelector('.imp-title-input')?.value?.trim() || '';
+        const category = row.querySelector('.imp-category-input')?.value || 'Major Exam';
+        const date = row.querySelector('.imp-date-input')?.value || '';
+        const endDate = row.querySelector('.imp-enddate-input')?.value || date;
+        const description = row.querySelector('.imp-desc-input')?.value?.trim() || '';
+        if (title && date) importantEvents.push({ title, category, date, endDate, description });
+    });
 
-            saveBtn.disabled = true;
-            saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
+    const lostAndFound = [];
+    document.querySelectorAll('.lost-found-item-row').forEach(row => {
+        const type = row.querySelector('.lf-type-input')?.value || 'FOUND';
+        const status = row.querySelector('.lf-status-input')?.value || 'UNCLAIMED';
+        const title = row.querySelector('.lf-title-input')?.value?.trim() || '';
+        const location = row.querySelector('.lf-location-input')?.value?.trim() || '';
+        const date = row.querySelector('.lf-date-input')?.value || '';
+        const contact = row.querySelector('.lf-contact-input')?.value?.trim() || '';
+        const description = row.querySelector('.lf-desc-input')?.value?.trim() || '';
+        const imageUrl = row.querySelector('.lf-image-input')?.value || '';
+        if (title) lostAndFound.push({ type, status, title, location, date, contact, description, imageUrl });
+    });
 
-            try {
-                // Gather Section 17 Important Events
-const importantEvents = [];
-document.querySelectorAll('.important-event-item-row').forEach(row => {
-    const title = row.querySelector('.imp-title-input')?.value?.trim() || '';
-    const category = row.querySelector('.imp-category-input')?.value || 'Major Exam';
-    const date = row.querySelector('.imp-date-input')?.value || '';
-    const endDate = row.querySelector('.imp-enddate-input')?.value || date;
-    const description = row.querySelector('.imp-desc-input')?.value?.trim() || '';
+    const capstoneItems = [];
+    document.querySelectorAll('.capstone-item-row').forEach(row => {
+        const title = row.querySelector('.cap-title-input')?.value?.trim() || '';
+        const advisor = row.querySelector('.cap-advisor-input')?.value?.trim() || '';
+        const authors = row.querySelector('.cap-authors-input')?.value?.trim() || '';
+        const year = row.querySelector('.cap-year-input')?.value?.trim() || '';
+        const videoUrl = row.querySelector('.cap-video-input')?.value?.trim() || '';
+        const abstract = row.querySelector('.cap-abstract-input')?.value?.trim() || '';
+        const diagramUrl = row.querySelector('.cap-image-input')?.value || '';
+        if (title) capstoneItems.push({ title, advisor, authors, year, videoUrl, abstract, diagramUrl });
+    });
 
-    if (title && date) {
-        importantEvents.push({ title, category, date, endDate, description });
-    }
-});
+    const events = [];
+    document.querySelectorAll('.event-item-row').forEach(row => {
+        const title = row.querySelector('.event-title-input')?.value?.trim() || '';
+        const date = row.querySelector('.event-date-input')?.value?.trim() || '';
+        const location = row.querySelector('.event-location-input')?.value?.trim() || '';
+        const link = row.querySelector('.event-link-input')?.value?.trim() || '';
+        if (title) events.push({ title, date, location, link });
+    });
 
-                const lostAndFound = [];
-                document.querySelectorAll('.lost-found-item-row').forEach(row => {
-                    const type = row.querySelector('.lf-type-input')?.value || 'FOUND';
-                    const status = row.querySelector('.lf-status-input')?.value || 'UNCLAIMED';
-                    const title = row.querySelector('.lf-title-input')?.value?.trim() || '';
-                    const location = row.querySelector('.lf-location-input')?.value?.trim() || '';
-                    const date = row.querySelector('.lf-date-input')?.value || '';
-                    const contact = row.querySelector('.lf-contact-input')?.value?.trim() || '';
-                    const description = row.querySelector('.lf-desc-input')?.value?.trim() || '';
-                    const imageUrl = row.querySelector('.lf-image-input')?.value || '';
+    const academicLinks = [];
+    document.querySelectorAll('.academic-link-item-row').forEach(row => {
+        const title = row.querySelector('.link-title-input')?.value?.trim() || '';
+        const url = row.querySelector('.link-url-input')?.value?.trim() || '';
+        if (title && url) academicLinks.push({ title, url });
+    });
 
-                    if (title) {
-                        lostAndFound.push({ type, status, title, location, date, contact, description, imageUrl });
-                    }
-                });
+    const faqs = [];
+    document.querySelectorAll('.faq-item-row').forEach(row => {
+        const q = row.querySelector('.faq-q-input')?.value?.trim() || '';
+        const a = row.querySelector('.faq-a-input')?.value?.trim() || '';
+        if (q && a) faqs.push({ q, a });
+    });
 
-                const capstoneItems = [];
-                document.querySelectorAll('.capstone-item-row').forEach(row => {
-                    const title = row.querySelector('.cap-title-input')?.value?.trim() || '';
-                    const advisor = row.querySelector('.cap-advisor-input')?.value?.trim() || '';
-                    const authors = row.querySelector('.cap-authors-input')?.value?.trim() || '';
-                    const year = row.querySelector('.cap-year-input')?.value?.trim() || '';
-                    const videoUrl = row.querySelector('.cap-video-input')?.value?.trim() || '';
-                    const abstract = row.querySelector('.cap-abstract-input')?.value?.trim() || '';
-                    const diagramUrl = row.querySelector('.cap-image-input')?.value || '';
+    const officers = [];
+    document.querySelectorAll('.officer-item-row').forEach(row => {
+        const category = row.querySelector('.off-category-input')?.value;
+        const subCategory = row.querySelector('.off-subcategory-input')?.value || 'academics';
+        const badge = row.querySelector('.off-badge-input')?.value;
+        const name = row.querySelector('.off-name-input')?.value?.trim();
+        const title = row.querySelector('.off-title-input')?.value?.trim();
+        const dept = row.querySelector('.off-dept-input')?.value?.trim();
+        const email = row.querySelector('.off-email-input')?.value?.trim();
+        const imageUrl = row.querySelector('.off-img-input')?.value?.trim();
+        if (title || name) officers.push({ name, title, dept, email, category, subCategory, badge, imageUrl });
+    });
 
-                    if (title) capstoneItems.push({ title, advisor, authors, year, videoUrl, abstract, diagramUrl });
-                });
+    const faculty = [];
+    document.querySelectorAll('.faculty-item-row').forEach(row => {
+        const name = row.querySelector('.fac-name-input')?.value?.trim() || '';
+        const specialization = row.querySelector('.fac-spec-input')?.value?.trim() || '';
+        const imageUrl = row.querySelector('.fac-img-input')?.value?.trim() || '';
+        if (name) faculty.push({ name, specialization, imageUrl });
+    });
 
-                const events = [];
-                document.querySelectorAll('.event-item-row').forEach(row => {
-                    const title = row.querySelector('.event-title-input')?.value?.trim() || '';
-                    const date = row.querySelector('.event-date-input')?.value?.trim() || '';
-                    const location = row.querySelector('.event-location-input')?.value?.trim() || '';
-                    const link = row.querySelector('.event-link-input')?.value?.trim() || '';
-                    if (title) events.push({ title, date, location, link });
-                });
+    const facilities = [];
+    document.querySelectorAll('.facility-item-row').forEach(row => {
+        const code = row.querySelector('.facil-code-input')?.value?.trim() || '';
+        const description = row.querySelector('.facil-desc-input')?.value?.trim() || '';
+        if (code && description) facilities.push({ code, description });
+    });
 
-                const academicLinks = [];
-                document.querySelectorAll('.academic-link-item-row').forEach(row => {
-                    const title = row.querySelector('.link-title-input')?.value?.trim() || '';
-                    const url = row.querySelector('.link-url-input')?.value?.trim() || '';
-                    if (title && url) academicLinks.push({ title, url });
-                });
+    const merchItems = [];
+    document.querySelectorAll('.merch-item-row').forEach(row => {
+        const title = row.querySelector('.merch-title-input')?.value?.trim() || '';
+        const price = row.querySelector('.merch-price-input')?.value?.trim() || '';
+        const badge = row.querySelector('.merch-badge-input')?.value || 'Pre-Orders';
+        const description = row.querySelector('.merch-desc-input')?.value?.trim() || '';
+        const orderUrl = row.querySelector('.merch-url-input')?.value?.trim() || '';
+        const imageUrl = row.querySelector('.merch-image-input')?.value || '';
+        const backImageUrl = row.querySelector('.merch-back-image-input')?.value || '';
+        if (title) merchItems.push({ title, price, badge, description, orderUrl, imageUrl, backImageUrl });
+    });
 
-                const faqs = [];
-                document.querySelectorAll('.faq-item-row').forEach(row => {
-                    const q = row.querySelector('.faq-q-input')?.value?.trim() || '';
-                    const a = row.querySelector('.faq-a-input')?.value?.trim() || '';
-                    if (q && a) faqs.push({ q, a });
-                });
+    const labPolicies = [];
+    document.querySelectorAll('.policy-item-row').forEach(row => {
+        const title = row.querySelector('.policy-title-input')?.value?.trim() || '';
+        const content = row.querySelector('.policy-content-input')?.value?.trim() || '';
+        if (title || content) labPolicies.push({ title, content });
+    });
 
-                const officers = [];
-document.querySelectorAll('.officer-item-row').forEach(row => {
-    const category = row.querySelector('.off-category-input')?.value;
-    const subCategory = row.querySelector('.off-subcategory-input')?.value || 'academics';
-    const badge = row.querySelector('.off-badge-input')?.value;
-    const name = row.querySelector('.off-name-input')?.value?.trim();
-    const title = row.querySelector('.off-title-input')?.value?.trim();
-    const dept = row.querySelector('.off-dept-input')?.value?.trim();
-    const email = row.querySelector('.off-email-input')?.value?.trim();
-    const imageUrl = row.querySelector('.off-img-input')?.value?.trim();
+    const weeklySchedule = { eeLab: [], comLab: [] };
+    document.querySelectorAll('.ee-schedule-item-row').forEach(row => {
+        const day = row.querySelector('.sch-day-input')?.value || 'Monday';
+        const startTime = row.querySelector('.sch-start-input')?.value?.trim() || '';
+        const endTime = row.querySelector('.sch-end-input')?.value?.trim() || '';
+        const subjectName = row.querySelector('.sch-subject-input')?.value?.trim() || '';
+        const instructor = row.querySelector('.sch-instructor-input')?.value?.trim() || '';
+        if (subjectName) weeklySchedule.eeLab.push({ day, startTime, endTime, subjectName, instructor });
+    });
 
-    if (title || name) {
-        officers.push({ name, title, dept, email, category, subCategory, badge, imageUrl });
-    }
-});
+    document.querySelectorAll('.com-schedule-item-row').forEach(row => {
+        const day = row.querySelector('.sch-day-input')?.value || 'Monday';
+        const startTime = row.querySelector('.sch-start-input')?.value?.trim() || '';
+        const endTime = row.querySelector('.sch-end-input')?.value?.trim() || '';
+        const subjectName = row.querySelector('.sch-subject-input')?.value?.trim() || '';
+        const instructor = row.querySelector('.sch-instructor-input')?.value?.trim() || '';
+        if (subjectName) weeklySchedule.comLab.push({ day, startTime, endTime, subjectName, instructor });
+    });
 
-                const faculty = [];
-                document.querySelectorAll('.faculty-item-row').forEach(row => {
-                    const name = row.querySelector('.fac-name-input')?.value?.trim() || '';
-                    const specialization = row.querySelector('.fac-spec-input')?.value?.trim() || '';
-                    const imageUrl = row.querySelector('.fac-img-input')?.value?.trim() || '';
-                    if (name) faculty.push({ name, specialization, imageUrl });
-                });
+    const activityEvents = [];
+    document.querySelectorAll('.act-event-item-row').forEach(row => {
+        const room = row.querySelector('.act-room-input')?.value || 'both';
+        const eventDate = row.querySelector('.act-date-input')?.value || '';
+        const eventTitle = row.querySelector('.act-title-input')?.value?.trim() || '';
+        const description = row.querySelector('.act-desc-input')?.value?.trim() || '';
+        if (eventTitle) activityEvents.push({ room, eventDate, eventTitle, description });
+    });
 
-                const facilities = [];
-                document.querySelectorAll('.facility-item-row').forEach(row => {
-                    const code = row.querySelector('.facil-code-input')?.value?.trim() || '';
-                    const description = row.querySelector('.facil-desc-input')?.value?.trim() || '';
-                    if (code && description) facilities.push({ code, description });
-                });
+    return {
+        tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
+        globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
+        paymentInfo: {
+            name: document.getElementById('admin-payment-name')?.value?.trim() || '',
+            number: document.getElementById('admin-payment-number')?.value?.trim() || '',
+            qr: document.getElementById('admin-payment-qr')?.value?.trim() || ''
+        },
+        events, academicLinks, merchItems, labPolicies, capstoneItems, weeklySchedule,
+        activityEvents, lostAndFound, importantEvents, faqs, officers,
+        sys1: {
+            tag: document.getElementById('sys1-tag')?.value?.trim() || '',
+            title: document.getElementById('sys1-title')?.value?.trim() || '',
+            description: document.getElementById('sys1-desc')?.value?.trim() || '',
+            location: document.getElementById('sys1-location')?.value?.trim() || '',
+            hours: document.getElementById('sys1-hours')?.value?.trim() || '',
+            studentLabel: document.getElementById('sys1-student-label')?.value?.trim() || '',
+            studentUrl: document.getElementById('sys1-student-url')?.value?.trim() || '',
+            adminLabel: document.getElementById('sys1-admin-label')?.value?.trim() || '',
+            adminUrl: document.getElementById('sys1-admin-url')?.value?.trim() || '',
+            guidelinesTitle: document.getElementById('sys1-guidelines-title')?.value?.trim() || '',
+            guidelinesContent: document.getElementById('sys1-guidelines-content')?.value?.trim() || '',
+            guidelinesUrl: document.getElementById('sys1-guidelines-url')?.value?.trim() || ''
+        },
+        sys2: {
+            tag: document.getElementById('sys2-tag')?.value?.trim() || '',
+            title: document.getElementById('sys2-title')?.value?.trim() || '',
+            description: document.getElementById('sys2-desc')?.value?.trim() || '',
+            location: document.getElementById('sys2-location')?.value?.trim() || '',
+            hours: document.getElementById('sys2-hours')?.value?.trim() || '',
+            badge: document.getElementById('sys2-badge')?.value?.trim() || '',
+            btnLabel: document.getElementById('sys2-btn-label')?.value?.trim() || '',
+            url: document.getElementById('sys2-url')?.value?.trim() || '',
+            policiesTitle: document.getElementById('sys2-policies-title')?.value?.trim() || '',
+            policiesContent: document.getElementById('sys2-policies-content')?.value?.trim() || '',
+            policiesUrl: document.getElementById('sys2-policies-url')?.value?.trim() || ''
+        },
+        sys3: {
+            tag: document.getElementById('sys3-tag')?.value?.trim() || '',
+            title: document.getElementById('sys3-title')?.value?.trim() || '',
+            description: document.getElementById('sys3-desc')?.value?.trim() || '',
+            location: document.getElementById('sys3-location')?.value?.trim() || '',
+            hours: document.getElementById('sys3-hours')?.value?.trim() || '',
+            badge: document.getElementById('sys3-badge')?.value?.trim() || '',
+            btnLabel: document.getElementById('sys3-btn-label')?.value?.trim() || '',
+            url: document.getElementById('sys3-url')?.value?.trim() || '',
+            guidelinesTitle: document.getElementById('sys3-guidelines-title')?.value?.trim() || '',
+            guidelinesContent: document.getElementById('sys3-guidelines-content')?.value?.trim() || '',
+            guidelinesUrl: document.getElementById('sys3-guidelines-url')?.value?.trim() || ''
+        },
+        banner: {
+            title: document.getElementById('banner-title')?.value?.trim() || '',
+            body: document.getElementById('banner-body')?.value?.trim() || ''
+        },
+        eeDept: {
+            description: document.getElementById('ee-dept-desc')?.value?.trim() || '',
+            chairName: document.getElementById('ee-dept-chair-name-input')?.value?.trim() || '',
+            chairDetails: document.getElementById('ee-dept-chair-details-input')?.value?.trim() || '',
+            custodianName: document.getElementById('ee-dept-custodian-name-input')?.value?.trim() || '',
+            custodianDetails: document.getElementById('ee-dept-custodian-details-input')?.value?.trim() || '',
+            faculty, facilities
+        },
+        fuseeInfo: {
+            description: document.getElementById('fusee-info-desc-input')?.value?.trim() || '',
+            email: document.getElementById('fusee-info-email-input')?.value?.trim() || ''
+        }
+    };
+}
 
-                const merchItems = [];
-document.querySelectorAll('.merch-item-row').forEach(row => {
-    const title = row.querySelector('.merch-title-input')?.value?.trim() || '';
-    const price = row.querySelector('.merch-price-input')?.value?.trim() || '';
-    const badge = row.querySelector('.merch-badge-input')?.value || 'Pre-Orders';
-    const description = row.querySelector('.merch-desc-input')?.value?.trim() || '';
-    const orderUrl = row.querySelector('.merch-url-input')?.value?.trim() || '';
-    const imageUrl = row.querySelector('.merch-image-input')?.value || '';
-    const backImageUrl = row.querySelector('.merch-back-image-input')?.value || '';
+// Auto-save draft to LocalStorage as user types or modifies inputs
+function saveLocalDraft() {
+    const data = gatherFormData();
+    localStorage.setItem('fusee_admin_draft', JSON.stringify(data));
+}
 
-    if (title) merchItems.push({ title, price, badge, description, orderUrl, imageUrl, backImageUrl });
-});
+// Listen for form inputs globally
+document.addEventListener('input', saveLocalDraft);
+document.addEventListener('change', saveLocalDraft);
 
-                const labPolicies = [];
-                document.querySelectorAll('.policy-item-row').forEach(row => {
-                    const title = row.querySelector('.policy-title-input')?.value?.trim() || '';
-                    const content = row.querySelector('.policy-content-input')?.value?.trim() || '';
-                    if (title || content) labPolicies.push({ title, content });
-                });
+// Publish to Firebase function
+window.saveDataToFirebase = async function() {
+    const saveBtn = document.getElementById('save-all-btn');
+    if (!saveBtn) return;
 
-                const weeklySchedule = { eeLab: [], comLab: [] };
-                document.querySelectorAll('.ee-schedule-item-row').forEach(row => {
-                    const day = row.querySelector('.sch-day-input')?.value || 'Monday';
-                    const startTime = row.querySelector('.sch-start-input')?.value?.trim() || '';
-                    const endTime = row.querySelector('.sch-end-input')?.value?.trim() || '';
-                    const subjectName = row.querySelector('.sch-subject-input')?.value?.trim() || '';
-                    const instructor = row.querySelector('.sch-instructor-input')?.value?.trim() || '';
-                    if (subjectName) weeklySchedule.eeLab.push({ day, startTime, endTime, subjectName, instructor });
-                });
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
 
-                document.querySelectorAll('.com-schedule-item-row').forEach(row => {
-                    const day = row.querySelector('.sch-day-input')?.value || 'Monday';
-                    const startTime = row.querySelector('.sch-start-input')?.value?.trim() || '';
-                    const endTime = row.querySelector('.sch-end-input')?.value?.trim() || '';
-                    const subjectName = row.querySelector('.sch-subject-input')?.value?.trim() || '';
-                    const instructor = row.querySelector('.sch-instructor-input')?.value?.trim() || '';
-                    if (subjectName) weeklySchedule.comLab.push({ day, startTime, endTime, subjectName, instructor });
-                });
-
-                const activityEvents = [];
-                document.querySelectorAll('.act-event-item-row').forEach(row => {
-                    const room = row.querySelector('.act-room-input')?.value || 'both';
-                    const eventDate = row.querySelector('.act-date-input')?.value || '';
-                    const eventTitle = row.querySelector('.act-title-input')?.value?.trim() || '';
-                    const description = row.querySelector('.act-desc-input')?.value?.trim() || '';
-                    if (eventTitle) activityEvents.push({ room, eventDate, eventTitle, description });
-                });
-
-                const updatedData = {
-    tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
-    globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
-
-    paymentInfo: {
-        name: document.getElementById('admin-payment-name')?.value?.trim() || '',
-        number: document.getElementById('admin-payment-number')?.value?.trim() || '',
-        qr: document.getElementById('admin-payment-qr')?.value?.trim() || ''
-    },
-
-    events,
-    academicLinks,
-    merchItems,
-    labPolicies,
-    capstoneItems,
-    weeklySchedule,
-    activityEvents,
-    lostAndFound,
-    importantEvents,
-    sys1: {
-        tag: document.getElementById('sys1-tag')?.value?.trim() || '',
-        title: document.getElementById('sys1-title')?.value?.trim() || '',
-        description: document.getElementById('sys1-desc')?.value?.trim() || '',
-        location: document.getElementById('sys1-location')?.value?.trim() || '',
-        hours: document.getElementById('sys1-hours')?.value?.trim() || '',
-        studentLabel: document.getElementById('sys1-student-label')?.value?.trim() || '',
-        studentUrl: document.getElementById('sys1-student-url')?.value?.trim() || '',
-        adminLabel: document.getElementById('sys1-admin-label')?.value?.trim() || '',
-        adminUrl: document.getElementById('sys1-admin-url')?.value?.trim() || '',
-        guidelinesTitle: document.getElementById('sys1-guidelines-title')?.value?.trim() || '',
-        guidelinesContent: document.getElementById('sys1-guidelines-content')?.value?.trim() || '',
-        guidelinesUrl: document.getElementById('sys1-guidelines-url')?.value?.trim() || ''
-    },
-    sys2: {
-        tag: document.getElementById('sys2-tag')?.value?.trim() || '',
-        title: document.getElementById('sys2-title')?.value?.trim() || '',
-        description: document.getElementById('sys2-desc')?.value?.trim() || '',
-        location: document.getElementById('sys2-location')?.value?.trim() || '',
-        hours: document.getElementById('sys2-hours')?.value?.trim() || '',
-        badge: document.getElementById('sys2-badge')?.value?.trim() || '',
-        btnLabel: document.getElementById('sys2-btn-label')?.value?.trim() || '',
-        url: document.getElementById('sys2-url')?.value?.trim() || '',
-        policiesTitle: document.getElementById('sys2-policies-title')?.value?.trim() || '',
-        policiesContent: document.getElementById('sys2-policies-content')?.value?.trim() || '',
-        policiesUrl: document.getElementById('sys2-policies-url')?.value?.trim() || ''
-    },
-    sys3: {
-        tag: document.getElementById('sys3-tag')?.value?.trim() || '',
-        title: document.getElementById('sys3-title')?.value?.trim() || '',
-        description: document.getElementById('sys3-desc')?.value?.trim() || '',
-        location: document.getElementById('sys3-location')?.value?.trim() || '',
-        hours: document.getElementById('sys3-hours')?.value?.trim() || '',
-        badge: document.getElementById('sys3-badge')?.value?.trim() || '',
-        btnLabel: document.getElementById('sys3-btn-label')?.value?.trim() || '',
-        url: document.getElementById('sys3-url')?.value?.trim() || '',
-        guidelinesTitle: document.getElementById('sys3-guidelines-title')?.value?.trim() || '',
-        guidelinesContent: document.getElementById('sys3-guidelines-content')?.value?.trim() || '',
-        guidelinesUrl: document.getElementById('sys3-guidelines-url')?.value?.trim() || ''
-    },
-    faqs,
-    officers,
-    banner: {
-        title: document.getElementById('banner-title')?.value?.trim() || '',
-        body: document.getElementById('banner-body')?.value?.trim() || ''
-    },
-    eeDept: {
-        description: document.getElementById('ee-dept-desc')?.value?.trim() || '',
-        chairName: document.getElementById('ee-dept-chair-name-input')?.value?.trim() || '',
-        chairDetails: document.getElementById('ee-dept-chair-details-input')?.value?.trim() || '',
-        custodianName: document.getElementById('ee-dept-custodian-name-input')?.value?.trim() || '',
-        custodianDetails: document.getElementById('ee-dept-custodian-details-input')?.value?.trim() || '',
-        faculty,
-        facilities
-    },
-    fuseeInfo: {
-        description: document.getElementById('fusee-info-desc-input')?.value?.trim() || '',
-        email: document.getElementById('fusee-info-email-input')?.value?.trim() || ''
-    },
-    updatedAt: new Date().toISOString()
-};
-
-                await withTimeout(setDoc(docRef, updatedData, { merge: true }), 8000);
-                showToast("All changes published to FUSEE Hub live!");
-            } catch (err) {
-                console.error("Save error:", err);
-                showToast(err.message || "Failed to save changes. Check Firebase Security Rules.", true);
-            } finally {
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk text-sm"></i> <span>Publish Changes</span>';
-            }
+    try {
+        const updatedData = {
+            ...gatherFormData(),
+            updatedAt: new Date().toISOString()
         };
+
+        await withTimeout(setDoc(docRef, updatedData, { merge: true }), 8000);
+        localStorage.removeItem('fusee_admin_draft');
+        showToast("All changes published to FUSEE Hub live!");
+    } catch (err) {
+        console.error("Save error:", err);
+        showToast(err.message || "Failed to save changes. Check Firebase Security Rules.", true);
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk text-sm"></i> <span>Publish Changes</span>';
+    }
+};
 
         function renderEvents(list = []) {
             const container = document.getElementById('events-container');
@@ -1988,15 +1983,34 @@ window.addOfficerRow = function(title = '', dept = '', email = '', badge = 'PRES
             container.appendChild(div);
         };
 
-        onSnapshot(docRef, (docSnap) => {
-    if (docSnap.exists()) {
-        populateUI(docSnap.data());
-    } else {
-        populateUI(defaultData);
+        let draftLoaded = false;
+onSnapshot(docRef, (docSnap) => {
+    const localDraft = localStorage.getItem('fusee_admin_draft');
+    if (localDraft && !draftLoaded) {
+        try {
+            populateUI(JSON.parse(localDraft));
+            draftLoaded = true;
+            return;
+        } catch (e) {
+            console.error("Error parsing local draft:", e);
+        }
+    }
+
+    if (!draftLoaded) {
+        if (docSnap.exists()) {
+            populateUI(docSnap.data());
+        } else {
+            populateUI(defaultData);
+        }
     }
 }, (err) => {
     console.warn("Firestore listener fallback:", err);
-    populateUI(defaultData);
+    const localDraft = localStorage.getItem('fusee_admin_draft');
+    if (localDraft) {
+        populateUI(JSON.parse(localDraft));
+    } else {
+        populateUI(defaultData);
+    }
 });
 
 // ===================================================
