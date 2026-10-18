@@ -390,22 +390,22 @@ if (data.merchItems && Array.isArray(data.merchItems)) {
          ${hasBack ? `onclick="toggleMerchCardImage(this)" style="cursor: pointer;"` : ''}>
         
         <!-- Front Image Cutout -->
-        <img src="${item.imageUrl}" 
-             alt="${item.title || 'EE Merch'} - Front" 
-             class="merch-front-img relative z-10 w-full h-full object-contain p-4 filter drop-shadow-[0_12px_24px_rgba(0,240,255,0.3)] transition-transform duration-300 opacity-100 group-hover:scale-105">
-        
-        ${hasBack ? `
-            <!-- Back Image Cutout -->
-            <img src="${item.backImageUrl}" 
-                 alt="${item.title || 'EE Merch'} - Back" 
-                 class="merch-back-img absolute inset-0 z-10 w-full h-full object-contain p-4 filter drop-shadow-[0_12px_24px_rgba(0,240,255,0.3)] transition-transform duration-300 opacity-0 group-hover:scale-105">
-            
-            <!-- Flip Hint Badge -->
-            <div class="absolute top-2.5 left-2.5 z-20 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-[9px] font-bold text-slate-200 flex items-center gap-1.5 shadow-md">
-                <i class="fa-solid fa-rotate text-fusee-cyan"></i>
-                <span class="merch-badge-text">Front — Tap for Back</span>
-            </div>
-        ` : ''}
+<img src="${item.imageUrl}" 
+     alt="${item.title || 'EE Merch'} - Front" 
+     class="merch-front-img relative z-10 w-full h-full object-contain p-1 filter drop-shadow-[0_12px_24px_rgba(0,240,255,0.3)] transition-transform duration-300 opacity-100 group-hover:scale-105">
+
+${hasBack ? `
+    <!-- Back Image Cutout -->
+    <img src="${item.backImageUrl}" 
+         alt="${item.title || 'EE Merch'} - Back" 
+         class="merch-back-img absolute inset-0 z-10 w-full h-full object-contain p-1 filter drop-shadow-[0_12px_24px_rgba(0,240,255,0.3)] transition-transform duration-300 opacity-0 group-hover:scale-105">
+    
+    <!-- Flip Hint Badge -->
+    <div class="absolute top-2.5 left-2.5 z-20 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-[9px] font-bold text-slate-200 flex items-center gap-1.5 shadow-md">
+        <i class="fa-solid fa-rotate text-fusee-cyan"></i>
+        <span class="merch-badge-text">Front - Tap for Back</span>
+    </div>
+` : ''}
     </div>
 `;
     } else {

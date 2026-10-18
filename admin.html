@@ -1080,48 +1080,47 @@ appId: "1:1027948046459:web:549cc5e4d6e47dd7e89ade",
 
         // Auto-Compress Image Uploads to lightweight Base64 for Firestore
         window.handleMerchImageUpload = function(input, previewId, hiddenInputId) {
-            const file = input.files[0];
-            if (!file) return;
+    const file = input.files[0];
+    if (!file) return;
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const maxDim = 400; // Resize maximum width/height
-                    let width = img.width;
-                    let height = img.height;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const maxDim = 800; // Increased from 400 for crisp high-DPI display
+            let width = img.width;
+            let height = img.height;
 
-                    if (width > height) {
-                        if (width > maxDim) {
-                            height = Math.round((height * maxDim) / width);
-                            width = maxDim;
-                        }
-                    } else {
-                        if (height > maxDim) {
-                            width = Math.round((width * maxDim) / height);
-                            height = maxDim;
-                        }
-                    }
+            if (width > height) {
+                if (width > maxDim) {
+                    height = Math.round((height * maxDim) / width);
+                    width = maxDim;
+                }
+            } else {
+                if (height > maxDim) {
+                    width = Math.round((width * maxDim) / height);
+                    height = maxDim;
+                }
+            }
 
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
 
-                    // Compress to WebP or PNG with Transparency preserved
-                    ctx.clearRect(0, 0, width, height);
-                    ctx.drawImage(img, 0, 0, width, height);
-                    const compressedDataUrl = canvas.toDataURL('image/webp', 0.85);
-                    document.getElementById(hiddenInputId).value = compressedDataUrl;
-                    const preview = document.getElementById(previewId);
-                    preview.src = compressedDataUrl;
-                    preview.classList.remove('hidden');
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+            // Compress to WebP with higher quality (0.92) to prevent pixelation
+            const compressedDataUrl = canvas.toDataURL('image/webp', 0.92);
+            document.getElementById(hiddenInputId).value = compressedDataUrl;
+            const preview = document.getElementById(previewId);
+            preview.src = compressedDataUrl;
+            preview.classList.remove('hidden');
         };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
 
         // Render Merch Rows in admin.html
 function renderMerchRows(list = []) {
