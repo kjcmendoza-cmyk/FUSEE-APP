@@ -1349,7 +1349,10 @@ window.addImportantEventRow = function(title = '', date = '', endDate = '', cate
         function populateUI(data) {
             document.getElementById('ticker-text').value = data.tickerText || defaultData.tickerText;
             document.getElementById('global-status-select').value = data.globalStatus || "ALL OPEN";
-            
+            // Load Payment Receiver Settings
+document.getElementById('admin-payment-name').value = data.paymentInfo?.name || '';
+document.getElementById('admin-payment-number').value = data.paymentInfo?.number || '';
+document.getElementById('admin-payment-qr').value = data.paymentInfo?.qr || '';
             // System 1
             document.getElementById('sys1-tag').value = data.sys1?.tag || defaultData.sys1.tag;
             document.getElementById('sys1-title').value = data.sys1?.title || defaultData.sys1.title;
@@ -1623,78 +1626,85 @@ document.querySelectorAll('.merch-item-row').forEach(row => {
                 });
 
                 const updatedData = {
-                    tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
-                    globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
-                    events,
-                    academicLinks,
-                    merchItems,
-                    labPolicies,
-                    capstoneItems,
-                    weeklySchedule,
-                    activityEvents,
-                    lostAndFound, 
-                    importantEvents,
-                    sys1: {
-                        tag: document.getElementById('sys1-tag')?.value?.trim() || '',
-                        title: document.getElementById('sys1-title')?.value?.trim() || '',
-                        description: document.getElementById('sys1-desc')?.value?.trim() || '',
-                        location: document.getElementById('sys1-location')?.value?.trim() || '',
-                        hours: document.getElementById('sys1-hours')?.value?.trim() || '',
-                        studentLabel: document.getElementById('sys1-student-label')?.value?.trim() || '',
-                        studentUrl: document.getElementById('sys1-student-url')?.value?.trim() || '',
-                        adminLabel: document.getElementById('sys1-admin-label')?.value?.trim() || '',
-                        adminUrl: document.getElementById('sys1-admin-url')?.value?.trim() || '',
-                        guidelinesTitle: document.getElementById('sys1-guidelines-title')?.value?.trim() || '',
-                        guidelinesContent: document.getElementById('sys1-guidelines-content')?.value?.trim() || '',
-                        guidelinesUrl: document.getElementById('sys1-guidelines-url')?.value?.trim() || ''
-                    },
-                    sys2: {
-                        tag: document.getElementById('sys2-tag')?.value?.trim() || '',
-                        title: document.getElementById('sys2-title')?.value?.trim() || '',
-                        description: document.getElementById('sys2-desc')?.value?.trim() || '',
-                        location: document.getElementById('sys2-location')?.value?.trim() || '',
-                        hours: document.getElementById('sys2-hours')?.value?.trim() || '',
-                        badge: document.getElementById('sys2-badge')?.value?.trim() || '',
-                        btnLabel: document.getElementById('sys2-btn-label')?.value?.trim() || '',
-                        url: document.getElementById('sys2-url')?.value?.trim() || '',
-                        policiesTitle: document.getElementById('sys2-policies-title')?.value?.trim() || '',
-                        policiesContent: document.getElementById('sys2-policies-content')?.value?.trim() || '',
-                        policiesUrl: document.getElementById('sys2-policies-url')?.value?.trim() || ''
-                    },
-                    sys3: {
-                        tag: document.getElementById('sys3-tag')?.value?.trim() || '',
-                        title: document.getElementById('sys3-title')?.value?.trim() || '',
-                        description: document.getElementById('sys3-desc')?.value?.trim() || '',
-                        location: document.getElementById('sys3-location')?.value?.trim() || '',
-                        hours: document.getElementById('sys3-hours')?.value?.trim() || '',
-                        badge: document.getElementById('sys3-badge')?.value?.trim() || '',
-                        btnLabel: document.getElementById('sys3-btn-label')?.value?.trim() || '',
-                        url: document.getElementById('sys3-url')?.value?.trim() || '',
-                        guidelinesTitle: document.getElementById('sys3-guidelines-title')?.value?.trim() || '',
-                        guidelinesContent: document.getElementById('sys3-guidelines-content')?.value?.trim() || '',
-                        guidelinesUrl: document.getElementById('sys3-guidelines-url')?.value?.trim() || ''
-                    },
-                    faqs,
-                    officers,
-                    banner: {
-                        title: document.getElementById('banner-title')?.value?.trim() || '',
-                        body: document.getElementById('banner-body')?.value?.trim() || ''
-                    },
-                    eeDept: {
-                        description: document.getElementById('ee-dept-desc')?.value?.trim() || '',
-                        chairName: document.getElementById('ee-dept-chair-name-input')?.value?.trim() || '',
-                        chairDetails: document.getElementById('ee-dept-chair-details-input')?.value?.trim() || '',
-                        custodianName: document.getElementById('ee-dept-custodian-name-input')?.value?.trim() || '',
-                        custodianDetails: document.getElementById('ee-dept-custodian-details-input')?.value?.trim() || '',
-                        faculty,
-                        facilities
-                    },
-                    fuseeInfo: {
-                        description: document.getElementById('fusee-info-desc-input')?.value?.trim() || '',
-                        email: document.getElementById('fusee-info-email-input')?.value?.trim() || ''
-                    },
-                    updatedAt: new Date().toISOString()
-                };
+    tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
+    globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
+
+    paymentInfo: {
+        name: document.getElementById('admin-payment-name')?.value?.trim() || '',
+        number: document.getElementById('admin-payment-number')?.value?.trim() || '',
+        qr: document.getElementById('admin-payment-qr')?.value?.trim() || ''
+    },
+
+    events,
+    academicLinks,
+    merchItems,
+    labPolicies,
+    capstoneItems,
+    weeklySchedule,
+    activityEvents,
+    lostAndFound,
+    importantEvents,
+    sys1: {
+        tag: document.getElementById('sys1-tag')?.value?.trim() || '',
+        title: document.getElementById('sys1-title')?.value?.trim() || '',
+        description: document.getElementById('sys1-desc')?.value?.trim() || '',
+        location: document.getElementById('sys1-location')?.value?.trim() || '',
+        hours: document.getElementById('sys1-hours')?.value?.trim() || '',
+        studentLabel: document.getElementById('sys1-student-label')?.value?.trim() || '',
+        studentUrl: document.getElementById('sys1-student-url')?.value?.trim() || '',
+        adminLabel: document.getElementById('sys1-admin-label')?.value?.trim() || '',
+        adminUrl: document.getElementById('sys1-admin-url')?.value?.trim() || '',
+        guidelinesTitle: document.getElementById('sys1-guidelines-title')?.value?.trim() || '',
+        guidelinesContent: document.getElementById('sys1-guidelines-content')?.value?.trim() || '',
+        guidelinesUrl: document.getElementById('sys1-guidelines-url')?.value?.trim() || ''
+    },
+    sys2: {
+        tag: document.getElementById('sys2-tag')?.value?.trim() || '',
+        title: document.getElementById('sys2-title')?.value?.trim() || '',
+        description: document.getElementById('sys2-desc')?.value?.trim() || '',
+        location: document.getElementById('sys2-location')?.value?.trim() || '',
+        hours: document.getElementById('sys2-hours')?.value?.trim() || '',
+        badge: document.getElementById('sys2-badge')?.value?.trim() || '',
+        btnLabel: document.getElementById('sys2-btn-label')?.value?.trim() || '',
+        url: document.getElementById('sys2-url')?.value?.trim() || '',
+        policiesTitle: document.getElementById('sys2-policies-title')?.value?.trim() || '',
+        policiesContent: document.getElementById('sys2-policies-content')?.value?.trim() || '',
+        policiesUrl: document.getElementById('sys2-policies-url')?.value?.trim() || ''
+    },
+    sys3: {
+        tag: document.getElementById('sys3-tag')?.value?.trim() || '',
+        title: document.getElementById('sys3-title')?.value?.trim() || '',
+        description: document.getElementById('sys3-desc')?.value?.trim() || '',
+        location: document.getElementById('sys3-location')?.value?.trim() || '',
+        hours: document.getElementById('sys3-hours')?.value?.trim() || '',
+        badge: document.getElementById('sys3-badge')?.value?.trim() || '',
+        btnLabel: document.getElementById('sys3-btn-label')?.value?.trim() || '',
+        url: document.getElementById('sys3-url')?.value?.trim() || '',
+        guidelinesTitle: document.getElementById('sys3-guidelines-title')?.value?.trim() || '',
+        guidelinesContent: document.getElementById('sys3-guidelines-content')?.value?.trim() || '',
+        guidelinesUrl: document.getElementById('sys3-guidelines-url')?.value?.trim() || ''
+    },
+    faqs,
+    officers,
+    banner: {
+        title: document.getElementById('banner-title')?.value?.trim() || '',
+        body: document.getElementById('banner-body')?.value?.trim() || ''
+    },
+    eeDept: {
+        description: document.getElementById('ee-dept-desc')?.value?.trim() || '',
+        chairName: document.getElementById('ee-dept-chair-name-input')?.value?.trim() || '',
+        chairDetails: document.getElementById('ee-dept-chair-details-input')?.value?.trim() || '',
+        custodianName: document.getElementById('ee-dept-custodian-name-input')?.value?.trim() || '',
+        custodianDetails: document.getElementById('ee-dept-custodian-details-input')?.value?.trim() || '',
+        faculty,
+        facilities
+    },
+    fuseeInfo: {
+        description: document.getElementById('fusee-info-desc-input')?.value?.trim() || '',
+        email: document.getElementById('fusee-info-email-input')?.value?.trim() || ''
+    },
+    updatedAt: new Date().toISOString()
+};
 
                 await withTimeout(setDoc(docRef, updatedData, { merge: true }), 8000);
                 showToast("All changes published to FUSEE Hub live!");
