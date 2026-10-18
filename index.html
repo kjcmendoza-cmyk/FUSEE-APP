@@ -4973,7 +4973,7 @@ window.handleMerchOrderSubmit = async function(event) {
     }
 };
 
-// --- Enhanced Lightbox Zoom Engine (Mouse + Touch + Wheel + Double-Click) ---
+// --- Enhanced Lightbox Zoom Engine (Mouse + Touch + Wheel + Double-Click / Double-Tap) ---
 let currentScale = 1;
 let initialPinchDistance = 0;
 let initialScale = 1;
@@ -4996,7 +4996,7 @@ window.openImageZoomModal = function(frontUrl, backUrl, btnElement) {
 
     zoomedImg.src = targetUrl;
     
-    // Reset transforms
+    // Reset transforms upon opening
     currentScale = 1;
     translateX = 0;
     translateY = 0;
@@ -5010,7 +5010,13 @@ window.closeImageZoomModal = function() {
     const modal = document.getElementById('imageZoomModal');
     if (!modal) return;
     modal.classList.add('opacity-0');
-    setTimeout(() => modal.classList.add('hidden'), 300);
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        currentScale = 1;
+        translateX = 0;
+        translateY = 0;
+        updateImageTransform();
+    }, 300);
 };
 
 function updateImageTransform() {
@@ -5020,25 +5026,29 @@ function updateImageTransform() {
     }
 }
 
-const zoomedImg = document.getElementById('zoomedImage');
+function initImageZoomEngine() {
+    const zoomedImg = document.getElementById('zoomedImage');
+    const zoomContainer = document.getElementById('zoomModalViewport') || (zoomedImg ? zoomedImg.parentElement : null);
+    if (!zoomedImg || !zoomContainer) return;
 
-if (zoomedImg) {
     zoomedImg.addEventListener('dragstart', (e) => e.preventDefault());
 
-    // 1. Mouse Wheel Zooming
-    const zoomContainer = zoomedImg.parentElement;
-    if (zoomContainer) {
-        zoomContainer.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
-            currentScale = Math.min(Math.max(1, currentScale * zoomFactor), 5);
-            if (currentScale === 1) { translateX = 0; translateY = 0; }
-            updateImageTransform();
-        }, { passive: false });
-    }
+    // 1. Mouse Wheel Zooming (PC)
+    zoomContainer.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const zoomFactor = e.deltaY < 0 ? 1.25 : 0.8;
+        const newScale = Math.min(Math.max(1, currentScale * zoomFactor), 5);
+        if (newScale === 1) {
+            translateX = 0;
+            translateY = 0;
+        }
+        currentScale = newScale;
+        updateImageTransform();
+    }, { passive: false });
 
-    // 2. Double Click / Double Tap Toggle Zoom
-    zoomedImg.addEventListener('dblclick', (e) => {
+    // 2. Double Click (PC) & Double Tap (Phone) Toggle
+    let lastTapTime = 0;
+    const handleDoubleZoom = (e) => {
         e.preventDefault();
         if (currentScale > 1) {
             currentScale = 1;
@@ -5048,9 +5058,11 @@ if (zoomedImg) {
             currentScale = 2.5;
         }
         updateImageTransform();
-    });
+    };
 
-    // 3. Mouse Dragging (Desktop)
+    zoomedImg.addEventListener('dblclick', handleDoubleZoom);
+
+    // 3. Desktop Mouse Dragging
     zoomedImg.addEventListener('mousedown', (e) => {
         if (currentScale > 1) {
             isDragging = true;
@@ -5072,24 +5084,32 @@ if (zoomedImg) {
     window.addEventListener('mouseup', () => {
         if (isDragging) {
             isDragging = false;
-            if (zoomedImg) zoomedImg.style.cursor = 'grab';
+            if (zoomedImg) zoomedImg.style.cursor = currentScale > 1 ? 'grab' : 'default';
         }
     });
 
-    // 4. Touch Drag & Pinch Gestures (Mobile)
+    // 4. Mobile Two-Finger Pinch-to-Zoom & One-Finger Drag Pan
     zoomedImg.addEventListener('touchstart', (e) => {
         if (e.touches.length === 2) {
+            isDragging = false;
             initialPinchDistance = Math.hypot(
                 e.touches[0].clientX - e.touches[1].clientX,
                 e.touches[0].clientY - e.touches[1].clientY
             );
             initialScale = currentScale;
-        } else if (e.touches.length === 1 && currentScale > 1) {
-            isDragging = true;
-            startX = e.touches[0].clientX - translateX;
-            startY = e.touches[0].clientY - translateY;
+        } else if (e.touches.length === 1) {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTapTime;
+            if (tapLength < 300 && tapLength > 0) {
+                handleDoubleZoom(e);
+            } else if (currentScale > 1) {
+                isDragging = true;
+                startX = e.touches[0].clientX - translateX;
+                startY = e.touches[0].clientY - translateY;
+            }
+            lastTapTime = currentTime;
         }
-    });
+    }, { passive: false });
 
     zoomedImg.addEventListener('touchmove', (e) => {
         if (e.touches.length === 2) {
@@ -5101,9 +5121,13 @@ if (zoomedImg) {
             if (initialPinchDistance > 0) {
                 const delta = currentDistance / initialPinchDistance;
                 currentScale = Math.min(Math.max(1, initialScale * delta), 5);
+                if (currentScale === 1) {
+                    translateX = 0;
+                    translateY = 0;
+                }
                 updateImageTransform();
             }
-        } else if (e.touches.length === 1 && isDragging) {
+        } else if (e.touches.length === 1 && isDragging && currentScale > 1) {
             e.preventDefault();
             translateX = e.touches[0].clientX - startX;
             translateY = e.touches[0].clientY - startY;
@@ -5125,6 +5149,12 @@ if (zoomedImg) {
     });
 }
 
+// Attach event listeners after DOM element creation
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initImageZoomEngine);
+} else {
+    initImageZoomEngine();
+}
 </script>
 
 <!-- Fully Functional Lightbox Container -->
@@ -5149,7 +5179,7 @@ if (zoomedImg) {
     </div>
 
     <p class="text-xs text-slate-400 mt-4 select-none pointer-events-none">
-        <i class="fa-solid fa-hand-pointer mr-1 text-cyan-400"></i> Double-click or scroll wheel to zoom • Drag when zoomed • Click black background to close
+        <i class="fa-solid fa-hand-pointer mr-1 text-cyan-400"></i> Mouse wheel / Pinch to zoom • Drag when zoomed • Double-click / Double-tap to quick toggle
     </p>
 </div>
 
