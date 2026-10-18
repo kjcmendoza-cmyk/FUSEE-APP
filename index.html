@@ -2810,15 +2810,20 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
     const searchVal = (document.getElementById('lf-search-input')?.value || '').toLowerCase();
 
     const filtered = items.filter(item => {
+        const isReturned = item.status === 'RETURNED';
+        
+        // Exclude returned items from 'lost' and 'found' tabs
         const matchesCat = currentLFFilter === 'all' || 
-                           (currentLFFilter === 'lost' && item.type === 'LOST') ||
-                           (currentLFFilter === 'found' && (item.type === 'FOUND' || item.type === 'OFFICIAL')) ||
-                           (currentLFFilter === 'returned' && item.status === 'RETURNED');
+                           (currentLFFilter === 'lost' && item.type === 'LOST' && !isReturned) ||
+                           (currentLFFilter === 'found' && (item.type === 'FOUND' || item.type === 'OFFICIAL') && !isReturned) ||
+                           (currentLFFilter === 'returned' && isReturned);
+
         const matchesSearch = !searchVal ||
             (item.title && item.title.toLowerCase().includes(searchVal)) ||
             (item.location && item.location.toLowerCase().includes(searchVal)) ||
             (item.description && item.description.toLowerCase().includes(searchVal)) ||
             (item.contact && item.contact.toLowerCase().includes(searchVal));
+            
         return matchesCat && matchesSearch;
     });
 
@@ -4392,6 +4397,55 @@ window.renderImportantEventsUI = function() {
         }
     }
 };
+// Toast Notification Engine
+function showToast(message, type = 'success', duration = 4000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    
+    let themeClasses = 'border-emerald-500/50 text-emerald-400 shadow-lg';
+    let iconClass = 'fa-circle-check text-emerald-400';
+
+    if (type === 'error') {
+        themeClasses = 'border-rose-500/50 text-rose-400 shadow-neon-pink';
+        iconClass = 'fa-circle-xmark text-rose-400';
+    } else if (type === 'info') {
+        themeClasses = 'border-fusee-cyan/50 text-fusee-cyan shadow-neon-cyan';
+        iconClass = 'fa-circle-info text-fusee-cyan';
+    } else if (type === 'warning') {
+        themeClasses = 'border-fusee-yellow/50 text-fusee-yellow shadow-lg';
+        iconClass = 'fa-triangle-exclamation text-fusee-yellow';
+    }
+
+    toast.className = `pointer-events-auto flex items-start gap-3 p-3.5 rounded-xl bg-slate-900/95 border backdrop-blur-xl text-xs font-semibold shadow-2xl transition-all duration-300 transform -translate-y-2 opacity-0 ${themeClasses}`;
+    
+    toast.innerHTML = `
+        <i class="fa-solid ${iconClass} text-base mt-0.5 flex-shrink-0"></i>
+        <div class="flex-1 min-w-0 leading-relaxed text-slate-200">${message}</div>
+        <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white transition flex-shrink-0 ml-1">
+            <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+    `;
+
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.classList.remove('-translate-y-2', 'opacity-0');
+    });
+
+    setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+}
+
+// Global Alert Override
+window.alert = function(message) {
+    const isError = /fail|error|invalid|prohibited|denied/i.test(message);
+    const isInfo = /login|sign|copied|notice/i.test(message);
+    showToast(message, isError ? 'error' : (isInfo ? 'info' : 'success'));
+};
     </script>
 
 <!-- MODAL: EE Academic Drive -->
@@ -4470,6 +4524,8 @@ window.renderImportantEventsUI = function() {
         <!-- Rendered dynamically via JavaScript -->
     </div>
 </div>
-
+<!-- Toast Notification Container -->
+<div id="toast-container" class="fixed top-5 right-5 z-[200] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4">
+</div>
 </body>
 </html>
