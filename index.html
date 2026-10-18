@@ -2966,7 +2966,7 @@ window.removeTutorListing = async function(itemId) {
         }
     }
 };
-    function handleStudentReportSubmit(e) {
+        async function handleStudentReportSubmit(e) {
     if (e) e.preventDefault();
 
     // 1. Require AdDU Google Login before posting
@@ -2992,7 +2992,7 @@ window.removeTutorListing = async function(itemId) {
     const description = document.getElementById('rpt-desc')?.value.trim() || '';
     const contact = document.getElementById('rpt-contact')?.value.trim() || window.currentUser.email;
 
-    // 2. Build report object with ownerEmail security tag
+    // 2. Build report object
     const newReport = {
         id: Date.now(),
         type: reportType,
@@ -3001,22 +3001,34 @@ window.removeTutorListing = async function(itemId) {
         location: location,
         description: description,
         contact: contact,
-        ownerEmail: window.currentUser.email, // Binds post ownership to logged-in user
+        ownerEmail: window.currentUser.email,
         date: date
     };
 
     if (!window.allLostFoundData) window.allLostFoundData = [];
     window.allLostFoundData.unshift(newReport);
 
-    if (typeof window.renderLostFoundUI === 'function') {
-        window.renderLostFoundUI();
+    // 3. Persist updated array to Cloud Firestore database
+    try {
+        const db = window.db;
+        const docRef = window.doc(db, "fusee_hub", "landing_content");
+        await window.updateDoc(docRef, {
+            lostAndFound: window.allLostFoundData
+        });
+
+        if (typeof window.renderLostFoundUI === 'function') {
+            window.renderLostFoundUI();
+        }
+
+        const form = document.getElementById('student-report-form');
+        if (form) form.reset();
+
+        closeModal('report-item-modal');
+        alert("Report submitted successfully and saved! Linked to " + window.currentUser.email);
+    } catch (err) {
+        console.error("Error saving Lost & Found report to Firestore:", err);
+        alert("Failed to save report to server: " + err.message);
     }
-
-    const form = document.getElementById('student-report-form');
-    if (form) form.reset();
-
-    closeModal('report-item-modal');
-    alert("Report submitted successfully! Linked to " + window.currentUser.email);
 }
 
         // Automatic Operating Hours to OPEN/CLOSED Status Calculator
