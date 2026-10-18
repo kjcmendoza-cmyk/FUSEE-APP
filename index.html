@@ -446,10 +446,10 @@ ${hasBack ? `
                     <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 hover:border-fusee-magenta/50 transition flex flex-col justify-between group">
                         <div class="space-y-2">
                             ${imgHtml}
-                            <div class="flex items-center justify-between gap-2 pt-1">
-                                <h4 class="font-bold text-white text-xs leading-snug line-clamp-1">${item.title || 'EE Merchandise'}</h4>
-                                ${badgeHtml}
-                            </div>
+                            <div class="flex items-start justify-between gap-2 pt-1">
+    <h4 class="font-bold text-white text-[11px] sm:text-xs leading-tight line-clamp-2 flex-1">${item.title || 'EE Merchandise'}</h4>
+    ${badgeHtml}
+</div>
                             ${item.price ? `<p class="text-xs font-bold text-fusee-magenta font-techno">${item.price.startsWith('₱') ? item.price : `₱${item.price}`}</p>` : ''}
                             ${descHtml}
                         </div>
