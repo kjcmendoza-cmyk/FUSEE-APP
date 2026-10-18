@@ -361,66 +361,88 @@ if (data.eeDept) {
                 if (fuseeEmail && data.fuseeInfo.email) fuseeEmail.textContent = data.fuseeInfo.email;
            }    
                 // 13. EE Merch Catalog Real-Time Sync
-            if (data.merchItems && Array.isArray(data.merchItems)) {
-                const merchContainer = document.getElementById('merch-display-container');
-                if (merchContainer) {
-                    if (data.merchItems.length === 0) {
-                        merchContainer.innerHTML = 
-                            '<p class="text-[10px] text-slate-400 italic text-center py-6 col-span-2">' +
-                            'No merchandise items available at the moment.</p>';
-                    } else {
-                        merchContainer.innerHTML = data.merchItems.map(item => {
-                            const imgHtml = item.imageUrl ? `
-                                <div class="w-full aspect-square rounded-xl overflow-hidden border border-slate-800 bg-slate-950 relative group flex items-center justify-center">
-                                    <img src="${item.imageUrl}"
-                                         alt="${item.title || 'EE Merch'}"
-                                         class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+if (data.merchItems && Array.isArray(data.merchItems)) {
+    const merchContainer = document.getElementById('merch-display-container');
+    if (merchContainer) {
+        if (data.merchItems.length === 0) {
+            merchContainer.innerHTML = 
+                '<p class="text-[10px] text-slate-400 italic text-center py-6 col-span-2">' +
+                'No merchandise items available at the moment.</p>';
+        } else {
+            merchContainer.innerHTML = data.merchItems.map(item => {
+                const hasBack = Boolean(item.backImageUrl);
+
+                let imgHtml = '';
+                if (item.imageUrl) {
+                    imgHtml = `
+                        <div class="w-full aspect-square rounded-xl overflow-hidden border border-slate-800 bg-slate-950 relative group select-none ${hasBack ? 'cursor-pointer' : ''}"
+                             ${hasBack ? `onclick="toggleMerchCardImage(this)" data-showing="front"` : ''}>
+                            <!-- Front Image -->
+                            <img src="${item.imageUrl}" 
+                                 alt="${item.title || 'EE Merch'} - Front" 
+                                 class="merch-front-img absolute inset-0 w-full h-full object-cover transition-opacity duration-300 opacity-100">
+                            
+                            ${hasBack ? `
+                                <!-- Back Image (Crossfade Layer) -->
+                                <img src="${item.backImageUrl}" 
+                                     alt="${item.title || 'EE Merch'} - Back" 
+                                     class="merch-back-img absolute inset-0 w-full h-full object-cover transition-opacity duration-300 opacity-0">
+                                
+                                <!-- Flip Hint Badge -->
+                                <div class="absolute top-2 left-2 z-10 px-2 py-1 rounded-md bg-slate-950/80 backdrop-blur-md border border-white/20 text-[9px] font-bold text-white flex items-center gap-1 shadow-lg pointer-events-none transition-all duration-200">
+                                    <i class="fa-solid fa-rotate text-fusee-cyan animate-pulse"></i>
+                                    <span class="merch-badge-text">Front — Tap for Back</span>
                                 </div>
-                            ` : `
-                                <div class="w-full aspect-square rounded-xl border border-slate-800 bg-slate-950 flex items-center justify-center">
-                                    <i class="fa-solid fa-shirt text-3xl text-fusee-magenta/40"></i>
-                                </div>
-                            `;
-
-                            const badgeHtml = item.badge ? `
-                                <span class="px-2 py-0.5 rounded-full bg-fusee-magenta/20 text-fusee-magenta text-[9px] font-bold border border-fusee-magenta/30 flex-shrink-0">
-                                    ${item.badge}
-                                </span>
-                            ` : '';
-
-                            const descHtml = item.description ? `
-                                <p class="text-[11px] text-slate-300 leading-relaxed">
-                                    ${item.description}
-                                </p>
-                            ` : '';
-
-                            const orderBtnHtml = item.orderUrl ? `
-                                <a href="${item.orderUrl}"
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   class="block w-full text-center py-2 bg-gradient-to-r from-fusee-magenta to-pink-600 text-white font-bold rounded-xl text-xs hover:from-pink-500 hover:to-purple-500 transition shadow-neon-pink mt-2">
-                                    <i class="fa-solid fa-cart-shopping mr-1.5"></i> Order Now
-                                </a>
-                            ` : '';
-
-                            return `
-        <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 hover:border-fusee-magenta/50 transition flex flex-col justify-between">
-            <div class="space-y-2">
-                ${imgHtml}
-                <div class="flex items-center justify-between gap-1">
-                    <h4 class="font-bold text-white text-xs leading-snug">${item.title || 'EE Merch Item'}</h4>
-                    ${badgeHtml}
-                </div>
-                ${item.price ? `<p class="text-xs font-bold text-fusee-magenta font-techno">${item.price}</p>` : ''}
-                ${descHtml}
-            </div>
-            ${orderBtnHtml}
-        </div>
-    `;
-                        }).join('');
-                    }
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    imgHtml = `
+                        <div class="w-full aspect-square rounded-xl border border-slate-800 bg-slate-950 flex items-center justify-center">
+                            <i class="fa-solid fa-shirt text-3xl text-fusee-magenta/40"></i>
+                        </div>
+                    `;
                 }
-            }
+
+                const badgeHtml = item.badge ? `
+                    <span class="px-2 py-0.5 rounded-full bg-fusee-magenta/20 text-fusee-magenta text-[9px] font-bold border border-fusee-magenta/30 flex-shrink-0">
+                        ${item.badge}
+                    </span>
+                ` : '';
+
+                const descHtml = item.description ? `
+                    <p class="text-[11px] text-slate-300 leading-relaxed">
+                        ${item.description}
+                    </p>
+                ` : '';
+
+                const orderBtnHtml = item.orderUrl ? `
+                    <a href="${item.orderUrl}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="block w-full text-center py-2 bg-gradient-to-r from-fusee-magenta to-pink-600 text-white font-bold rounded-xl text-xs hover:from-pink-500 hover:to-purple-500 transition shadow-neon-pink mt-2">
+                        <i class="fa-solid fa-cart-shopping mr-1.5"></i> Order Now
+                    </a>
+                ` : '';
+
+                return `
+                    <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 hover:border-fusee-magenta/50 transition flex flex-col justify-between">
+                        <div class="space-y-2">
+                            ${imgHtml}
+                            <div class="flex items-center justify-between gap-1">
+                                <h4 class="font-bold text-white text-xs leading-snug">${item.title || 'EE Merch Item'}</h4>
+                                ${badgeHtml}
+                            </div>
+                            ${item.price ? `<p class="text-xs font-bold text-fusee-magenta font-techno">${item.price}</p>` : ''}
+                            ${descHtml}
+                        </div>
+                        ${orderBtnHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+}
 
             // 14. EE Laboratory Policies Real-Time Sync (Accordion Format)
             if (data.labPolicies && Array.isArray(data.labPolicies)) {
@@ -3013,7 +3035,6 @@ window.removeTutorListing = async function(itemId) {
                 peerTutoring: window.allPeerTutoringData
             });
 
-            if (typeof window.renderTutorUI === 'function') window.renderTutorUI();
             if (typeof window.renderPeerTutoringUI === 'function') window.renderPeerTutoringUI();
         } catch (err) {
             console.error("Error updating Firestore:", err);
@@ -3200,12 +3221,30 @@ window.removeTutorListing = async function(itemId) {
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('fusee_selected_theme') || 'fusee';
-            window.setTheme(savedTheme);
+    const savedTheme = localStorage.getItem('fusee_selected_theme');
+    window.setTheme(savedTheme);
 
-            if (window.refreshAllSystemStatuses) window.refreshAllSystemStatuses();
-            if (window.evaluateLiveRoomStatuses) window.evaluateLiveRoomStatuses();
-        });
+    if (window.refreshAllSystemStatuses) window.refreshAllSystemStatuses();
+    if (window.evaluateLiveRoomStatuses) window.evaluateLiveRoomStatuses();
+
+    // Attach debounced live search listener
+    const tutorSearchInput = document.getElementById('tutor-search-input');
+    if (tutorSearchInput) {
+        tutorSearchInput.addEventListener('input', debounce((event) => {
+            const searchTerm = event.target.value.trim().toLowerCase();
+            
+            const filteredTutors = (window.allPeerTutoringData || []).filter(item => 
+                item.subject?.toLowerCase().includes(searchTerm) ||
+                item.name?.toLowerCase().includes(searchTerm) ||
+                item.topic?.toLowerCase().includes(searchTerm)
+            );
+
+            if (typeof window.renderPeerTutoringUI === 'function') {
+                window.renderPeerTutoringUI(filteredTutors);
+            }
+        }, 250));
+    }
+});
 
         // Live Room Status Evaluator & Matrix Grid Engine
         let activeMatrixRoom = 'ee'; // 'ee' or 'com'
@@ -4502,6 +4541,46 @@ window.alert = function(message) {
             btnCancel.addEventListener('click', onCancel);
         });
     };
+    // Toggle Merch Card Image View (Front <-> Back Crossfade)
+window.toggleMerchCardImage = function(container) {
+    const frontImg = container.querySelector('.merch-front-img');
+    const backImg = container.querySelector('.merch-back-img');
+    const badgeText = container.querySelector('.merch-badge-text');
+
+    if (!frontImg || !backImg) return;
+
+    const currentShowing = container.getAttribute('data-showing') || 'front';
+
+    if (currentShowing === 'front') {
+        frontImg.classList.remove('opacity-100');
+        frontImg.classList.add('opacity-0');
+        
+        backImg.classList.remove('opacity-0');
+        backImg.classList.add('opacity-100');
+        
+        if (badgeText) badgeText.textContent = 'Back — Tap for Front';
+        container.setAttribute('data-showing', 'back');
+    } else {
+        backImg.classList.remove('opacity-100');
+        backImg.classList.add('opacity-0');
+        
+        frontImg.classList.remove('opacity-0');
+        frontImg.classList.add('opacity-100');
+        
+        if (badgeText) badgeText.textContent = 'Front — Tap for Back';
+        container.setAttribute('data-showing', 'front');
+    }
+};
+// Generic debounce utility to delay execution until typing pauses
+function debounce(func, delay = 250) {
+    let timeoutId;
+    return function(...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
+}
     </script>
 
 <!-- MODAL: EE Academic Drive -->

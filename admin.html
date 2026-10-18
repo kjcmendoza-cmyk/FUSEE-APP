@@ -1003,61 +1003,95 @@
             reader.readAsDataURL(file);
         };
 
-        // Render Merch Rows
-        function renderMerchRows(list = []) {
-            const container = document.getElementById('merch-container');
-            if (!container) return;
-            container.innerHTML = '';
-            list.forEach((item, index) => window.addMerchRow(item.title, item.price, item.badge, item.description, item.orderUrl, item.imageUrl, index));
-        }
+        // Render Merch Rows in admin.html
+function renderMerchRows(list = []) {
+    const container = document.getElementById('merch-container');
+    if (!container) return;
+    container.innerHTML = '';
+    list.forEach((item, index) => window.addMerchRow(
+        item.title, 
+        item.price, 
+        item.badge, 
+        item.description, 
+        item.orderUrl, 
+        item.imageUrl, 
+        item.backImageUrl || '', 
+        index
+    ));
+}
 
-        window.addMerchRow = function(title = '', price = '', badge = 'Pre-Orders', description = '', orderUrl = '', imageUrl = '', idx = Date.now()) {
-            const container = document.getElementById('merch-container');
-            if (!container) return;
+window.addMerchRow = function(
+    title = '', 
+    price = '', 
+    badge = 'Pre-Orders', 
+    description = '', 
+    orderUrl = '', 
+    imageUrl = '', 
+    backImageUrl = '', 
+    idx = Date.now()
+) {
+    const container = document.getElementById('merch-container');
+    if (!container) return;
 
-            const previewId = `merch-img-preview-${idx}`;
-            const hiddenId = `merch-img-data-${idx}`;
+    const previewFrontId = `merch-img-preview-front-${idx}`;
+    const hiddenFrontId = `merch-img-data-front-${idx}`;
+    const previewBackId = `merch-img-preview-back-${idx}`;
+    const hiddenBackId = `merch-img-data-back-${idx}`;
 
-            const div = document.createElement('div');
-            div.className = 'merch-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
-            div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Item">
-                    <i class="fa-solid fa-trash"></i> Remove Item
-                </button>
+    const div = document.createElement('div');
+    div.className = 'merch-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Item">
+            <i class="fa-solid fa-trash"></i> Remove Item
+        </button>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
-                    <div class="space-y-2">
-                        <label class="block text-slate-400 font-semibold">T-Shirt / Product Photo</label>
-                        <div class="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-700 rounded-xl bg-slate-950/50 text-center space-y-2">
-                            <img id="${previewId}" src="${imageUrl}" class="${imageUrl ? '' : 'hidden'} w-24 h-24 object-cover rounded-lg border border-slate-700 mb-1">
-                            <input type="file" accept="image/*" onchange="handleMerchImageUpload(this, '${previewId}', '${hiddenId}')" class="text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-semibold file:bg-fusee-magenta/20 file:text-fusee-magenta hover:file:bg-fusee-magenta/30 cursor-pointer">
-                            <input type="hidden" class="merch-image-input" id="${hiddenId}" value="${imageUrl}">
-                            <span class="text-[9px] text-slate-500">Upload direct JPG/PNG photo</span>
-                        </div>
-                    </div>
-
-                    <div class="md:col-span-2 space-y-2">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                            <input type="text" class="merch-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 md:col-span-2" placeholder="Item Name" value="${title.replace(/"/g, '&quot;')}">
-                            <input type="text" class="merch-price-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Price (e.g. ₱350.00)" value="${price.replace(/"/g, '&quot;')}">
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            <select class="merch-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
-                                <option value="Pre-Orders" ${badge === 'Pre-Orders' ? 'selected' : ''}>Pre-Orders</option>
-                                <option value="In Stock" ${badge === 'In Stock' ? 'selected' : ''}>In Stock</option>
-                                <option value="Available" ${badge === 'Available' ? 'selected' : ''}>Available</option>
-                                <option value="Sold Out" ${badge === 'Sold Out' ? 'selected' : ''}>Sold Out</option>
-                            </select>
-                            <input type="text" class="merch-url-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Order Form Link" value="${orderUrl.replace(/"/g, '&quot;')}">
-                        </div>
-
-                        <textarea class="merch-desc-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="2" placeholder="Item description...">${description}</textarea>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
+            <!-- Front & Back Image Upload Controls -->
+            <div class="space-y-3">
+                <!-- Front Image -->
+                <div class="space-y-1">
+                    <label class="block text-slate-400 font-semibold">Front Photo (Required)</label>
+                    <div class="flex flex-col items-center justify-center p-2 border-2 border-dashed border-slate-700 rounded-xl bg-slate-950/50 text-center space-y-1">
+                        <img id="${previewFrontId}" src="${imageUrl}" class="${imageUrl ? '' : 'hidden'} w-20 h-20 object-cover rounded-lg border border-slate-700">
+                        <input type="file" accept="image/*" onchange="handleMerchImageUpload(this, '${previewFrontId}', '${hiddenFrontId}')" class="text-[9px] text-slate-400 file:mr-2 file:py-0.5 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-fusee-magenta/20 file:text-fusee-magenta hover:file:bg-fusee-magenta/30 cursor-pointer">
+                        <input type="hidden" class="merch-image-input" id="${hiddenFrontId}" value="${imageUrl}">
                     </div>
                 </div>
-            `;
-            container.appendChild(div);
-        };
+
+                <!-- Back Image (Optional) -->
+                <div class="space-y-1">
+                    <label class="block text-slate-400 font-semibold">Back Photo (Optional)</label>
+                    <div class="flex flex-col items-center justify-center p-2 border-2 border-dashed border-slate-700 rounded-xl bg-slate-950/50 text-center space-y-1">
+                        <img id="${previewBackId}" src="${backImageUrl}" class="${backImageUrl ? '' : 'hidden'} w-20 h-20 object-cover rounded-lg border border-slate-700">
+                        <input type="file" accept="image/*" onchange="handleMerchImageUpload(this, '${previewBackId}', '${hiddenBackId}')" class="text-[9px] text-slate-400 file:mr-2 file:py-0.5 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-fusee-cyan/20 file:text-fusee-cyan hover:file:bg-fusee-cyan/30 cursor-pointer">
+                        <input type="hidden" class="merch-back-image-input" id="${hiddenBackId}" value="${backImageUrl}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Merch Text & Pricing Details -->
+            <div class="md:col-span-2 space-y-2">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <input type="text" class="merch-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 md:col-span-2" placeholder="Item Name" value="${title.replace(/"/g, '&quot;')}">
+                    <input type="text" class="merch-price-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Price (e.g. ₱350.00)" value="${price.replace(/"/g, '&quot;')}">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <select class="merch-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                        <option value="Pre-Orders" ${badge === 'Pre-Orders' ? 'selected' : ''}>Pre-Orders</option>
+                        <option value="In Stock" ${badge === 'In Stock' ? 'selected' : ''}>In Stock</option>
+                        <option value="Available" ${badge === 'Available' ? 'selected' : ''}>Available</option>
+                        <option value="Sold Out" ${badge === 'Sold Out' ? 'selected' : ''}>Sold Out</option>
+                    </select>
+                    <input type="text" class="merch-url-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Order Form Link" value="${orderUrl.replace(/"/g, '&quot;')}">
+                </div>
+
+                <textarea class="merch-desc-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="2" placeholder="Item description...">${description}</textarea>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+};
 
         function renderLabPolicies(list = []) {
             const container = document.getElementById('lab-policies-container');
@@ -1422,16 +1456,17 @@ document.querySelectorAll('.officer-item-row').forEach(row => {
                 });
 
                 const merchItems = [];
-                document.querySelectorAll('.merch-item-row').forEach(row => {
-                    const title = row.querySelector('.merch-title-input')?.value?.trim() || '';
-                    const price = row.querySelector('.merch-price-input')?.value?.trim() || '';
-                    const badge = row.querySelector('.merch-badge-input')?.value || 'Pre-Orders';
-                    const description = row.querySelector('.merch-desc-input')?.value?.trim() || '';
-                    const orderUrl = row.querySelector('.merch-url-input')?.value?.trim() || '';
-                    const imageUrl = row.querySelector('.merch-image-input')?.value || '';
+document.querySelectorAll('.merch-item-row').forEach(row => {
+    const title = row.querySelector('.merch-title-input')?.value?.trim() || '';
+    const price = row.querySelector('.merch-price-input')?.value?.trim() || '';
+    const badge = row.querySelector('.merch-badge-input')?.value || 'Pre-Orders';
+    const description = row.querySelector('.merch-desc-input')?.value?.trim() || '';
+    const orderUrl = row.querySelector('.merch-url-input')?.value?.trim() || '';
+    const imageUrl = row.querySelector('.merch-image-input')?.value || '';
+    const backImageUrl = row.querySelector('.merch-back-image-input')?.value || '';
 
-                    if (title) merchItems.push({ title, price, badge, description, orderUrl, imageUrl });
-                });
+    if (title) merchItems.push({ title, price, badge, description, orderUrl, imageUrl, backImageUrl });
+});
 
                 const labPolicies = [];
                 document.querySelectorAll('.policy-item-row').forEach(row => {
