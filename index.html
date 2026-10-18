@@ -4424,15 +4424,17 @@ function showToast(message, type = 'success', duration = 4000) {
         iconClass = 'fa-triangle-exclamation text-fusee-yellow';
     }
 
-    toast.className = `pointer-events-auto flex items-start gap-3 p-3.5 rounded-xl bg-slate-900/95 border backdrop-blur-xl text-xs font-semibold shadow-2xl transition-all duration-300 transform -translate-y-2 opacity-0 ${themeClasses}`;
+    // Changed items-start -> items-center, added w-full
+    toast.className = `pointer-events-auto flex items-center gap-3 p-3.5 rounded-xl bg-slate-900/95 border backdrop-blur-xl text-xs font-semibold shadow-2xl transition-all duration-300 transform -translate-y-2 opacity-0 w-full ${themeClasses}`;
     
+    // Added text-center to message container
     toast.innerHTML = `
-        <i class="fa-solid ${iconClass} text-base mt-0.5 flex-shrink-0"></i>
-        <div class="flex-1 min-w-0 leading-relaxed text-slate-200">${message}</div>
-        <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white transition flex-shrink-0 ml-1">
-            <i class="fa-solid fa-xmark text-xs"></i>
-        </button>
-    `;
+    <i class="fa-solid ${iconClass} text-base flex-shrink-0"></i>
+    <div class="flex-1 min-w-0 leading-relaxed text-slate-200 text-center">${message}</div>
+    <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white transition flex-shrink-0 ml-1">
+        <i class="fa-solid fa-xmark text-xs"></i>
+    </button>
+`;
 
     container.appendChild(toast);
 
@@ -4599,8 +4601,8 @@ window.alert = function(message) {
     </div>
 </div>
 
-<!-- Toast Notification Container -->
-<div id="toast-container" class="fixed top-5 right-5 z-[200] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4">
+<!-- Toast Notification Container (Top-Centered) -->
+<div id="toast-container" class="fixed top-5 left-1/2 -translate-x-1/2 z-[200] flex flex-col items-center gap-2.5 max-w-sm w-full pointer-events-none px-4">
 </div>
 
 </body>
