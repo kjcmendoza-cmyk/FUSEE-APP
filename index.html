@@ -386,22 +386,27 @@ if (data.merchItems && Array.isArray(data.merchItems)) {
                 let imgHtml = '';
                 if (item.imageUrl) {
                     imgHtml = `
-                        <div class="w-full aspect-square rounded-xl overflow-hidden relative bg-slate-950 border border-slate-800" 
-                             ${hasBack ? `onclick="toggleMerchCardImage(this)" cursor-pointer` : ''}>
-                            <!-- Front Image -->
+                        <div class="w-full aspect-square rounded-xl overflow-hidden relative bg-gradient-to-b from-slate-900/60 via-slate-950/80 to-[#0B081E] border border-white/10 group-hover:border-fusee-magenta/40 transition-all duration-300" 
+                             ${hasBack ? `onclick="toggleMerchCardImage(this)" style="cursor: pointer;"` : ''}>
+                            
+                            <!-- Ambient Spotlight Glow Behind Transparent Shirt Cutout -->
+                            <div class="absolute inset-0 bg-radial from-fusee-magenta/10 via-transparent to-transparent opacity-60 pointer-events-none"></div>
+
+                            <!-- Front Image (Transparent PNG Cutout) -->
                             <img src="${item.imageUrl}" 
                                  alt="${item.title || 'EE Merch'} - Front" 
-                                 class="merch-front-img absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-10 opacity-100">
+                                 class="merch-front-img absolute inset-0 w-full h-full object-contain p-3 filter drop-shadow-[0_10px_15px_rgba(0,0,0,0.65)] transition-all duration-300 z-10 opacity-100 group-hover:scale-105">
+                            
                             ${hasBack ? `
-                                <!-- Back Image (Crossfade Layer) -->
+                                <!-- Back Image (Transparent PNG Cutout) -->
                                 <img src="${item.backImageUrl}" 
                                      alt="${item.title || 'EE Merch'} - Back" 
-                                     class="merch-back-img absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0 opacity-0">
+                                     class="merch-back-img absolute inset-0 w-full h-full object-contain p-3 filter drop-shadow-[0_10px_15px_rgba(0,0,0,0.65)] transition-all duration-300 z-0 opacity-0 group-hover:scale-105">
                                 
                                 <!-- Flip Hint Badge -->
-                                <div class="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-[9px] font-bold text-slate-300 flex items-center gap-1 shadow-md">
+                                <div class="absolute top-2 left-2 z-20 px-2 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-[9px] font-bold text-slate-300 flex items-center gap-1 shadow-md">
                                     <i class="fa-solid fa-rotate text-fusee-cyan"></i>
-                                    <span class="merch-badge-text">Front</span>
+                                    <span class="merch-badge-text">Front — Tap for Back</span>
                                 </div>
                             ` : ''}
                         </div>
@@ -435,7 +440,7 @@ if (data.merchItems && Array.isArray(data.merchItems)) {
                 `;
 
                 return `
-                    <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 hover:border-fusee-magenta/50 transition flex flex-col justify-between">
+                    <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 hover:border-fusee-magenta/50 transition flex flex-col justify-between group">
                         <div class="space-y-2">
                             ${imgHtml}
                             <div class="flex items-center justify-between gap-2 pt-1">
