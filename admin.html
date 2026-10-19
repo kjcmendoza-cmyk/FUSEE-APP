@@ -1152,11 +1152,6 @@ window.addMerchRow = function(
     const container = document.getElementById('merch-container');
     if (!container) return;
 
-    const previewFrontId = `merch-img-preview-front-${idx}`;
-    const hiddenFrontId = `merch-img-data-front-${idx}`;
-    const previewBackId = `merch-img-preview-back-${idx}`;
-    const hiddenBackId = `merch-img-data-back-${idx}`;
-
     const div = document.createElement('div');
     div.className = 'merch-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
     div.innerHTML = `
@@ -1165,26 +1160,16 @@ window.addMerchRow = function(
         </button>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
-            <!-- Front & Back Image Upload Controls -->
+            <!-- Front & Back Image URL Inputs -->
             <div class="space-y-3">
-                <!-- Front Image -->
                 <div class="space-y-1">
-                    <label class="block text-slate-400 font-semibold">Front Photo (Required)</label>
-                    <div class="flex flex-col items-center justify-center p-2 border-2 border-dashed border-slate-700 rounded-xl bg-slate-950/50 text-center space-y-1">
-                        <img id="${previewFrontId}" src="${imageUrl}" class="${imageUrl ? '' : 'hidden'} w-20 h-20 object-cover rounded-lg border border-slate-700">
-                        <input type="file" accept="image/*" onchange="handleMerchImageUpload(this, '${previewFrontId}', '${hiddenFrontId}')" class="text-[9px] text-slate-400 file:mr-2 file:py-0.5 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-fusee-magenta/20 file:text-fusee-magenta hover:file:bg-fusee-magenta/30 cursor-pointer">
-                        <input type="hidden" class="merch-image-input" id="${hiddenFrontId}" value="${imageUrl}">
-                    </div>
+                    <label class="block text-slate-400 font-semibold">Front Photo Image URL</label>
+                    <input type="url" class="merch-image-input w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-fusee-magenta focus:outline-none" placeholder="https://raw.githubusercontent.com/... or Imgur URL" value="${imageUrl.replace(/"/g, '&quot;')}">
                 </div>
 
-                <!-- Back Image (Optional) -->
                 <div class="space-y-1">
-                    <label class="block text-slate-400 font-semibold">Back Photo (Optional)</label>
-                    <div class="flex flex-col items-center justify-center p-2 border-2 border-dashed border-slate-700 rounded-xl bg-slate-950/50 text-center space-y-1">
-                        <img id="${previewBackId}" src="${backImageUrl}" class="${backImageUrl ? '' : 'hidden'} w-20 h-20 object-cover rounded-lg border border-slate-700">
-                        <input type="file" accept="image/*" onchange="handleMerchImageUpload(this, '${previewBackId}', '${hiddenBackId}')" class="text-[9px] text-slate-400 file:mr-2 file:py-0.5 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-fusee-cyan/20 file:text-fusee-cyan hover:file:bg-fusee-cyan/30 cursor-pointer">
-                        <input type="hidden" class="merch-back-image-input" id="${hiddenBackId}" value="${backImageUrl}">
-                    </div>
+                    <label class="block text-slate-400 font-semibold">Back Photo Image URL (Optional)</label>
+                    <input type="url" class="merch-back-image-input w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-fusee-cyan focus:outline-none" placeholder="https://raw.githubusercontent.com/... or Imgur URL" value="${backImageUrl.replace(/"/g, '&quot;')}">
                 </div>
             </div>
 
@@ -1682,9 +1667,19 @@ function saveLocalDraft() {
     const data = gatherFormData();
     localStorage.setItem('fusee_admin_draft', JSON.stringify(data));
 }
+
+// Debounce wrapper to prevent lag while typing
+let draftTimeout;
+function saveLocalDraftDebounced() {
+    clearTimeout(draftTimeout);
+    draftTimeout = setTimeout(() => {
+        saveLocalDraft();
+    }, 400); // Waits 400ms after you stop typing
+}
+
 // Listen for form inputs and row modifications globally
-document.addEventListener('input', saveLocalDraft);
-document.addEventListener('change', saveLocalDraft);
+document.addEventListener('input', saveLocalDraftDebounced);
+document.addEventListener('change', saveLocalDraftDebounced);
 document.addEventListener('click', (e) => {
     // If a button inside a section is clicked (e.g. Add Row or Delete Row), update local draft after DOM updates
     if (e.target.closest('button')) {
