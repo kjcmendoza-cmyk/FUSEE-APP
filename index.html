@@ -5434,9 +5434,39 @@ document.addEventListener('click', (e) => {
     let liveCurriculumStore = { ...FALLBACK_CURRICULUM };
     let currentSubjectGrades = [];
 
+    // Helper: Save current student edits locally
+    function saveLocalQPISession() {
+        const trackKey = document.getElementById('qpi-track-select')?.value || 'new';
+        const termKey = document.getElementById('qpi-term-select')?.value || 'y1s1';
+        const storageKey = `qpi_saved_subjects_${trackKey}_${termKey}`;
+
+        localStorage.setItem(storageKey, JSON.stringify(currentSubjectGrades));
+    }
+
+    // Helper: Clear stored local edits when admin publishes a new version
+    function clearAllLocalQPISessions() {
+        Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('qpi_saved_subjects_')) {
+                localStorage.removeItem(key);
+            }
+        });
+    }
+
+    // Real-Time Firebase Listener
     onSnapshot(docRef, (docSnap) => {
         if (docSnap.exists() && docSnap.data().curriculumData) {
-            liveCurriculumStore = docSnap.data().curriculumData;
+            const incomingData = docSnap.data().curriculumData;
+            liveCurriculumStore = incomingData;
+
+            const serverVersion = incomingData.lastUpdated ? String(incomingData.lastUpdated) : null;
+            const localVersion = localStorage.getItem('qpi_curriculum_version');
+
+            // IF ADMIN PUBLISHED A NEWER CURRICULUM VERSION:
+            if (serverVersion && serverVersion !== localVersion) {
+                clearAllLocalQPISessions(); // Reset stale student local edits
+                localStorage.setItem('qpi_curriculum_version', serverVersion); // Save new version stamp
+            }
+
             loadEECurriculumTerm();
         }
     }, (err) => {
@@ -5446,17 +5476,26 @@ document.addEventListener('click', (e) => {
     window.loadEECurriculumTerm = function() {
         const trackKey = document.getElementById('qpi-track-select')?.value || 'new';
         const termKey = document.getElementById('qpi-term-select')?.value || 'y1s1';
+        const storageKey = `qpi_saved_subjects_${trackKey}_${termKey}`;
 
-        const trackData = liveCurriculumStore[trackKey] || FALLBACK_CURRICULUM[trackKey] || {};
-        const termSubjects = trackData[termKey] || [];
+        const savedSession = localStorage.getItem(storageKey);
 
-        currentSubjectGrades = termSubjects.map((sub, idx) => ({
-            id: `sub-${idx}`,
-            code: sub.code || 'EE SUBJ',
-            name: sub.name || 'Course Subject',
-            units: parseInt(sub.units, 10) || 3,
-            gradeValue: null
-        }));
+        if (savedSession) {
+            // Load student's saved custom session from local browser memory
+            currentSubjectGrades = JSON.parse(savedSession);
+        } else {
+            // Load master admin-published curriculum
+            const trackData = liveCurriculumStore[trackKey] || FALLBACK_CURRICULUM[trackKey] || {};
+            const termSubjects = trackData[termKey] || [];
+
+            currentSubjectGrades = termSubjects.map((sub, idx) => ({
+                id: `sub-${idx}`,
+                code: sub.code || 'EE SUBJ',
+                name: sub.name || 'Course Subject',
+                units: parseInt(sub.units, 10) || 3,
+                gradeValue: null
+            }));
+        }
 
         renderQPISubjectRows();
         calculateQPI();
@@ -5527,6 +5566,7 @@ document.addEventListener('click', (e) => {
         if (currentSubjectGrades[index]) {
             currentSubjectGrades[index].gradeValue = (currentSubjectGrades[index].gradeValue === gradeVal) ? null : gradeVal;
         }
+        saveLocalQPISession();
         renderQPISubjectRows();
         calculateQPI();
     };
@@ -5592,6 +5632,7 @@ document.addEventListener('click', (e) => {
             gradeValue: null,
             isCustom: true
         });
+        saveLocalQPISession();
         renderQPISubjectRows();
         calculateQPI();
     };
@@ -5602,22 +5643,31 @@ document.addEventListener('click', (e) => {
             if (newUnits < 1) newUnits = 1;
             if (newUnits > 6) newUnits = 6;
             currentSubjectGrades[index].units = newUnits;
+            saveLocalQPISession();
             renderQPISubjectRows();
             calculateQPI();
         }
     };
 
-    window.removeCustomSubjectRow = function(index) {
-        currentSubjectGrades.splice(index, 1);
-        renderQPISubjectRows();
-        calculateQPI();
-    };
+    window.removeSubjectRow = function(index) {
+    currentSubjectGrades.splice(index, 1);
+    saveLocalQPISession();
+    renderQPISubjectRows();
+    calculateQPI();
+};
 
-    window.resetQPIForm = function() {
-        if (document.getElementById('qpi-prev-cgpa')) document.getElementById('qpi-prev-cgpa').value = '';
-        if (document.getElementById('qpi-prev-units')) document.getElementById('qpi-prev-units').value = '';
-        loadEECurriculumTerm();
-    };
+window.resetQPIForm = function() {
+    const trackKey = document.getElementById('qpi-track-select')?.value || 'new';
+    const termKey = document.getElementById('qpi-term-select')?.value || 'y1s1';
+    
+    // Clear student local edit cache for current term
+    localStorage.removeItem(`qpi_saved_subjects_${trackKey}_${termKey}`);
+
+    if (document.getElementById('qpi-prev-cgpa')) document.getElementById('qpi-prev-cgpa').value = '';
+    if (document.getElementById('qpi-prev-units')) document.getElementById('qpi-prev-units').value = '';
+
+    loadEECurriculumTerm();
+};
 
     document.addEventListener('DOMContentLoaded', () => {
         loadEECurriculumTerm();

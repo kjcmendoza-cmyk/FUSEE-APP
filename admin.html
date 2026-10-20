@@ -1800,7 +1800,10 @@ function gatherFormData() {
         },
         events, academicLinks, merchItems, labPolicies, capstoneItems, weeklySchedule,
         activityEvents, lostAndFound, importantEvents, faqs, officers,
-        curriculumData: activeCurriculumStore,
+        curriculumData: {
+    ...activeCurriculumStore,
+    lastUpdated: Date.now() // Signals a new curriculum version to all student devices
+},
         sys1: {
             tag: document.getElementById('sys1-tag')?.value?.trim() || '',
             title: document.getElementById('sys1-title')?.value?.trim() || '',
