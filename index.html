@@ -4842,7 +4842,11 @@ window.cycleQpiGrade = function(index) {
     studentAddedSubjects[index].gradeIndex = (studentAddedSubjects[index].gradeIndex + 1) % QPI_GRADE_SCALE.length;
     saveAndCalculateQpi();
 };
-
+window.setQpiGrade = function(index, gradeIdx) {
+    if (!studentAddedSubjects[index]) return;
+    studentAddedSubjects[index].gradeIndex = parseInt(gradeIdx, 10);
+    saveAndCalculateQpi();
+};
 function saveAndCalculateQpi() {
     localStorage.setItem('fusee_qpi_student_list', JSON.stringify(studentAddedSubjects));
     renderStudentQpiSubjects();
@@ -4881,9 +4885,13 @@ function renderStudentQpiSubjects() {
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <button onclick="cycleQpiGrade(${idx})" class="px-3 py-1.5 rounded-xl border font-techno font-bold text-xs transition active:scale-95 ${gradeObj.class}">
-                        ${gradeObj.letter} <span class="text-[9px] opacity-75">(${gradeObj.value.toFixed(1)})</span>
-                    </button>
+                    <select onchange="setQpiGrade(${idx}, this.value)" class="px-2.5 py-1.5 rounded-xl border font-techno font-bold text-xs bg-slate-950 focus:outline-none focus:border-fusee-cyan transition cursor-pointer ${gradeObj.class}">
+                        ${QPI_GRADE_SCALE.map((g, gIdx) => `
+                            <option value="${gIdx}" class="bg-slate-900 text-white font-sans" ${gIdx === sub.gradeIndex ? 'selected' : ''}>
+                                ${g.letter} (${g.value.toFixed(1)})
+                            </option>
+                        `).join('')}
+                    </select>
                     <button onclick="removeSubjectFromQpiCalc(${idx})" class="w-7 h-7 rounded-lg bg-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white flex items-center justify-center transition">
                         <i class="fa-solid fa-trash-can text-xs"></i>
                     </button>
@@ -5999,38 +6007,31 @@ document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40Mo
         </div>
     </div>
 
-    <!-- Workspace Screen: Search & Subject List -->
     <div id="qpi-workspace-screen" class="hidden flex-1 flex flex-col space-y-3 overflow-hidden">
-        <div class="relative flex-shrink-0">
-            <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" id="qpi-search-input" onkeyup="searchQpiSubjects()" placeholder="Search subject code or title (e.g., EE 111)..." 
-                       class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900/90 text-xs text-white placeholder-slate-500 border border-slate-800 focus:outline-none focus:border-fusee-cyan transition">
-            </div>
-            <div id="qpi-search-results" class="hidden absolute left-0 right-0 top-full mt-1.5 z-30 max-h-48 overflow-y-auto rounded-xl bg-slate-900/95 border border-slate-700 shadow-2xl p-1.5 space-y-1"></div>
-        </div>
-
-        <div class="flex-1 overflow-y-auto space-y-2 pr-1 border border-slate-800/80 rounded-2xl bg-slate-950/60 p-3">
-            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800/80 pb-2">
-                <span>Added Subjects (<span id="qpi-subject-count">0</span>)</span>
-                <span>Tap Grade to Cycle</span>
-            </div>
-            <div id="qpi-student-subjects-container" class="space-y-2"></div>
-        </div>
-
-        <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between flex-shrink-0">
-            <div>
-                <p class="text-[10px] text-slate-400 font-techno uppercase">Calculated QPI</p>
-                <div class="flex items-baseline gap-2 mt-0.5">
-                    <h3 id="qpi-result-display" class="text-xl font-black text-fusee-cyan font-techno">0.00</h3>
-                    <span id="qpi-honors-badge" class="text-[9px] font-bold text-slate-400">No Subjects Added</span>
+            <div class="relative flex-shrink-0">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="qpi-search-input" onkeyup="searchQpiSubjects()" placeholder="Search subject code or title (e.g., EE 111)..." class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900/90 text-xs text-white placeholder-slate-500 border border-slate-800 focus:outline-none focus:border-fusee-cyan transition">
                 </div>
+                <div id="qpi-search-results" class="hidden absolute left-0 right-0 top-full mt-1.5 z-30 max-h-48 overflow-y-auto rounded-xl bg-slate-900/95 border border-slate-700 shadow-2xl p-1.5 space-y-1"></div>
             </div>
-            <div class="text-right space-y-1">
-                <p class="text-[10px] text-slate-400">Total Units: <strong id="qpi-total-units" class="text-white">0</strong></p>
-                <button onclick="clearQpiCalculator()" class="text-[10px] text-rose-400 font-bold hover:underline flex items-center gap-1 ml-auto">
-                    <i class="fa-solid fa-trash-can"></i> Clear Sheet
-                </button>
+
+            <div class="flex-1 overflow-y-auto space-y-2 pr-1 border border-slate-800/80 rounded-xl p-2.5 bg-slate-950/40">
+                <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800/80 pb-2">
+                    <span>Added Subjects (<span id="qpi-subject-count">0</span>)</span>
+                    <span>Select Grade</span>
+                </div>
+                <div id="qpi-student-subjects-container" class="space-y-2"></div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between flex-shrink-0">
+                <div>
+                    <p class="text-[10px] text-slate-400 font-techno uppercase tracking-wider">Calculated QPI</p>
+                    <div class="flex items-baseline gap-2 mt-0.5">
+                        <h3 id="qpi-result-display" class="text-xl font-black text-fusee-cyan font-techno">0.00</h3>
+                        <span id="qpi-honors-badge" class="text-[10px] text-slate-500">No Subjects Added</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
