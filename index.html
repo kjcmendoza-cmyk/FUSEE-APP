@@ -5456,6 +5456,207 @@ document.addEventListener('click', (e) => {
         window.toggleQuickLinksMenu(false);
     }
 });
+// ========================================================
+// TARGET GRADE CALCULATOR ENGINE
+// ========================================================
+let tgTargetPercent = 92.0;
+let tgActiveBase40Period = 'pl'; // 'pl' or 'mt'
+
+const ADDU_GRADE_CHIPS = [
+    { letter: 'A', pct: 92.0 },
+    { letter: 'B+', pct: 87.0 },
+    { letter: 'B', pct: 82.0 },
+    { letter: 'C+', pct: 77.0 },
+    { letter: 'C', pct: 72.0 },
+    { letter: 'D', pct: 60.0 }
+];
+
+window.openTargetGradeCalculatorModal = function() {
+    renderGradeChips();
+    initTargetGradeEvents();
+    calculateTargetGrade();
+    if (typeof window.openModal === 'function') {
+        window.openModal('target-grade-calc-modal');
+    } else {
+        document.getElementById('target-grade-calc-modal')?.classList.remove('hidden-sheet');
+    }
+};
+
+function renderGradeChips() {
+    const container = document.getElementById('tg-gradeChipsContainer');
+    if (!container) return;
+
+    container.innerHTML = ADDU_GRADE_CHIPS.map(g => {
+        const isSelected = g.pct === tgTargetPercent;
+        const activeCls = isSelected 
+            ? 'bg-fusee-yellow text-slate-950 font-black border-fusee-yellow shadow-neon-yellow scale-105' 
+            : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:border-slate-700 font-bold';
+
+        return `
+            <button type="button" onclick="selectTargetGrade(${g.pct})" 
+                    class="py-2 rounded-xl border text-center transition ${activeCls}">
+                <div class="text-xs font-techno">${g.letter}</div>
+                <div class="text-[9px] opacity-80">${g.pct}%</div>
+            </button>
+        `;
+    }).join('');
+}
+
+window.selectTargetGrade = function(pct) {
+    tgTargetPercent = pct;
+    const badge = document.getElementById('tg-targetPctBadge');
+    if (badge) badge.textContent = `${pct.toFixed(1)}% Required`;
+    renderGradeChips();
+    calculateTargetGrade();
+};
+
+function calculateTargetGrade() {
+    const wPL = parseFloat(document.getElementById('tg-wPL')?.value) || 25;
+    const wMT = parseFloat(document.getElementById('tg-wMT')?.value) || 25;
+    const wPF = parseFloat(document.getElementById('tg-wPF')?.value) || 25;
+    const wFR = parseFloat(document.getElementById('tg-wFR')?.value) || 25;
+
+    const gPL = parseFloat(document.getElementById('tg-gradePL')?.value) || 0;
+    const gMT = parseFloat(document.getElementById('tg-gradeMT')?.value) || 0;
+    const pfSliderVal = parseFloat(document.getElementById('tg-pfSlider')?.value) || 85;
+
+    const accumPts = (gPL * (wPL / 100)) + (gMT * (wMT / 100));
+    const accumPtsEl = document.getElementById('tg-accumulatedPtsText');
+    if (accumPtsEl) {
+        accumPtsEl.textContent = `${accumPts.toFixed(2)} / ${tgTargetPercent.toFixed(2)} pts`;
+    }
+
+    const remWeight = wPF + wFR;
+    const ptsNeeded = tgTargetPercent - accumPts;
+    const reqAvg = remWeight > 0 ? (ptsNeeded / (remWeight / 100)) : 0;
+
+    const reqAvgDisplay = document.getElementById('tg-reqAvgDisplay');
+    const feasibilityBadge = document.getElementById('tg-feasibilityBadge');
+    const reqRawDisplay = document.getElementById('tg-reqRawDisplay');
+
+    if (reqAvgDisplay) reqAvgDisplay.textContent = `${reqAvg.toFixed(1)}%`;
+
+    // Base-40 Conversion: Transmuted = 40 + 0.6 * Raw => Raw = (Transmuted - 40) / 0.6
+    const reqRawPct = (reqAvg - 40) / 0.6;
+    if (reqRawDisplay) {
+        if (reqRawPct > 100) reqRawDisplay.textContent = `>100% Raw`;
+        else if (reqRawPct <= 0) reqRawDisplay.textContent = `0% Raw`;
+        else reqRawDisplay.textContent = `~${reqRawPct.toFixed(1)}% Raw`;
+    }
+
+    if (feasibilityBadge) {
+        if (reqAvg <= 100 && reqAvg >= 0) {
+            feasibilityBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+            feasibilityBadge.textContent = 'Achievable 🟢';
+        } else if (reqAvg > 100) {
+            feasibilityBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-rose-500/20 text-rose-400 border border-rose-500/30';
+            feasibilityBadge.textContent = 'Impossible 🔴';
+        } else {
+            feasibilityBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-fusee-cyan/20 text-fusee-cyan border border-fusee-cyan/30';
+            feasibilityBadge.textContent = 'Secured 🌟';
+        }
+    }
+
+    // "What-If" Prefinal Slider calculation
+    const sliderBadge = document.getElementById('tg-sliderValueBadge');
+    if (sliderBadge) sliderBadge.textContent = `PF: ${pfSliderVal}%`;
+
+    const ptsAfterPF = accumPts + (pfSliderVal * (wPF / 100));
+    const finalPtsNeeded = tgTargetPercent - ptsAfterPF;
+    const finalGradeNeeded = wFR > 0 ? (finalPtsNeeded / (wFR / 100)) : 0;
+
+    const neededFinalDisplay = document.getElementById('tg-neededFinalDisplay');
+    const finalRawNeededText = document.getElementById('tg-finalRawNeededText');
+
+    if (neededFinalDisplay) {
+        if (finalGradeNeeded <= 0) neededFinalDisplay.textContent = '0.0%';
+        else neededFinalDisplay.textContent = `${finalGradeNeeded.toFixed(1)}%`;
+    }
+
+    if (finalRawNeededText) {
+        const finalRaw = (finalGradeNeeded - 40) / 0.6;
+        if (finalRaw > 100) finalRawNeededText.textContent = `Raw exam score: >100 / 100 (Out of range)`;
+        else if (finalRaw <= 0) finalRawNeededText.textContent = `Raw exam score: Guaranteed pass`;
+        else finalRawNeededText.textContent = `Raw exam score: ~${finalRaw.toFixed(1)} / 100`;
+    }
+}
+
+function initTargetGradeEvents() {
+    ['tg-wPL', 'tg-wMT', 'tg-wPF', 'tg-wFR', 'tg-gradePL', 'tg-gradeMT', 'tg-pfSlider'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && !el.dataset.hasListener) {
+            el.addEventListener('input', calculateTargetGrade);
+            el.dataset.hasListener = 'true';
+        }
+    });
+
+    const presetEqual = document.getElementById('tg-presetEqualBtn');
+    if (presetEqual && !presetEqual.dataset.hasListener) {
+        presetEqual.addEventListener('click', () => {
+            document.getElementById('tg-wPL').value = 25;
+            document.getElementById('tg-wMT').value = 25;
+            document.getElementById('tg-wPF').value = 25;
+            document.getElementById('tg-wFR').value = 25;
+            calculateTargetGrade();
+        });
+        presetEqual.dataset.hasListener = 'true';
+    }
+
+    const presetEngg = document.getElementById('tg-presetEnggBtn');
+    if (presetEngg && !presetEngg.dataset.hasListener) {
+        presetEngg.addEventListener('click', () => {
+            document.getElementById('tg-wPL').value = 20;
+            document.getElementById('tg-wMT').value = 20;
+            document.getElementById('tg-wPF').value = 20;
+            document.getElementById('tg-wFR').value = 40;
+            calculateTargetGrade();
+        });
+        presetEngg.dataset.hasListener = 'true';
+    }
+}
+
+// Base-40 Modal Logic
+window.openTargetGradeBase40 = function(period) {
+    tgActiveBase40Period = period;
+    const modal = document.getElementById('tg-base40Modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        updateBase40ModalCalc();
+    }
+};
+
+window.closeTargetGradeBase40 = function() {
+    const modal = document.getElementById('tg-base40Modal');
+    if (modal) modal.classList.add('hidden');
+};
+
+function updateBase40ModalCalc() {
+    const raw = parseFloat(document.getElementById('tg-b40Raw')?.value) || 0;
+    const total = parseFloat(document.getElementById('tg-b40Total')?.value) || 1;
+    const transmuted = 40 + (60 * (raw / total));
+    const resText = document.getElementById('tg-b40ResultText');
+    if (resText) resText.textContent = `${transmuted.toFixed(1)}%`;
+}
+
+window.applyTargetGradeBase40 = function() {
+    const raw = parseFloat(document.getElementById('tg-b40Raw')?.value) || 0;
+    const total = parseFloat(document.getElementById('tg-b40Total')?.value) || 1;
+    const transmuted = Math.min(100, Math.max(0, 40 + (60 * (raw / total))));
+
+    if (tgActiveBase40Period === 'pl') {
+        const el = document.getElementById('tg-gradePL');
+        if (el) el.value = transmuted.toFixed(1);
+    } else {
+        const el = document.getElementById('tg-gradeMT');
+        if (el) el.value = transmuted.toFixed(1);
+    }
+
+    closeTargetGradeBase40();
+    calculateTargetGrade();
+};
+
+document.getElementById('tg-b40Raw')?.addEventListener('input', updateBase40ModalCalc);
+document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40ModalCalc);
 </script>
 
 
@@ -5511,14 +5712,22 @@ document.addEventListener('click', (e) => {
             </div>
         </a>
         <!-- QPI Calculator Shortcut Button -->
-        <button onclick="openQpiCalculatorModal(); toggleQuickLinksMenu(false)" class="group flex items-center gap-3 px-3.5 py-2 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-fusee-cyan/50 transition w-full justify-between">
-            <span class="font-bold font-techno text-[11px] text-fusee-cyan">QPI CALCULATOR</span>
-            <div class="w-8 h-8 rounded-xl bg-fusee-cyan/20 border border-fusee-cyan/40 text-fusee-cyan flex items-center justify-center">
-                <i class="fa-solid fa-calculator text-sm"></i>
-            </div>
-        </button>
+    <button onclick="openQpiCalculatorModal(); toggleQuickLinksMenu(false)" class="group flex items-center gap-3 px-3.5 py-2 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-fusee-cyan/50 transition w-full justify-between">
+        <span class="font-bold font-techno text-[11px] text-fusee-cyan">QPI CALCULATOR</span>
+        <div class="w-8 h-8 rounded-xl bg-fusee-cyan/20 border border-fusee-cyan/40 text-fusee-cyan flex items-center justify-center">
+            <i class="fa-solid fa-calculator text-sm"></i>
+        </div>
+    </button>
 
-    </div>
+    <!-- Target Grade Calculator Shortcut Button -->
+    <button onclick="openTargetGradeCalculatorModal(); toggleQuickLinksMenu(false)" class="group flex items-center gap-3 px-3.5 py-2 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/50 transition w-full justify-between">
+        <span class="font-bold font-techno text-[11px] text-fusee-yellow">TARGET GRADE CALC</span>
+        <div class="w-8 h-8 rounded-xl bg-fusee-yellow/20 border border-fusee-yellow/40 text-fusee-yellow flex items-center justify-center">
+            <i class="fa-solid fa-bullseye text-sm"></i>
+        </div>
+    </button>
+
+</div> <!-- Menu container properly closed HERE -->
 
     <!-- Floating Trigger Icon Button -->
     <button id="quick-links-toggle-btn" 
@@ -5527,13 +5736,225 @@ document.addEventListener('click', (e) => {
             class="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-fusee-cyan/30 text-fusee-cyan shadow-lg opacity-40 hover:opacity-100 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center group relative">
         <i id="quick-links-icon" class="fa-solid fa-bolt text-base md:text-lg group-hover:rotate-12 transition-transform"></i>
         
-        <!-- Subtle Animated Ring Indicator -->
-        <span class="absolute inset-0 rounded-2xl border border-fusee-cyan/30 animate-ping pointer-events-none opacity-40"></span>
-    </button>
+        </button>
 </div>
+
+<!-- ======================================================== -->
+<!-- MODAL: AdDU Target Grade Calculator                      -->
+<!-- ======================================================== -->
+<div id="target-grade-calc-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-yellow/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[90vh] shadow-2xl overflow-y-auto flex flex-col">
+    
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between border-b border-white/10 pb-3 flex-shrink-0">
+        <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-fusee-yellow/20 text-fusee-yellow flex items-center justify-center font-bold">
+                <i class="fa-solid fa-calculator text-sm"></i>
+            </div>
+            <div>
+                <h3 class="text-sm md:text-base font-bold text-white font-display">AdDU Target Grade Calculator</h3>
+                <p class="text-[10px] md:text-xs text-slate-400">Ateneo de Davao Grade Projection & Base-40 Converter</p>
+            </div>
+        </div>
+        <button onclick="closeModal('target-grade-calc-modal')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+    </div>
+
+    <!-- Calculator Body Container -->
+    <div class="space-y-4 flex-1">
+
+        <!-- 1. Target Grade Selector -->
+        <div class="space-y-2">
+            <div class="flex items-center justify-between">
+                <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 font-techno">
+                    1. Select Target Letter Grade
+                </label>
+                <span id="tg-targetPctBadge" class="text-[11px] font-extrabold text-fusee-yellow bg-fusee-yellow/10 px-2 py-0.5 rounded-md border border-fusee-yellow/30 font-techno">
+                    92.0% Required
+                </span>
+            </div>
+            <div class="grid grid-cols-6 gap-1.5" id="tg-gradeChipsContainer">
+                <!-- Grade chips injected via JS -->
+            </div>
+        </div>
+
+        <!-- 2. Current Grades (Prelim & Midterm) -->
+        <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+                <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 font-techno">
+                    2. Current Period Grades (%)
+                </label>
+                <button onclick="document.getElementById('tg-weightsDrawer').classList.toggle('hidden')" class="text-[11px] font-bold text-fusee-cyan hover:underline flex items-center gap-1">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Weights</span>
+                </button>
+            </div>
+
+            <!-- Weight Adjustment Drawer -->
+            <div id="tg-weightsDrawer" class="hidden p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2">
+                <div class="flex items-center justify-between text-xs font-bold text-slate-300">
+                    <span>Period Weights (%)</span>
+                    <div class="space-x-1">
+                        <button id="tg-presetEqualBtn" class="px-2 py-0.5 text-[10px] bg-slate-800 rounded text-slate-300 hover:bg-slate-700 transition">Equal 25%</button>
+                        <button id="tg-presetEnggBtn" class="px-2 py-0.5 text-[10px] bg-slate-800 rounded text-slate-300 hover:bg-slate-700 transition">20/20/20/40</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-2">
+                    <div>
+                        <span class="text-[10px] text-slate-400 block">Prelim</span>
+                        <input type="number" id="tg-wPL" value="25" min="0" max="100" class="w-full text-center bg-slate-950 text-xs font-bold py-1 rounded border border-slate-700 focus:outline-none focus:border-fusee-cyan text-white">
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block">Midterm</span>
+                        <input type="number" id="tg-wMT" value="25" min="0" max="100" class="w-full text-center bg-slate-950 text-xs font-bold py-1 rounded border border-slate-700 focus:outline-none focus:border-fusee-cyan text-white">
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block">Prefinal</span>
+                        <input type="number" id="tg-wPF" value="25" min="0" max="100" class="w-full text-center bg-slate-950 text-xs font-bold py-1 rounded border border-slate-700 focus:outline-none focus:border-fusee-cyan text-white">
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block">Final</span>
+                        <input type="number" id="tg-wFR" value="25" min="0" max="100" class="w-full text-center bg-slate-950 text-xs font-bold py-1 rounded border border-slate-700 focus:outline-none focus:border-fusee-cyan text-white">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prelim & Midterm Inputs -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-300">Prelim</span>
+                        <button onclick="openTargetGradeBase40('pl')" class="text-[10px] font-bold text-fusee-yellow bg-fusee-yellow/10 hover:bg-fusee-yellow/20 px-1.5 py-0.5 rounded border border-fusee-yellow/30 transition flex items-center gap-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Base-40
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <input type="number" id="tg-gradePL" value="85" min="0" max="100" step="0.5" class="w-full bg-slate-950 text-white font-extrabold text-lg px-3 py-1.5 rounded-xl border border-slate-700 focus:outline-none focus:border-fusee-yellow pr-7">
+                        <span class="absolute right-2.5 top-2.5 text-xs font-bold text-slate-400">%</span>
+                    </div>
+                </div>
+
+                <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-300">Midterm</span>
+                        <button onclick="openTargetGradeBase40('mt')" class="text-[10px] font-bold text-fusee-yellow bg-fusee-yellow/10 hover:bg-fusee-yellow/20 px-1.5 py-0.5 rounded border border-fusee-yellow/30 transition flex items-center gap-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Base-40
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <input type="number" id="tg-gradeMT" value="80" min="0" max="100" step="0.5" class="w-full bg-slate-950 text-white font-extrabold text-lg px-3 py-1.5 rounded-xl border border-slate-700 focus:outline-none focus:border-fusee-yellow pr-7">
+                        <span class="absolute right-2.5 top-2.5 text-xs font-bold text-slate-400">%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. High Impact Result Card -->
+        <div id="tg-resultCard" class="p-4 rounded-2xl bg-gradient-to-br from-slate-900 via-[#130e2e] to-slate-950 border border-fusee-cyan/30 shadow-neon-cyan space-y-2 relative overflow-hidden">
+            <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold tracking-wider text-slate-300 uppercase font-techno">Required Remaining Avg</span>
+                <span id="tg-feasibilityBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    On Track 🟢
+                </span>
+            </div>
+
+            <div class="flex items-baseline justify-between py-1">
+                <div>
+                    <div class="text-3xl sm:text-4xl font-black text-white font-techno" id="tg-reqAvgDisplay">
+                        84.5%
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1" id="tg-reqSubtext">
+                        Average needed across Prefinals & Finals
+                    </p>
+                </div>
+
+                <div class="text-right border-l border-white/10 pl-4">
+                    <span class="text-[9px] text-slate-400 block uppercase font-medium">Equiv. Base-40 Raw Score</span>
+                    <span class="text-base font-bold text-fusee-yellow font-techno" id="tg-reqRawDisplay">~74.2%</span>
+                </div>
+            </div>
+
+            <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[11px]">
+                <span class="text-slate-400">Accumulated Points:</span>
+                <span id="tg-accumulatedPtsText" class="font-bold text-fusee-yellow font-techno">41.25 / 92.00 pts</span>
+            </div>
+        </div>
+
+        <!-- 4. Interactive "What-If" Prefinal Slider -->
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="text-xs font-bold text-white font-techno flex items-center gap-1.5">
+                        <i class="fa-solid fa-sliders text-fusee-yellow"></i>
+                        Prefinal "What-If" Scenario
+                    </h4>
+                    <p class="text-[10px] text-slate-400">Slide expected Prefinal to calculate exact Final Exam needed.</p>
+                </div>
+                <span id="tg-sliderValueBadge" class="text-xs font-bold px-2 py-0.5 rounded-lg bg-fusee-yellow text-slate-950 font-techno">
+                    PF: 85%
+                </span>
+            </div>
+
+            <div>
+                <input type="range" id="tg-pfSlider" min="40" max="100" value="85" step="1" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-400">
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-semibold text-slate-300 block">Required Final Exam Grade:</span>
+                    <span id="tg-finalRawNeededText" class="text-[10px] text-slate-400">Raw exam score: ~68 / 100</span>
+                </div>
+                <div id="tg-neededFinalDisplay" class="text-base font-black text-fusee-cyan font-techno">
+                    84.0%
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- INLINE BASE-40 POPUP MODAL -->
+<div id="tg-base40Modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-[220] flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl max-w-xs w-full p-4 shadow-2xl border border-fusee-yellow/40 space-y-3">
+        <div class="flex items-center justify-between border-b border-white/10 pb-2">
+            <h3 class="text-xs font-bold text-white font-techno flex items-center gap-1.5">
+                <i class="fa-solid fa-wand-magic-sparkles text-fusee-yellow"></i>
+                Base-40 Raw Converter
+            </h3>
+            <button onclick="closeTargetGradeBase40()" class="text-slate-400 hover:text-white text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="space-y-2 text-xs">
+            <div>
+                <label class="text-[10px] text-slate-400 block mb-0.5">Your Raw Score</label>
+                <input type="number" id="tg-b40Raw" value="40" min="0" class="w-full bg-slate-900 text-white font-bold p-2 rounded-lg border border-slate-700 focus:outline-none">
+            </div>
+            <div>
+                <label class="text-[10px] text-slate-400 block mb-0.5">Total Exam Items</label>
+                <input type="number" id="tg-b40Total" value="50" min="1" class="w-full bg-slate-900 text-white font-bold p-2 rounded-lg border border-slate-700 focus:outline-none">
+            </div>
+
+            <div class="p-2 rounded-lg bg-fusee-yellow/10 border border-fusee-yellow/30 text-center">
+                <span class="text-[10px] text-fusee-yellow block font-medium">Calculated Transmuted Grade</span>
+                <span id="tg-b40ResultText" class="text-base font-black text-white font-techno">88.0%</span>
+            </div>
+        </div>
+
+        <div class="flex gap-2 pt-1">
+            <button onclick="closeTargetGradeBase40()" class="w-1/2 py-1.5 rounded-xl border border-slate-700 text-xs font-medium text-slate-300">
+                Cancel
+            </button>
+            <button onclick="applyTargetGradeBase40()" class="w-1/2 py-1.5 rounded-xl bg-fusee-yellow text-slate-950 text-xs font-bold font-techno">
+                Apply
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL: QPI Calculator -->
 <div id="qpi-calc-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-cyan/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[90vh] shadow-2xl overflow-hidden flex flex-col">
-    
     <!-- Modal Header -->
     <div class="flex items-center justify-between border-b border-white/10 pb-3 flex-shrink-0">
         <div class="flex items-center space-x-2.5">
