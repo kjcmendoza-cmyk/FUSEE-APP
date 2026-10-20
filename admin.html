@@ -865,68 +865,29 @@
         </button>
     </div>
 </details>
-<!-- SECTION 18: EE Curriculum & QPI Subjects Manager -->
-<details class="glass-panel rounded-2xl border border-fusee-yellow/30 group transition-all duration-200">
-    <summary class="p-5 md:p-6 cursor-pointer list-none select-none flex items-center justify-between hover:bg-white/5 rounded-2xl transition-colors">
-        <div class="flex items-center space-x-2.5">
-            <i class="fa-solid fa-calculator text-fusee-yellow"></i>
-            <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">18. EE Curriculum & QPI Calculator Subjects Manager</h2>
-        </div>
-        <div class="flex items-center space-x-2 text-slate-400">
-            <span class="text-[10px] font-pixel text-slate-500 uppercase group-open:hidden">Expand</span>
-            <span class="text-[10px] font-pixel text-slate-500 uppercase hidden group-open:inline">Collapse</span>
-            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 text-fusee-yellow"></i>
-        </div>
-    </summary>
-    <div class="px-5 md:px-6 pb-5 md:pb-6 pt-2 space-y-4 border-t border-white/10">
-        
-        <!-- Track & Term Filter Bar -->
-        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div>
-                    <label class="block text-slate-400 font-bold mb-1">SELECT PROSPECTUS TRACK</label>
-                    <select id="curriculum-track-select" onchange="renderCurriculumAdmin()" class="w-full p-2.5 rounded-xl bg-slate-950 border border-fusee-yellow/40 text-xs text-white font-bold focus:outline-none focus:border-fusee-yellow">
-                        <option value="new">⚡ New Curriculum (Batch 2024 & Newer)</option>
-                        <option value="old">📜 Old Curriculum (Batch 2023 & Earlier)</option>
-                    </select>
+<!-- SECTION 18: QPI Calculator Subject Directory -->
+        <details class="glass-panel rounded-2xl border border-fusee-cyan/30 group transition-all duration-200">
+            <summary class="p-5 md:p-6 cursor-pointer list-none select-none flex items-center justify-between hover:bg-white/5 rounded-2xl transition-colors">
+                <div class="flex items-center space-x-2.5">
+                    <i class="fa-solid fa-calculator text-fusee-cyan"></i>
+                    <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">18. QPI Calculator Subject Directory</h2>
                 </div>
-                <div>
-                    <label class="block text-slate-400 font-bold mb-1">SELECT YEAR & SEMESTER</label>
-                    <select id="curriculum-term-select" onchange="renderCurriculumAdmin()" class="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white font-semibold focus:outline-none focus:border-fusee-yellow">
-                        <option value="y1s1">1st Year - 1st Semester</option>
-                        <option value="y1s2">1st Year - 2nd Semester</option>
-                        <option value="y2s1">2nd Year - 1st Semester</option>
-                        <option value="y2s2">2nd Year - 2nd Semester</option>
-                        <option value="y3s1">3rd Year - 1st Semester</option>
-                        <option value="y3s2">3rd Year - 2nd Semester</option>
-                        <option value="y4s1">4th Year - 1st Semester</option>
-                        <option value="y4s2">4th Year - 2nd Semester</option>
-                    </select>
+                <div class="flex items-center space-x-2 text-slate-400">
+                    <span class="text-[10px] font-pixel text-slate-500 uppercase group-open:hidden">Expand</span>
+                    <span class="text-[10px] font-pixel text-slate-500 uppercase hidden group-open:inline">Collapse</span>
+                    <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 text-fusee-cyan"></i>
                 </div>
-            </div>
-        </div>
+            </summary>
+            <div class="px-5 md:px-6 pb-5 md:pb-6 pt-2 space-y-4 border-t border-white/10">
+                <p class="text-xs text-slate-400">Manage all subjects offered in the curriculum directory. Students will search and add these subjects into their individual QPI calculator sheets.</p>
+                
+                <div id="qpi-directory-container" class="space-y-3 max-h-[500px] overflow-y-auto pr-2"></div>
 
-        <!-- Subjects Editor Container -->
-        <div class="space-y-2">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-white font-techno uppercase tracking-wider">Subject Load List</span>
-                <span id="curriculum-count-badge" class="text-[10px] text-fusee-cyan font-bold font-techno">0 Subjects</span>
+                <button type="button" onclick="addQpiSubjectRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-plus text-fusee-cyan"></i> Add New Subject to Directory
+                </button>
             </div>
-            
-            <div id="curriculum-subjects-admin-container" class="space-y-2.5">
-                <!-- Dynamically populated by renderCurriculumAdmin() -->
-            </div>
-        </div>
-
-        <!-- Action Controls -->
-        <div class="pt-2 flex justify-between items-center border-t border-white/10">
-            <button type="button" onclick="addCurriculumSubjectRow()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-fusee-yellow text-xs font-bold border border-slate-700 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-plus"></i> Add Subject to Selected Term
-            </button>
-        </div>
-
-    </div>
-</details>
+        </details>
     </main>
 
    <!-- Firebase SDK Scripts -->
@@ -972,141 +933,50 @@ appId: "1:1027948046459:web:549cc5e4d6e47dd7e89ade",
                 new Promise((_, reject) => setTimeout(() => reject(new Error("Request timed out. Please check Firebase Rules.")), ms))
             ]);
         }
-
-// Active curriculum dataset memory cache
-let activeCurriculumStore = { new: {}, old: {} };
-
-// Render Admin Subject Rows based on Track & Term selectors
-window.renderCurriculumAdmin = function() {
-    const track = document.getElementById('curriculum-track-select')?.value || 'new';
-    const term = document.getElementById('curriculum-term-select')?.value || 'y1s1';
-    const container = document.getElementById('curriculum-subjects-admin-container');
-    const badge = document.getElementById('curriculum-count-badge');
-    
+        // SECTION 18: QPI Calculator Directory Builder & Renderer
+function renderQpiDirectoryAdmin(list = []) {
+    const container = document.getElementById('qpi-directory-container');
     if (!container) return;
-
-    const subjects = (activeCurriculumStore[track] && activeCurriculumStore[track][term]) 
-        ? activeCurriculumStore[track][term] 
-        : [];
-
-    if (badge) badge.innerText = `${subjects.length} Subjects`;
-
-    if (subjects.length === 0) {
-        container.innerHTML = `
-            <div class="p-6 text-center text-xs text-slate-500 italic bg-slate-900/50 rounded-2xl border border-slate-800">
-                No pre-loaded subjects for this term yet. Click "+ Add Subject to Selected Term" below to add one.
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = subjects.map((sub, index) => `
-        <div class="curr-subject-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative hover:border-fusee-yellow/30 transition">
-            <button type="button" onclick="removeCurriculumSubjectRow(${index})" class="absolute top-2.5 right-2.5 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Subject">
-                <i class="fa-solid fa-trash"></i>
-            </button>
-
-            <div class="grid grid-cols-1 md:grid-cols-6 gap-2 text-xs pt-1">
-                <div class="md:col-span-2">
-                    <label class="block text-[10px] text-slate-400 font-bold mb-1">COURSE CODE</label>
-                    <input type="text" class="curr-code-input w-full p-2 rounded-lg bg-slate-800 text-white font-techno font-bold border border-slate-700 focus:outline-none focus:border-fusee-yellow" placeholder="e.g. EE 211" value="${(sub.code || '').replace(/"/g, '&quot;')}">
-                </div>
-                
-                <div class="md:col-span-3">
-                    <label class="block text-[10px] text-slate-400 font-bold mb-1">COURSE NAME / TITLE</label>
-                    <input type="text" class="curr-name-input w-full p-2 rounded-lg bg-slate-800 text-white font-semibold border border-slate-700 focus:outline-none focus:border-fusee-yellow" placeholder="e.g. Electrical Circuits 1" value="${(sub.name || '').replace(/"/g, '&quot;')}">
-                </div>
-
-                <div>
-                    <label class="block text-[10px] text-slate-400 font-bold mb-1">UNITS</label>
-                    <input type="number" min="1" max="10" step="1" class="curr-units-input w-full p-2 rounded-lg bg-slate-800 text-fusee-yellow font-techno font-bold text-center border border-slate-700 focus:outline-none focus:border-fusee-yellow" value="${sub.units || 3}">
-                </div>
-            </div>
-        </div>
-    `).join('');
-};
-
-// Sync active form inputs into memory when navigating terms
-function syncCurrentTermMemory() {
-    const track = document.getElementById('curriculum-track-select')?.value || 'new';
-    const term = document.getElementById('curriculum-term-select')?.value || 'y1s1';
-
-    if (!activeCurriculumStore[track]) activeCurriculumStore[track] = {};
-
-    const rows = document.querySelectorAll('.curr-subject-row');
-    const updatedList = [];
-
-    rows.forEach(row => {
-        const code = row.querySelector('.curr-code-input')?.value?.trim() || '';
-        const name = row.querySelector('.curr-name-input')?.value?.trim() || '';
-        const units = parseInt(row.querySelector('.curr-units-input')?.value, 10) || 3;
-
-        if (code || name) {
-            updatedList.push({ code, name, units });
-        }
-    });
-
-    activeCurriculumStore[track][term] = updatedList;
+    container.innerHTML = '';
+    list.forEach(item => window.addQpiSubjectRow(item.code, item.title, item.units, item.curriculum));
 }
 
-// Add Subject Row
-window.addCurriculumSubjectRow = function() {
-    syncCurrentTermMemory();
-    const track = document.getElementById('curriculum-track-select')?.value || 'new';
-    const term = document.getElementById('curriculum-term-select')?.value || 'y1s1';
+window.addQpiSubjectRow = function(code = '', title = '', units = 3, curriculum = 'Both Curriculum') {
+    const container = document.getElementById('qpi-directory-container');
+    if (!container) return;
 
-    if (!activeCurriculumStore[track]) activeCurriculumStore[track] = {};
-    if (!activeCurriculumStore[track][term]) activeCurriculumStore[track][term] = [];
-
-    const nextCount = activeCurriculumStore[track][term].length + 1;
-    activeCurriculumStore[track][term].push({
-        code: `EE ${100 + nextCount}`,
-        name: `New Subject ${nextCount}`,
-        units: 3
-    });
-
-    renderCurriculumAdmin();
+    const div = document.createElement('div');
+    div.className = 'qpi-subject-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative';
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Subject">
+            <i class="fa-solid fa-trash"></i> Remove
+        </button>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-2 text-xs pt-2">
+            <input type="text" class="qpi-code-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 uppercase font-mono font-bold" placeholder="Subject Code (e.g. EE 111)" value="${code.replace(/"/g, '&quot;')}">
+            <input type="text" class="qpi-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 md:col-span-2" placeholder="Subject Title (e.g. Electrical Circuits 1)" value="${title.replace(/"/g, '&quot;')}">
+            <div class="grid grid-cols-2 gap-2">
+                <input type="number" step="0.5" min="0.5" max="12" class="qpi-units-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 font-bold" placeholder="Units" value="${units}">
+                <select class="qpi-curriculum-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                    <option value="Both Curriculum" ${curriculum === 'Both Curriculum' ? 'selected' : ''}>Both Curriculum</option>
+                    <option value="Old Curriculum" ${curriculum === 'Old Curriculum' ? 'selected' : ''}>Old Curriculum</option>
+                    <option value="New Curriculum" ${curriculum === 'New Curriculum' ? 'selected' : ''}>New Curriculum</option>
+                </select>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
 };
 
-// Remove Subject Row
-window.removeCurriculumSubjectRow = function(index) {
-    syncCurrentTermMemory();
-    const track = document.getElementById('curriculum-track-select')?.value || 'new';
-    const term = document.getElementById('curriculum-term-select')?.value || 'y1s1';
-
-    if (activeCurriculumStore[track] && activeCurriculumStore[track][term]) {
-        activeCurriculumStore[track][term].splice(index, 1);
-    }
-
-    renderCurriculumAdmin();
-}; 
 
         const defaultData = {
-            curriculumData: {
-            new: {
-                y1s1: [
-                    { code: 'MATH 111', name: 'Calculus 1', units: 4 },
-                    { code: 'CHEM 111', name: 'Chemistry for Engineers', units: 4 },
-                    { code: 'ENGG 111', name: 'Engineering Drawing & CAD', units: 1 },
-                    { code: 'ASF 1102', name: 'NSTP 1', units: 3 },
-                    { code: 'GE 1105', name: 'Understanding the Self', units: 3 },
-                    { code: 'GE 1106', name: 'Purposive Communication', units: 3 }
-                ],
-                y1s2: [
-                    { code: 'MATH 122', name: 'Calculus 2', units: 4 },
-                    { code: 'PHYS 121', name: 'Physics for Engineers', units: 4 }
-                ],
-                y2s1: [], y2s2: [], y3s1: [], y3s2: [], y4s1: [], y4s2: []
-            },
-            old: {
-                y1s1: [
-                    { code: 'MATH 101', name: 'Old College Algebra', units: 3 },
-                    { code: 'GE 1105', name: 'Understanding the Self', units: 3 }
-                ],
-                y1s2: [], y2s1: [], y2s2: [], y3s1: [], y3s2: [], y4s1: [], y4s2: []
-            }
-        },
-            peerTutoring: [
+    qpiSubjects: [
+        { code: "EE 111", title: "Electrical Circuits 1", units: 3, curriculum: "Both Curriculum" },
+        { code: "EE 121", title: "Electrical Circuits 2", units: 3, curriculum: "Both Curriculum" },
+        { code: "MATH 101", title: "Calculus 1", units: 4, curriculum: "Old Curriculum" },
+        { code: "MATH 111", title: "Differential Calculus", units: 3, curriculum: "New Curriculum" },
+        { code: "EE 421", title: "Power Systems 1", units: 3, curriculum: "New Curriculum" }
+    ],
+    peerTutoring: [
                 {
                     type: "TUTOR",
                     status: "AVAILABLE",
@@ -1576,6 +1446,7 @@ document.getElementById('admin-payment-qr').value = data.paymentInfo?.qr || '';
             document.getElementById('banner-body').value = data.banner?.body || defaultData.banner.body;
 
             renderEvents(data.events || defaultData.events);
+            renderQpiDirectoryAdmin(data.qpiSubjects || defaultData.qpiSubjects);
             renderAcademicLinks(
                 (data.academicLinks && data.academicLinks.length)
                     ? data.academicLinks 
@@ -1608,8 +1479,6 @@ document.getElementById('admin-payment-qr').value = data.paymentInfo?.qr || '';
                 fuseeDescEl.value = data.fuseeInfo?.description || defaultData.fuseeInfo.description;
                 document.getElementById('fusee-info-email-input').value = data.fuseeInfo?.email || defaultData.fuseeInfo.email;
             }
-            activeCurriculumStore = data.curriculumData || defaultData.curriculumData || { new: {}, old: {} };
-renderCurriculumAdmin();
         }
 
         function renderFacultyRows(list = []) {
@@ -1655,7 +1524,6 @@ renderCurriculumAdmin();
 
         // Helper to collect all form fields and dynamic rows across all 17 sections
 function gatherFormData() {
-    syncCurrentTermMemory();
     const importantEvents = [];
     document.querySelectorAll('.important-event-item-row').forEach(row => {
         const title = row.querySelector('.imp-title-input')?.value?.trim() || '';
@@ -1789,8 +1657,19 @@ function gatherFormData() {
         const description = row.querySelector('.act-desc-input')?.value?.trim() || '';
         if (eventTitle) activityEvents.push({ room, eventDate, eventTitle, description });
     });
+    const qpiSubjects = [];
+    document.querySelectorAll('.qpi-subject-item-row').forEach(row => {
+        const code = row.querySelector('.qpi-code-input')?.value?.trim() || '';
+        const title = row.querySelector('.qpi-title-input')?.value?.trim() || '';
+        const units = parseFloat(row.querySelector('.qpi-units-input')?.value) || 3;
+        const curriculum = row.querySelector('.qpi-curriculum-input')?.value || 'Both Curriculum';
+        if (code && title) {
+            qpiSubjects.push({ code, title, units, curriculum });
+        }
+    });
 
     return {
+        qpiSubjects,
         tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
         globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
         paymentInfo: {
@@ -1800,10 +1679,6 @@ function gatherFormData() {
         },
         events, academicLinks, merchItems, labPolicies, capstoneItems, weeklySchedule,
         activityEvents, lostAndFound, importantEvents, faqs, officers,
-        curriculumData: {
-    ...activeCurriculumStore,
-    lastUpdated: Date.now() // Signals a new curriculum version to all student devices
-},
         sys1: {
             tag: document.getElementById('sys1-tag')?.value?.trim() || '',
             title: document.getElementById('sys1-title')?.value?.trim() || '',
@@ -2007,32 +1882,36 @@ window.saveDataToFirebase = async function() {
 window.addOfficerRow = function(title = '', dept = '', email = '', badge = 'PRES', category = 'executive', name = '', imageUrl = '', subCategory = 'academics') {
     const container = document.getElementById('officers-container');
     if (!container) return;
+    
     const div = document.createElement('div');
     div.className = 'officer-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative';
     div.innerHTML = `
-        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Remove Contact">
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Officer">
             <i class="fa-solid fa-trash"></i> Remove Contact
         </button>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-2">
-            <select class="off-category-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 focus:outline-none focus:border-fusee-purple">
-                <option value="executive" ${category === 'executive' ? 'selected' : ''}>Executive</option>
-                <option value="reps" ${category === 'reps' ? 'selected' : ''}>Representative</option>
-                <option value="committees" ${category === 'committees' ? 'selected' : ''}>Committee</option>
+            <input type="text" class="off-name-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Officer Name" value="${name.replace(/"/g, '&quot;')}">
+            <input type="text" class="off-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Title / Position" value="${title.replace(/"/g, '&quot;')}">
+            <input type="text" class="off-dept-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Department / Year Level" value="${dept.replace(/"/g, '&quot;')}">
+            <input type="email" class="off-email-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="AdDU Email" value="${email.replace(/"/g, '&quot;')}">
+            <input type="text" class="off-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Badge (e.g. PRES, VP)" value="${badge.replace(/"/g, '&quot;')}">
+            
+            <select class="off-category-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                <option value="executive" ${category === 'executive' ? 'selected' : ''}>Executive Board</option>
+                <option value="reps" ${category === 'reps' ? 'selected' : ''}>Batch / Course Reps</option>
+                <option value="committees" ${category === 'committees' ? 'selected' : ''}>Committees</option>
             </select>
-            <select class="off-subcategory-input p-2 rounded bg-slate-900 text-xs text-white border border-slate-700 outline-none">
-                <option value="academics" ${subCategory === 'academics' ? 'selected' : ''}>Academics</option>
+            
+            <select class="off-subcategory-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                <option value="academics" ${subCategory === 'academics' ? 'selected' : ''}>Academics & Scholarship</option>
                 <option value="creatives" ${subCategory === 'creatives' ? 'selected' : ''}>Creatives</option>
                 <option value="documentations" ${subCategory === 'documentations' ? 'selected' : ''}>Documentations</option>
                 <option value="communications" ${subCategory === 'communications' ? 'selected' : ''}>Communications</option>
                 <option value="logistics" ${subCategory === 'logistics' ? 'selected' : ''}>Logistics</option>
-                <option value="projects" ${subCategory === 'projects' ? 'selected' : ''}>Projects</option>
+                <option value="projects" ${subCategory === 'projects' ? 'selected' : ''}>FUSEE Projects</option>
             </select>
-            <input type="text" class="off-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 font-pixel text-[10px]" placeholder="Badge (e.g. PRES)" value="${badge}">
-            <input type="text" class="off-name-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Officer Name" value="${name}">
-            <input type="text" class="off-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Title / Position" value="${title}">
-            <input type="text" class="off-dept-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Department / Office" value="${dept}">
-            <input type="email" class="off-email-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Email" value="${email}">
-            <input type="text" class="off-img-input md:col-span-3 p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Image URL or Filename" value="${imageUrl}">
+            
+            <input type="text" class="off-img-input md:col-span-2 p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Photo URL or Filename (e.g. Nicolas.png)" value="${imageUrl.replace(/"/g, '&quot;')}">
         </div>
     `;
     container.appendChild(div);
