@@ -5471,12 +5471,12 @@ let tgTargetPercent = 92.0;
 let tgActiveBase40Period = 'pl'; // 'pl' or 'mt'
 
 const ADDU_GRADE_CHIPS = [
-    { letter: 'A', pct: 92.0 },
-    { letter: 'B+', pct: 87.0 },
-    { letter: 'B', pct: 82.0 },
-    { letter: 'C+', pct: 77.0 },
-    { letter: 'C', pct: 72.0 },
-    { letter: 'D', pct: 60.0 }
+    { letter: 'A',  pct: 92.0, range: '92-100%', label: 'Excellent (92% - 100%)' },
+    { letter: 'B+', pct: 88.0, range: '88-91%',  label: 'Very Good (88% - 91%)' },
+    { letter: 'B',  pct: 84.0, range: '84-87%',  label: 'Good (84% - 87%)' },
+    { letter: 'C+', pct: 80.0, range: '80-83%',  label: 'Satisfactory (80% - 83%)' },
+    { letter: 'C',  pct: 76.0, range: '76-79%',  label: 'Acceptable (76% - 79%)' },
+    { letter: 'D',  pct: 72.0, range: '72-75%',  label: 'Minimal Pass (72% - 75%)' }
 ];
 
 window.openTargetGradeCalculatorModal = function() {
@@ -5501,10 +5501,10 @@ function renderGradeChips() {
             : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:border-slate-700 font-bold';
 
         return `
-            <button type="button" onclick="selectTargetGrade(${g.pct})" 
-                    class="py-2 rounded-xl border text-center transition ${activeCls}">
+            <button type="button" onclick="selectTargetGrade(${g.pct})" title="${g.label}" 
+                    class="py-2 px-1 rounded-xl border text-center transition ${activeCls}">
                 <div class="text-xs font-techno">${g.letter}</div>
-                <div class="text-[9px] opacity-80">${g.pct}%</div>
+                <div class="text-[8px] sm:text-[9px] opacity-80 leading-tight mt-0.5">${g.range}</div>
             </button>
         `;
     }).join('');
