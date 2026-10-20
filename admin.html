@@ -1366,14 +1366,14 @@ window.addImportantEventRow = function(title = '', date = '', endDate = '', cate
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
                     <div class="space-y-2">
-                        <label class="block text-slate-400 font-semibold">Circuit Block Diagram Image</label>
-                        <div class="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-700 rounded-xl bg-slate-950/50 text-center space-y-2">
-                            <img id="${previewId}" src="${diagramUrl}" class="${diagramUrl ? '' : 'hidden'} w-full max-h-32 object-contain rounded-lg border border-slate-700 mb-1">
-                            <input type="file" accept="image/*" onchange="handleMerchImageUpload(this, '${previewId}', '${hiddenId}')" class="text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-semibold file:bg-fusee-cyan/20 file:text-fusee-cyan hover:file:bg-fusee-cyan/30 cursor-pointer">
-                            <input type="hidden" class="cap-image-input" id="${hiddenId}" value="${diagramUrl}">
-                            <span class="text-[9px] text-slate-500">Upload circuit diagram (JPG/PNG)</span>
-                        </div>
-                    </div>
+        <label class="block text-slate-400 font-semibold">Circuit Block Diagram Image (URL)</label>
+        <input 
+          type="url" 
+          class="cap-image-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs w-full" 
+          placeholder="https://example.com/diagram.png" 
+          value="${diagramUrl || ''}"
+        >
+      </div>
 
                     <div class="md:col-span-2 space-y-2">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -1489,18 +1489,18 @@ document.getElementById('admin-payment-qr').value = data.paymentInfo?.qr || '';
         }
 
         window.addFacultyRow = function(name = '', specialization = '', imageUrl = '') {
-            const container = document.getElementById('ee-faculty-editor-container');
-            if (!container) return;
-            const div = document.createElement('div');
-            div.className = 'faculty-item-row flex items-center space-x-2 mb-2';
-            div.innerHTML = `
-                <input type="text" class="fac-name-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs flex-1" placeholder="Faculty Name" value="${name.replace(/"/g, '&quot;')}">
-                <input type="text" class="fac-spec-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs flex-1" placeholder="Specialization" value="${specialization.replace(/"/g, '&quot;')}">
-                <input type="text" class="fac-img-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs flex-1" placeholder="Image Filename (e.g., Teofilo.png)" value="${imageUrl ? imageUrl.replace(/"/g, '&quot;') : ''}">
-                <button type="button" onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-300 px-2"><i class="fa-solid fa-trash"></i></button>
-            `;
-            container.appendChild(div);
-        };
+  const container = document.getElementById('ee-faculty-editor-container');
+  if (!container) return;
+  const div = document.createElement('div');
+  div.className = 'faculty-item-row flex items-center space-x-2 mb-2';
+  div.innerHTML = `
+    <input type="text" class="fac-name-input p-2 rounded bg-slate-800 text-xs text-white" placeholder="Name" value="${name || ''}">
+    <input type="text" class="fac-spec-input p-2 rounded bg-slate-800 text-xs text-white" placeholder="Specialization" value="${specialization || ''}">
+    <input type="url" class="fac-img-input p-2 rounded bg-slate-800 text-xs text-white" placeholder="Photo URL" value="${imageUrl || ''}">
+    <button type="button" onclick="this.parentElement.remove()" class="text-rose-400 p-2"><i class="fa-solid fa-trash"></i></button>
+  `;
+  container.appendChild(div);
+};
 
         function renderFacilityRows(list = []) {
             const container = document.getElementById('ee-facilities-editor-container');
@@ -2025,10 +2025,12 @@ window.addOfficerRow = function(title = '', dept = '', email = '', badge = 'PRES
                     <div class="space-y-2">
                         <label class="block text-slate-400 font-semibold">Item Photo (Optional)</label>
                         <div class="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-700 rounded-xl bg-slate-950/50 text-center space-y-2">
-                            <img id="${previewId}" src="${imageUrl}" class="${imageUrl ? '' : 'hidden'} w-full max-h-32 object-contain rounded-lg border border-slate-700 mb-1">
-                            <input type="file" accept="image/*" onchange="handleMerchImageUpload(this, '${previewId}', '${hiddenId}')" class="text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-semibold file:bg-rose-500/20 file:text-rose-400 cursor-pointer">
-                            <input type="hidden" class="lf-image-input" id="${hiddenId}" value="${imageUrl}">
-                            <span class="text-[9px] text-slate-500">Upload direct photo</span>
+                            <input 
+  type="url" 
+  class="cap-image-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs w-full" 
+  placeholder="https://example.com/diagram.png" 
+  value="${diagramUrl || ''}"
+>
                         </div>
                     </div>
 

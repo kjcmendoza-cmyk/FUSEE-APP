@@ -5340,64 +5340,76 @@ function initImageZoomEngine() {
     });
 
     // 4. Mobile Two-Finger Pinch-to-Zoom & One-Finger Drag Pan
-    zoomedImg.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 2) {
-            isDragging = false;
-            initialPinchDistance = Math.hypot(
-                e.touches[0].clientX - e.touches[1].clientX,
-                e.touches[0].clientY - e.touches[1].clientY
-            );
-            initialScale = currentScale;
-        } else if (e.touches.length === 1) {
-            const currentTime = new Date().getTime();
-            const tapLength = currentTime - lastTapTime;
-            if (tapLength < 300 && tapLength > 0) {
-                handleDoubleZoom(e);
-            } else if (currentScale > 1) {
-                isDragging = true;
-                startX = e.touches[0].clientX - translateX;
-                startY = e.touches[0].clientY - translateY;
-            }
-            lastTapTime = currentTime;
+zoomedImg.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+        isDragging = false;
+        initialPinchDistance = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+        );
+        initialScale = currentScale;
+    } else if (e.touches.length === 1) {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTapTime;
+        
+        if (tapLength < 300 && tapLength > 0) {
+            handleDoubleZoom(e);
+        } else if (currentScale > 1) {
+            isDragging = true;
+            startX = e.touches[0].clientX - translateX;
+            startY = e.touches[0].clientY - translateY;
         }
-    }, { passive: false });
+        lastTapTime = currentTime;
+    }
+}, { passive: false });
 
-    zoomedImg.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 2) {
-            e.preventDefault();
-            const currentDistance = Math.hypot(
-                e.touches[0].clientX - e.touches[1].clientX,
-                e.touches[0].clientY - e.touches[1].clientY
-            );
-            if (initialPinchDistance > 0) {
-                const delta = currentDistance / initialPinchDistance;
-                currentScale = Math.min(Math.max(1, initialScale * delta), 5);
-                if (currentScale === 1) {
-                    translateX = 0;
-                    translateY = 0;
-                }
-                updateImageTransform();
-            }
-        } else if (e.touches.length === 1 && isDragging && currentScale > 1) {
-            e.preventDefault();
-            translateX = e.touches[0].clientX - startX;
-            translateY = e.touches[0].clientY - startY;
-            updateImageTransform();
+zoomedImg.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2 && initialPinchDistance > 0) {
+        e.preventDefault();
+        const currentDistance = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+        );
+        
+        const scaleFactor = currentDistance / initialPinchDistance;
+        let newScale = initialScale * scaleFactor;
+        
+        // Clamp scale between 1x and 4x
+        newScale = Math.min(Math.max(1, newScale), 4);
+        
+        if (newScale === 1) {
+            translateX = 0;
+            translateY = 0;
         }
-    }, { passive: false });
+        
+        currentScale = newScale;
+        updateImageTransform();
+    } else if (e.touches.length === 1 && isDragging) {
+        e.preventDefault();
+        translateX = e.touches[0].clientX - startX;
+        translateY = e.touches[0].clientY - startY;
+        updateImageTransform();
+    }
+}, { passive: false });
 
-    zoomedImg.addEventListener('touchend', (e) => {
-        if (e.touches.length < 2) initialPinchDistance = 0;
-        if (e.touches.length === 0) {
-            isDragging = false;
-            if (currentScale <= 1) {
-                translateX = 0;
-                translateY = 0;
-                currentScale = 1;
-                updateImageTransform();
-            }
-        }
-    });
+zoomedImg.addEventListener('touchend', (e) => {
+    if (e.touches.length < 2) {
+        initialPinchDistance = 0;
+    }
+    
+    if (e.touches.length === 1 && currentScale > 1) {
+        // Seamlessly switch to single-finger panning for the remaining finger
+        isDragging = true;
+        startX = e.touches[0].clientX - translateX;
+        startY = e.touches[0].clientY - translateY;
+    } else if (e.touches.length === 0) {
+        isDragging = false;
+    }
+});
+zoomedImg.addEventListener('touchcancel', () => {
+    isDragging = false;
+    initialPinchDistance = 0;
+});
 }
 
 // Attach event listeners after DOM element creation
