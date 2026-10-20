@@ -5170,7 +5170,46 @@ if (document.readyState === 'loading') {
 } else {
     initImageZoomEngine();
 }
+// Floating Quick-Access Speed Dial Toggle Engine
+window.toggleQuickLinksMenu = function(forceState) {
+    const menu = document.getElementById('quick-links-menu');
+    const icon = document.getElementById('quick-links-icon');
+    const btn = document.getElementById('quick-links-toggle-btn');
+    if (!menu || !icon || !btn) return;
+
+    const isHidden = menu.classList.contains('hidden');
+    const shouldOpen = forceState !== undefined ? forceState : isHidden;
+
+    if (shouldOpen) {
+        menu.classList.remove('hidden');
+        btn.classList.remove('opacity-40');
+        btn.classList.add('opacity-100', 'shadow-neon-cyan', 'border-fusee-cyan');
+        requestAnimationFrame(() => {
+            menu.classList.remove('opacity-0', 'scale-90');
+            menu.classList.add('opacity-100', 'scale-100');
+        });
+        icon.className = 'fa-solid fa-xmark text-lg';
+    } else {
+        menu.classList.remove('opacity-100', 'scale-100');
+        menu.classList.add('opacity-0', 'scale-90');
+        btn.classList.remove('shadow-neon-cyan');
+        btn.classList.add('opacity-40');
+        setTimeout(() => {
+            menu.classList.add('hidden');
+            icon.className = 'fa-solid fa-bolt text-lg';
+        }, 200);
+    }
+};
+
+// Auto-close quick links floating menu when clicking anywhere outside
+document.addEventListener('click', (e) => {
+    const widget = document.getElementById('quick-links-widget');
+    if (widget && !widget.contains(e.target)) {
+        window.toggleQuickLinksMenu(false);
+    }
+});
 </script>
+
 
 <!-- Fully Functional Lightbox Container -->
 <div id="imageZoomModal" 
@@ -5196,6 +5235,46 @@ if (document.readyState === 'loading') {
     <p class="text-xs text-slate-400 mt-4 select-none pointer-events-none">
         <i class="fa-solid fa-hand-pointer mr-1 text-cyan-400"></i> Mouse wheel / Pinch to zoom • Drag when zoomed • Double-click / Double-tap to quick toggle
     </p>
+</div>
+
+<!-- Floating Quick-Access Shortcut Widget (SIS & Daigler) -->
+<div id="quick-links-widget" class="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-[180] flex flex-col items-end gap-2.5 pointer-events-auto select-none">
+    
+    <!-- Expanded Speed-Dial Links Menu -->
+    <div id="quick-links-menu" class="hidden opacity-0 scale-90 transition-all duration-300 origin-bottom-right flex flex-col items-end gap-2.5 text-xs">
+        
+        <!-- Daigler LMS Shortcut Button -->
+        <a href="https://daigler25.addu.edu.ph/login/index.php?loginredirect=1" target="_blank" rel="noopener noreferrer" 
+           onclick="toggleQuickLinksMenu(false)"
+           class="group flex items-center gap-3 px-3.5 py-2 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-fusee-magenta/40 text-white shadow-neon-pink hover:border-fusee-magenta hover:scale-105 active:scale-95 transition-all">
+            <span class="font-bold font-techno text-[11px] text-fusee-magenta group-hover:text-pink-300 transition-colors">AdDU Daigler LMS</span>
+            <div class="w-8 h-8 rounded-xl bg-fusee-magenta/20 border border-fusee-magenta/40 text-fusee-magenta flex items-center justify-center font-bold group-hover:bg-fusee-magenta group-hover:text-white transition-colors">
+                <i class="fa-solid fa-graduation-cap text-sm"></i>
+            </div>
+        </a>
+
+        <!-- SIS Shortcut Button -->
+        <a href="https://sis.addu.edu.ph/registration" target="_blank" rel="noopener noreferrer"
+           onclick="toggleQuickLinksMenu(false)"
+           class="group flex items-center gap-3 px-3.5 py-2 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-fusee-cyan/40 text-white shadow-neon-cyan hover:border-fusee-cyan hover:scale-105 active:scale-95 transition-all">
+            <span class="font-bold font-techno text-[11px] text-fusee-cyan group-hover:text-cyan-300 transition-colors">AdDU SIS Portal</span>
+            <div class="w-8 h-8 rounded-xl bg-fusee-cyan/20 border border-fusee-cyan/40 text-fusee-cyan flex items-center justify-center font-bold group-hover:bg-fusee-cyan group-hover:text-slate-950 transition-colors">
+                <i class="fa-solid fa-user-gear text-sm"></i>
+            </div>
+        </a>
+
+    </div>
+
+    <!-- Floating Trigger Icon Button -->
+    <button id="quick-links-toggle-btn" 
+            onclick="toggleQuickLinksMenu()"
+            title="Quick Access: SIS & Daigler"
+            class="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-fusee-cyan/30 text-fusee-cyan shadow-lg opacity-40 hover:opacity-100 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center group relative">
+        <i id="quick-links-icon" class="fa-solid fa-bolt text-base md:text-lg group-hover:rotate-12 transition-transform"></i>
+        
+        <!-- Subtle Animated Ring Indicator -->
+        <span class="absolute inset-0 rounded-2xl border border-fusee-cyan/30 animate-ping pointer-events-none opacity-40"></span>
+    </button>
 </div>
 
 </body>
