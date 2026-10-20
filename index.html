@@ -5263,6 +5263,16 @@ document.addEventListener('click', (e) => {
             </div>
         </a>
 
+<!-- QPI Calculator Shortcut Button -->
+<button type="button" 
+        onclick="openModal('qpi-calculator-modal'); toggleQuickLinksMenu(false);" 
+        class="group flex items-center gap-3 px-3.5 py-2 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-fusee-yellow/50 transition w-full justify-end">
+    <span class="font-bold font-techno text-[11px] text-fusee-yellow group-hover:underline">QPI Calculator</span>
+    <div class="w-8 h-8 rounded-xl bg-fusee-yellow/20 border border-fusee-yellow/30 flex items-center justify-center shrink-0">
+        <i class="fa-solid fa-calculator text-sm text-fusee-yellow"></i>
+    </div>
+</button>
+
     </div>
 
     <!-- Floating Trigger Icon Button -->
@@ -5276,6 +5286,342 @@ document.addEventListener('click', (e) => {
         <span class="absolute inset-0 rounded-2xl border border-fusee-cyan/30 animate-ping pointer-events-none opacity-40"></span>
     </button>
 </div>
+<!-- MODAL: AdDU EE QPI Calculator -->
+<div id="qpi-calculator-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-yellow/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[90vh] shadow-2xl overflow-hidden flex flex-col">
+    
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between border-b border-white/10 pb-3 flex-shrink-0">
+        <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-fusee-yellow/20 text-fusee-yellow flex items-center justify-center font-bold">
+                <i class="fa-solid fa-calculator text-sm"></i>
+            </div>
+            <div>
+                <h3 class="text-sm md:text-base font-bold text-white font-display">AdDU EE QPI Calculator</h3>
+                <p class="text-[10px] md:text-xs text-slate-400">Pre-loaded Electrical Engineering Curriculum</p>
+            </div>
+        </div>
+        <button onclick="closeModal('qpi-calculator-modal')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+    </div>
 
+    <!-- Curriculum Prospectus & Term Filters -->
+    <div class="space-y-3 flex-shrink-0">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 mb-1">PROSPECTUS TRACK</label>
+                <select id="qpi-track-select" onchange="loadEECurriculumTerm()" class="w-full p-2 rounded-xl bg-slate-900 border border-fusee-yellow/40 text-xs text-white focus:outline-none focus:border-fusee-yellow font-bold">
+                    <option value="new">⚡ New Curriculum (Batch 2024+)</option>
+                    <option value="old">📜 Old Curriculum (Batch 2023 &amp; Earlier)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 mb-1">YEAR &amp; SEMESTER</label>
+                <select id="qpi-term-select" onchange="loadEECurriculumTerm()" class="w-full p-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-fusee-yellow font-semibold">
+                    <option value="y1s1">1st Year - 1st Semester</option>
+                    <option value="y1s2">1st Year - 2nd Semester</option>
+                    <option value="y2s1">2nd Year - 1st Semester</option>
+                    <option value="y2s2">2nd Year - 2nd Semester</option>
+                    <option value="y3s1">3rd Year - 1st Semester</option>
+                    <option value="y3s2">3rd Year - 2nd Semester</option>
+                    <option value="y4s1">4th Year - 1st Semester</option>
+                    <option value="y4s2">4th Year - 2nd Semester</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Cumulative Inputs -->
+        <div class="grid grid-cols-2 gap-2">
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 mb-1">PREV. CUMULATIVE QPI</label>
+                <input type="number" id="qpi-prev-cgpa" step="0.01" min="0" max="4.0" placeholder="0.00" oninput="calculateQPI()" class="w-full p-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white font-techno text-center focus:outline-none focus:border-fusee-yellow">
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 mb-1">PREV. UNITS COMPLETED</label>
+                <input type="number" id="qpi-prev-units" step="1" min="0" placeholder="0" oninput="calculateQPI()" class="w-full p-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white font-techno text-center focus:outline-none focus:border-fusee-yellow">
+            </div>
+        </div>
+    </div>
+
+    <!-- Live QPI Result Banner -->
+    <div class="p-3.5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-fusee-yellow/40 flex items-center justify-between flex-shrink-0 shadow-lg">
+        <div>
+            <span class="text-[9px] font-bold uppercase text-slate-400 font-techno">Term QPI</span>
+            <div id="qpi-term-result" class="text-xl md:text-2xl font-black text-fusee-yellow font-techno">0.00</div>
+        </div>
+        <div class="text-center border-x border-slate-800 px-4">
+            <span class="text-[9px] font-bold uppercase text-slate-400 font-techno">Overall Cumulative QPI</span>
+            <div id="qpi-cumulative-result" class="text-xl md:text-2xl font-black text-fusee-cyan font-techno">0.00</div>
+        </div>
+        <div class="text-right">
+            <span id="qpi-honors-badge" class="px-2 py-1 rounded-full text-[9px] font-bold bg-slate-800 text-slate-400 border border-slate-700 inline-block font-techno">
+                NO GRADES
+            </span>
+        </div>
+    </div>
+
+    <!-- Subjects Container (Grade Pills Area) -->
+    <div id="qpi-subjects-container" class="space-y-2.5 overflow-y-auto pr-1 flex-1 max-h-[45vh]">
+        <!-- Populated dynamically by loadEECurriculumTerm() -->
+    </div>
+
+    <!-- Action Bar -->
+    <div class="pt-2 flex-shrink-0 flex justify-between items-center border-t border-white/10">
+        <button type="button" onclick="addCustomSubjectRow()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-fusee-yellow text-xs font-bold border border-slate-700 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-plus"></i> Add Backlog / Elective
+        </button>
+        <button type="button" onclick="resetQPIForm()" class="text-slate-400 hover:text-rose-400 text-xs font-bold transition">
+            Reset All
+        </button>
+    </div>
+<!-- Line 5367 -->
+</div>
+
+<!-- ⚡ PASTE HERE: QPI Calculator Engine Script -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCoydIWpV6ujbc9q-COWxFr9SyAyU7I7D0",
+        authDomain: "fusee-app.firebaseapp.com",
+        projectId: "fusee-app",
+        storageBucket: "fusee-app.firebasestorage.app",
+        messagingSenderId: "1027948046459",
+        appId: "1:1027948046459:web:549cc5e4d6e47dd7e89ade",
+        measurementId: "G-MN7CMTLDZ2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const docRef = doc(db, "fusee_hub", "landing_content");
+
+    const ADDU_GRADES = [
+        { label: 'A', value: 4.0 },
+        { label: 'B+', value: 3.5 },
+        { label: 'B', value: 3.0 },
+        { label: 'C+', value: 2.5 },
+        { label: 'C', value: 2.0 },
+        { label: 'D', value: 1.0 },
+        { label: 'F', value: 0.0 }
+    ];
+
+    const FALLBACK_CURRICULUM = {
+        new: {
+            y1s1: [
+                { code: 'MATH 111', name: 'Calculus 1', units: 4 },
+                { code: 'CHEM 111', name: 'Chemistry for Engineers', units: 4 },
+                { code: 'ENGG 111', name: 'Engineering Drawing & CAD', units: 1 },
+                { code: 'ASF 1102', name: 'NSTP 1', units: 3 },
+                { code: 'GE 1105', name: 'Understanding the Self', units: 3 },
+                { code: 'GE 1106', name: 'Purposive Communication', units: 3 }
+            ],
+            y1s2: [
+                { code: 'MATH 122', name: 'Calculus 2', units: 4 },
+                { code: 'PHYS 121', name: 'Physics for Engineers', units: 4 }
+            ],
+            y2s1: [], y2s2: [], y3s1: [], y3s2: [], y4s1: [], y4s2: []
+        },
+        old: {
+            y1s1: [
+                { code: 'MATH 101', name: 'College Algebra', units: 3 },
+                { code: 'GE 1105', name: 'Understanding the Self', units: 3 }
+            ],
+            y1s2: [], y2s1: [], y2s2: [], y3s1: [], y3s2: [], y4s1: [], y4s2: []
+        }
+    };
+
+    let liveCurriculumStore = { ...FALLBACK_CURRICULUM };
+    let currentSubjectGrades = [];
+
+    onSnapshot(docRef, (docSnap) => {
+        if (docSnap.exists() && docSnap.data().curriculumData) {
+            liveCurriculumStore = docSnap.data().curriculumData;
+            loadEECurriculumTerm();
+        }
+    }, (err) => {
+        console.warn("Using fallback local curriculum:", err);
+    });
+
+    window.loadEECurriculumTerm = function() {
+        const trackKey = document.getElementById('qpi-track-select')?.value || 'new';
+        const termKey = document.getElementById('qpi-term-select')?.value || 'y1s1';
+
+        const trackData = liveCurriculumStore[trackKey] || FALLBACK_CURRICULUM[trackKey] || {};
+        const termSubjects = trackData[termKey] || [];
+
+        currentSubjectGrades = termSubjects.map((sub, idx) => ({
+            id: `sub-${idx}`,
+            code: sub.code || 'EE SUBJ',
+            name: sub.name || 'Course Subject',
+            units: parseInt(sub.units, 10) || 3,
+            gradeValue: null
+        }));
+
+        renderQPISubjectRows();
+        calculateQPI();
+    };
+
+    function renderQPISubjectRows() {
+        const container = document.getElementById('qpi-subjects-container');
+        if (!container) return;
+
+        if (currentSubjectGrades.length === 0) {
+            container.innerHTML = `
+                <div class="p-6 text-center text-xs text-slate-500 italic bg-slate-900/50 rounded-2xl border border-slate-800">
+                    No pre-loaded subjects for this term. Tap "+ Add Backlog / Elective" below to add custom courses.
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = currentSubjectGrades.map((sub, index) => {
+            const gradePillsHtml = ADDU_GRADES.map(g => {
+                const isSelected = sub.gradeValue === g.value;
+                const activeClass = isSelected 
+                    ? 'bg-fusee-yellow text-slate-950 font-black border-fusee-yellow shadow-neon-yellow' 
+                    : 'bg-slate-900 text-slate-300 border-slate-700/80 hover:border-fusee-yellow/50';
+
+                return `
+                    <button type="button" 
+                            onclick="setSubjectGrade(${index}, ${g.value})" 
+                            class="px-2 py-1 rounded-lg text-[10px] font-techno font-bold border transition-all active:scale-95 ${activeClass}">
+                        ${g.label}
+                    </button>
+                `;
+            }).join('');
+
+            return `
+                <div class="p-2.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2 hover:border-fusee-yellow/30 transition">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="min-w-0 flex-1 flex items-center gap-1.5">
+                            <span class="text-[9px] font-bold font-techno text-fusee-yellow bg-fusee-yellow/10 px-1.5 py-0.5 rounded border border-fusee-yellow/30">
+                                ${sub.code}
+                            </span>
+                            <span class="font-bold text-white text-xs truncate">${sub.name}</span>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            ${sub.isCustom ? `
+                                <div class="flex items-center border border-slate-700 rounded-lg bg-slate-950 overflow-hidden">
+                                    <button type="button" onclick="updateSubjectUnits(${index}, -1)" class="px-2 py-0.5 text-slate-300 hover:bg-slate-800 font-bold text-[10px]">-</button>
+                                    <span class="px-1.5 text-fusee-yellow font-bold font-techno text-[10px]">${sub.units} u</span>
+                                    <button type="button" onclick="updateSubjectUnits(${index}, 1)" class="px-2 py-0.5 text-slate-300 hover:bg-slate-800 font-bold text-[10px]">+</button>
+                                </div>
+                                <button type="button" onclick="removeCustomSubjectRow(${index})" class="text-rose-400 hover:text-rose-300 text-xs pl-1">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            ` : `
+                                <span class="text-[10px] font-semibold text-slate-400">${sub.units}${sub.units === 1 ? 'unit' : 'units'}</span>
+                            `}
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between gap-1 overflow-x-auto no-scrollbar pt-0.5">
+                        ${gradePillsHtml}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.setSubjectGrade = function(index, gradeVal) {
+        if (currentSubjectGrades[index]) {
+            currentSubjectGrades[index].gradeValue = (currentSubjectGrades[index].gradeValue === gradeVal) ? null : gradeVal;
+        }
+        renderQPISubjectRows();
+        calculateQPI();
+    };
+
+    window.calculateQPI = function() {
+        let totalQualityPoints = 0;
+        let totalTermUnits = 0;
+        let gradedCount = 0;
+
+        currentSubjectGrades.forEach(sub => {
+            if (sub.gradeValue !== null) {
+                totalQualityPoints += sub.gradeValue * sub.units;
+                totalTermUnits += sub.units;
+                gradedCount++;
+            }
+        });
+
+        const termQPI = totalTermUnits > 0 ? (totalQualityPoints / totalTermUnits) : 0;
+        const termResultEl = document.getElementById('qpi-term-result');
+        if (termResultEl) termResultEl.textContent = termQPI.toFixed(2);
+
+        const prevCGPA = parseFloat(document.getElementById('qpi-prev-cgpa')?.value) || 0;
+        const prevUnits = parseFloat(document.getElementById('qpi-prev-units')?.value) || 0;
+
+        let cumulativeQPI = termQPI;
+        if (prevUnits > 0) {
+            const totalOverallPoints = (prevCGPA * prevUnits) + totalQualityPoints;
+            const totalOverallUnits = prevUnits + totalTermUnits;
+            cumulativeQPI = totalOverallUnits > 0 ? (totalOverallPoints / totalOverallUnits) : 0;
+        }
+
+        const cumulativeResultEl = document.getElementById('qpi-cumulative-result');
+        if (cumulativeResultEl) cumulativeResultEl.textContent = cumulativeQPI.toFixed(2);
+
+        const badgeEl = document.getElementById('qpi-honors-badge');
+        if (badgeEl) {
+            if (gradedCount === 0) {
+                badgeEl.className = 'px-2 py-1 rounded-full text-[9px] font-bold bg-slate-800 text-slate-400 border border-slate-700 inline-block font-techno';
+                badgeEl.textContent = 'NO GRADES';
+            } else if (termQPI >= 3.70) {
+                badgeEl.className = 'px-2 py-1 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 inline-block font-techno shadow-neon-cyan';
+                badgeEl.textContent = '🌟 FIRST HONORS';
+            } else if (termQPI >= 3.35) {
+                badgeEl.className = 'px-2 py-1 rounded-full text-[9px] font-bold bg-fusee-cyan/20 text-fusee-cyan border border-fusee-cyan/30 inline-block font-techno';
+                badgeEl.textContent = '⚡ SECOND HONORS';
+            } else if (termQPI >= 2.00) {
+                badgeEl.className = 'px-2 py-1 rounded-full text-[9px] font-bold bg-fusee-yellow/20 text-fusee-yellow border border-fusee-yellow/30 inline-block font-techno';
+                badgeEl.textContent = '👍 PASSING';
+            } else {
+                badgeEl.className = 'px-2 py-1 rounded-full text-[9px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 inline-block font-techno';
+                badgeEl.textContent = '⚠️ ACADEMIC WARNING';
+            }
+        }
+    };
+
+    window.addCustomSubjectRow = function() {
+        const nextNum = currentSubjectGrades.length + 1;
+        currentSubjectGrades.push({
+            id: `custom-${Date.now()}`,
+            code: `SUBJ ${nextNum}`,
+            name: `Custom / Backlog Course ${nextNum}`,
+            units: 3,
+            gradeValue: null,
+            isCustom: true
+        });
+        renderQPISubjectRows();
+        calculateQPI();
+    };
+
+    window.updateSubjectUnits = function(index, change) {
+        if (currentSubjectGrades[index]) {
+            let newUnits = currentSubjectGrades[index].units + change;
+            if (newUnits < 1) newUnits = 1;
+            if (newUnits > 6) newUnits = 6;
+            currentSubjectGrades[index].units = newUnits;
+            renderQPISubjectRows();
+            calculateQPI();
+        }
+    };
+
+    window.removeCustomSubjectRow = function(index) {
+        currentSubjectGrades.splice(index, 1);
+        renderQPISubjectRows();
+        calculateQPI();
+    };
+
+    window.resetQPIForm = function() {
+        if (document.getElementById('qpi-prev-cgpa')) document.getElementById('qpi-prev-cgpa').value = '';
+        if (document.getElementById('qpi-prev-units')) document.getElementById('qpi-prev-units').value = '';
+        loadEECurriculumTerm();
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadEECurriculumTerm();
+    });
+</script>
 </body>
 </html>
