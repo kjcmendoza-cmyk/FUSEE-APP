@@ -41,12 +41,12 @@
                     }
                 }
             }
-        };
+}
 
-        window.formatEditorText = function(command, value = null) {
-            document.execCommand(command, false, value);
-        };
-    </script>
+window.formatEditorText = function(command, value = null) {
+    document.execCommand(command, false, value);
+};
+</script>
 
     <style>
         body {
@@ -190,7 +190,6 @@
                 </div>
             </summary>
             <div class="px-5 md:px-6 pb-5 md:pb-6 pt-2 space-y-6 border-t border-white/10">
-                
                 <!-- Card 1 Config -->
                 <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
                     <div class="flex items-center justify-between border-b border-slate-800 pb-2">
@@ -239,7 +238,7 @@
                         </div>
                     </div>
 
-                    <!-- System 1 Tool Guidelines Editing with Rich Toolbar -->
+                    <!-- System 1 Tool Guidelines Editing -->
                     <div class="p-3.5 rounded-lg bg-slate-950/50 border border-fusee-cyan/30 space-y-3">
                         <h4 class="text-xs font-bold text-fusee-cyan flex items-center gap-1.5 font-techno">
                             <i class="fa-solid fa-circle-info"></i> Tool Guidelines Configuration
@@ -253,33 +252,9 @@
                                 <label class="block text-slate-400 mb-1">External Link URL (Optional)</label>
                                 <input type="text" id="sys1-guidelines-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="https://... (or leave empty for popup content)">
                             </div>
-                            <div class="md:col-span-2 space-y-1">
-                                <label class="block text-slate-400 font-semibold text-xs mb-1">Tool Guidelines Text Content / Rules</label>
-                                
-                                <!-- Rich Formatting Toolbar -->
-                                <div class="flex items-center gap-1 p-1.5 rounded-t-xl bg-slate-950 border border-slate-700 border-b-0 text-slate-300 flex-wrap">
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('bold')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Bold"><i class="fa-solid fa-bold"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('italic')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Italic"><i class="fa-solid fa-italic"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('underline')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Underline"><i class="fa-solid fa-underline"></i></button>
-                                    
-                                    <div class="h-4 w-[1px] bg-slate-700 mx-1"></div>
-                                    
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyLeft')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyCenter')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyRight')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyFull')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Justify"><i class="fa-solid fa-align-justify"></i></button>
-                                    
-                                    <div class="h-4 w-[1px] bg-slate-700 mx-1"></div>
-                                    
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('insertUnorderedList')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('insertOrderedList')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
-                                </div>
-
-                                <!-- Editable Content Box -->
-                                <div id="sys1-guidelines-content" 
-                                     contenteditable="true" 
-                                     class="rich-editor-content w-full p-3 rounded-b-xl bg-slate-800 border border-slate-700 text-white min-h-[110px] text-xs focus:outline-none focus:border-fusee-cyan font-sans overflow-y-auto leading-relaxed">
-                                </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-slate-400 mb-1">Tool Guidelines Text Content / Rules</label>
+                                <textarea id="sys1-guidelines-content" rows="3" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-sans" placeholder="Enter tool guidelines, borrowing rules, and safety conditions..."></textarea>
                             </div>
                         </div>
                     </div>
@@ -303,10 +278,34 @@
                             <label class="block text-slate-400 mb-1">System Title / Name</label>
                             <input type="text" id="sys2-title" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="EE Computer Lab Digital Logbook">
                         </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-slate-400 mb-1">System Description</label>
-                            <textarea id="sys2-desc" rows="2" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="Description of System 02..."></textarea>
-                        </div>
+                        <div class="md:col-span-2 space-y-1">
+    <label class="block text-slate-400 font-semibold text-xs mb-1">Tool Guidelines Text / Content</label>
+    
+    <!-- Rich Controls Toolbar -->
+    <div class="flex items-center gap-1 p-1.5 rounded-t-xl bg-slate-950 border border-slate-700 border-b-0 text-slate-300 flex-wrap">
+        <button type="button" onclick="formatEditorText('bold')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Bold"><i class="fa-solid fa-bold"></i></button>
+        <button type="button" onclick="formatEditorText('italic')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Italic"><i class="fa-solid fa-italic"></i></button>
+        <button type="button" onclick="formatEditorText('underline')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Underline"><i class="fa-solid fa-underline"></i></button>
+        
+        <div class="h-4 w-[1px] bg-slate-700 mx-1"></div>
+        
+        <button type="button" onclick="formatEditorText('justifyLeft')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
+        <button type="button" onclick="formatEditorText('justifyCenter')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
+        <button type="button" onclick="formatEditorText('justifyRight')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+        <button type="button" onclick="formatEditorText('justifyFull')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Justify"><i class="fa-solid fa-align-justify"></i></button>
+        
+        <div class="h-4 w-[1px] bg-slate-700 mx-1"></div>
+        
+        <button type="button" onclick="formatEditorText('insertUnorderedList')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
+        <button type="button" onclick="formatEditorText('insertOrderedList')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
+    </div>
+
+    <!-- Editable Content Box -->
+    <div id="sys1-guidelines-content" 
+         contenteditable="true" 
+         class="rich-editor-content w-full p-3 rounded-b-xl bg-slate-800 border border-slate-700 text-white min-h-[110px] text-xs focus:outline-none focus:border-fusee-cyan font-sans overflow-y-auto leading-relaxed">
+    </div>
+</div>
                         <div>
                             <label class="block text-slate-400 mb-1">Location</label>
                             <input type="text" id="sys2-location" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white">
@@ -329,7 +328,7 @@
                         </div>
                     </div>
 
-                    <!-- System 2 Workstation Policies Editing with Rich Toolbar -->
+                    <!-- System 2 Workstation Policies Editing -->
                     <div class="p-3.5 rounded-lg bg-slate-950/50 border border-fusee-magenta/30 space-y-3">
                         <h4 class="text-xs font-bold text-fusee-magenta flex items-center gap-1.5 font-techno">
                             <i class="fa-solid fa-laptop-code"></i> Workstation Policies & PC Rules Configuration
@@ -343,33 +342,9 @@
                                 <label class="block text-slate-400 mb-1">External Link URL (Optional)</label>
                                 <input type="text" id="sys2-policies-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="https://... (or leave empty for popup content)">
                             </div>
-                            <div class="md:col-span-2 space-y-1">
-                                <label class="block text-slate-400 font-semibold text-xs mb-1">Workstation Policies Content / PC Rules</label>
-                                
-                                <!-- Rich Formatting Toolbar -->
-                                <div class="flex items-center gap-1 p-1.5 rounded-t-xl bg-slate-950 border border-slate-700 border-b-0 text-slate-300 flex-wrap">
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('bold')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-magenta rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Bold"><i class="fa-solid fa-bold"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('italic')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-magenta rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Italic"><i class="fa-solid fa-italic"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('underline')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-magenta rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Underline"><i class="fa-solid fa-underline"></i></button>
-                                    
-                                    <div class="h-4 w-[1px] bg-slate-700 mx-1"></div>
-                                    
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyLeft')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-magenta rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyCenter')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-magenta rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyRight')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-magenta rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyFull')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-magenta rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Justify"><i class="fa-solid fa-align-justify"></i></button>
-                                    
-                                    <div class="h-4 w-[1px] bg-slate-700 mx-1"></div>
-                                    
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('insertUnorderedList')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-magenta rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('insertOrderedList')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-magenta rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
-                                </div>
-
-                                <!-- Editable Content Box -->
-                                <div id="sys2-policies-content" 
-                                     contenteditable="true" 
-                                     class="rich-editor-content w-full p-3 rounded-b-xl bg-slate-800 border border-slate-700 text-white min-h-[110px] text-xs focus:outline-none focus:border-fusee-magenta font-sans overflow-y-auto leading-relaxed">
-                                </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-slate-400 mb-1">Workstation Policies Content / PC Rules</label>
+                                <textarea id="sys2-policies-content" rows="3" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-sans" placeholder="Enter computer lab policies, software rules, and PC guidelines..."></textarea>
                             </div>
                         </div>
                     </div>
@@ -419,7 +394,7 @@
                         </div>
                     </div>
 
-                    <!-- System 3 Electrical Safety & Bench Guidelines Editing with Rich Toolbar -->
+                    <!-- System 3 Electrical Safety & Bench Guidelines Editing -->
                     <div class="p-3.5 rounded-lg bg-slate-950/50 border border-fusee-yellow/30 space-y-3">
                         <h4 class="text-xs font-bold text-fusee-yellow flex items-center gap-1.5 font-techno">
                             <i class="fa-solid fa-shield-halved"></i> Electrical Safety & Bench Guidelines Configuration
@@ -433,33 +408,9 @@
                                 <label class="block text-slate-400 mb-1">External Link URL (Optional)</label>
                                 <input type="text" id="sys3-guidelines-url" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white" placeholder="https://... (or leave empty for popup content)">
                             </div>
-                            <div class="md:col-span-2 space-y-1">
-                                <label class="block text-slate-400 font-semibold text-xs mb-1">Safety & Bench Guidelines Content / Rules</label>
-                                
-                                <!-- Rich Formatting Toolbar -->
-                                <div class="flex items-center gap-1 p-1.5 rounded-t-xl bg-slate-950 border border-slate-700 border-b-0 text-slate-300 flex-wrap">
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('bold')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-yellow rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Bold"><i class="fa-solid fa-bold"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('italic')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-yellow rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Italic"><i class="fa-solid fa-italic"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('underline')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-yellow rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Underline"><i class="fa-solid fa-underline"></i></button>
-                                    
-                                    <div class="h-4 w-[1px] bg-slate-700 mx-1"></div>
-                                    
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyLeft')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-yellow rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyCenter')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-yellow rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyRight')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-yellow rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyFull')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-yellow rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Justify"><i class="fa-solid fa-align-justify"></i></button>
-                                    
-                                    <div class="h-4 w-[1px] bg-slate-700 mx-1"></div>
-                                    
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('insertUnorderedList')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-yellow rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
-                                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('insertOrderedList')" class="p-1.5 hover:bg-slate-800 hover:text-fusee-yellow rounded text-xs w-7 h-7 flex items-center justify-center transition" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
-                                </div>
-
-                                <!-- Editable Content Box -->
-                                <div id="sys3-guidelines-content" 
-                                     contenteditable="true" 
-                                     class="rich-editor-content w-full p-3 rounded-b-xl bg-slate-800 border border-slate-700 text-white min-h-[110px] text-xs focus:outline-none focus:border-fusee-yellow font-sans overflow-y-auto leading-relaxed">
-                                </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-slate-400 mb-1">Safety & Bench Guidelines Content / Rules</label>
+                                <textarea id="sys3-guidelines-content" rows="3" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-sans" placeholder="Enter electrical safety rules, bench handling procedures, and lab protocols..."></textarea>
                             </div>
                         </div>
                     </div>
@@ -683,26 +634,26 @@
                 </div>
             </summary>
             <div class="px-5 md:px-6 pb-5 md:pb-6 pt-2 space-y-4 border-t border-white/10">
-                <!-- Payment Account Settings Card -->
-                <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 mb-4">
-                    <h4 class="font-bold text-white text-xs font-techno uppercase tracking-wider text-fusee-yellow flex items-center gap-1.5">
-                        <i class="fa-solid fa-qrcode"></i> GCash / Maya Payment Receiver Settings
-                    </h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                        <div>
-                            <label class="block text-slate-400 mb-1">Receiver Account Name</label>
-                            <input type="text" id="admin-payment-name" placeholder="FUSEE Treasurer" class="w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-fusee-yellow focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">GCash / Maya Number</label>
-                            <input type="text" id="admin-payment-number" placeholder="09XX-XXX-XXXX" class="w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-fusee-yellow focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">Payment QR Code Image URL</label>
-                            <input type="url" id="admin-payment-qr" placeholder="https://..." class="w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-fusee-yellow focus:outline-none">
-                        </div>
-                    </div>
-                </div>
+               <!-- Payment Account Settings Card -->
+    <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 mb-4">
+        <h4 class="font-bold text-white text-xs font-techno uppercase tracking-wider text-fusee-yellow flex items-center gap-1.5">
+            <i class="fa-solid fa-qrcode"></i> GCash / Maya Payment Receiver Settings
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div>
+                <label class="block text-slate-400 mb-1">Receiver Account Name</label>
+                <input type="text" id="admin-payment-name" placeholder="FUSEE Treasurer" class="w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-fusee-yellow focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-slate-400 mb-1">GCash / Maya Number</label>
+                <input type="text" id="admin-payment-number" placeholder="09XX-XXX-XXXX" class="w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-fusee-yellow focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-slate-400 mb-1">Payment QR Code Image URL</label>
+                <input type="url" id="admin-payment-qr" placeholder="https://..." class="w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-fusee-yellow focus:outline-none">
+            </div>
+        </div>
+    </div>
                 <div id="merch-container" class="space-y-4"></div>
 
                 <button type="button" onclick="addMerchRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
@@ -832,120 +783,117 @@
                 </button>
             </div>
         </details>
+<!-- SECTION 16: Live Merch Orders Management Dashboard -->
+<details class="glass-panel rounded-2xl border border-fusee-magenta/30 group transition-all duration-200">
+    <summary class="p-5 md:p-6 cursor-pointer list-none select-none flex items-center justify-between hover:bg-white/5 rounded-2xl transition-colors">
+        <div class="flex items-center space-x-2.5">
+            <i class="fa-solid fa-receipt text-fusee-magenta"></i>
+            <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">16. Live Merch Orders Management Dashboard</h2>
+        </div>
+        <div class="flex items-center space-x-2 text-slate-400">
+            <span class="text-[10px] font-pixel text-slate-500 uppercase group-open:hidden">Expand</span>
+            <span class="text-[10px] font-pixel text-slate-500 uppercase hidden group-open:inline">Collapse</span>
+            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 text-fusee-magenta"></i>
+        </div>
+    </summary>
+    <div class="px-5 md:px-6 pb-5 md:pb-6 pt-2 space-y-6 border-t border-white/10">
+    
+    <!-- Section Header -->
+    <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <div>
+            <h2 class="text-lg md:text-xl font-bold text-white font-display flex items-center gap-2">
+                <i class="fa-solid fa-receipt text-fusee-magenta"></i> Merch Orders Management
+            </h2>
+            <p class="text-xs text-slate-400">Review incoming student pre-orders and payment reference numbers</p>
+        </div>
+        <button onclick="window.initMerchOrdersListener()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs transition flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate text-fusee-cyan"></i>
+            <span>Refresh</span>
+        </button>
+    </div>
 
-        <!-- SECTION 16: Live Merch Orders Management Dashboard -->
-        <details class="glass-panel rounded-2xl border border-fusee-magenta/30 group transition-all duration-200">
-            <summary class="p-5 md:p-6 cursor-pointer list-none select-none flex items-center justify-between hover:bg-white/5 rounded-2xl transition-colors">
-                <div class="flex items-center space-x-2.5">
-                    <i class="fa-solid fa-receipt text-fusee-magenta"></i>
-                    <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">16. Live Merch Orders Management Dashboard</h2>
-                </div>
-                <div class="flex items-center space-x-2 text-slate-400">
-                    <span class="text-[10px] font-pixel text-slate-500 uppercase group-open:hidden">Expand</span>
-                    <span class="text-[10px] font-pixel text-slate-500 uppercase hidden group-open:inline">Collapse</span>
-                    <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 text-fusee-magenta"></i>
-                </div>
-            </summary>
-            <div class="px-5 md:px-6 pb-5 md:pb-6 pt-2 space-y-6 border-t border-white/10">
-                
-                <!-- Section Header -->
-                <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                    <div>
-                        <h2 class="text-lg md:text-xl font-bold text-white font-display flex items-center gap-2">
-                            <i class="fa-solid fa-receipt text-fusee-magenta"></i> Merch Orders Management
-                        </h2>
-                        <p class="text-xs text-slate-400">Review incoming student pre-orders and payment reference numbers</p>
-                    </div>
-                    <button onclick="window.initMerchOrdersListener()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-rotate text-fusee-cyan"></i>
-                        <span>Refresh</span>
-                    </button>
-                </div>
-
-                <!-- Stat Counters -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
-                        <div>
-                            <p class="text-[10px] text-slate-400 uppercase font-techno">Total Orders</p>
-                            <h3 id="stat-total-orders" class="text-xl font-bold text-white font-techno mt-0.5">0</h3>
-                        </div>
-                        <div class="w-10 h-10 rounded-xl bg-fusee-magenta/20 text-fusee-magenta flex items-center justify-center font-bold">
-                            <i class="fa-solid fa-cart-flatbed"></i>
-                        </div>
-                    </div>
-
-                    <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
-                        <div>
-                            <p class="text-[10px] text-slate-400 uppercase font-techno">Pending Payment Verification</p>
-                            <h3 id="stat-pending-orders" class="text-xl font-bold text-amber-400 font-techno mt-0.5">0</h3>
-                        </div>
-                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
-                            <i class="fa-solid fa-clock"></i>
-                        </div>
-                    </div>
-
-                    <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
-                        <div>
-                            <p class="text-[10px] text-slate-400 uppercase font-techno">Total Revenue Collected</p>
-                            <h3 id="stat-total-revenue" class="text-xl font-bold text-emerald-400 font-techno mt-0.5">₱0.00</h3>
-                        </div>
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
-                            <i class="fa-solid fa-sack-dollar"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Orders Table Container -->
-                <div class="rounded-2xl bg-slate-900/90 border border-slate-800 overflow-hidden shadow-xl">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs text-slate-300">
-                            <thead class="bg-slate-950/80 text-[10px] uppercase font-techno text-slate-400 border-b border-slate-800">
-                                <tr>
-                                    <th class="p-3">Date / Time</th>
-                                    <th class="p-3">Student Name</th>
-                                    <th class="p-3">Course & Sec</th>
-                                    <th class="p-3">Merch & Size</th>
-                                    <th class="p-3">Qty</th>
-                                    <th class="p-3">Total</th>
-                                    <th class="p-3">GCash Ref #</th>
-                                    <th class="p-3">Status</th>
-                                    <th class="p-3 text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-orders-table-body" class="divide-y divide-slate-800/60 font-sans">
-                                <tr>
-                                    <td colspan="9" class="p-6 text-center text-slate-500 italic">Loading merch orders...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <!-- Stat Counters -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+            <div>
+                <p class="text-[10px] text-slate-400 uppercase font-techno">Total Orders</p>
+                <h3 id="stat-total-orders" class="text-xl font-bold text-white font-techno mt-0.5">0</h3>
             </div>
-        </details>
-
-        <!-- SECTION 17: Important Events & Academic Calendar Management -->
-        <details class="glass-panel rounded-2xl border border-fusee-yellow/30 group transition-all duration-200">
-            <summary class="p-5 md:p-6 cursor-pointer list-none select-none flex items-center justify-between hover:bg-white/5 rounded-2xl transition-colors">
-                <div class="flex items-center space-x-2.5">
-                    <i class="fa-solid fa-star text-fusee-yellow"></i>
-                    <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">17. Important Events & Academic Calendar</h2>
-                </div>
-                <div class="flex items-center space-x-2 text-slate-400">
-                    <span class="text-[10px] font-pixel text-slate-500 uppercase group-open:hidden">Expand</span>
-                    <span class="text-[10px] font-pixel text-slate-500 uppercase hidden group-open:inline">Collapse</span>
-                    <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 text-fusee-yellow"></i>
-                </div>
-            </summary>
-            <div class="px-5 md:px-6 pb-5 md:pb-6 pt-2 space-y-4 border-t border-white/10">
-                <div id="important-events-admin-container" class="space-y-4"></div>
-
-                <button type="button" onclick="addImportantEventRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-plus text-fusee-yellow"></i> Add Important Event Record
-                </button>
+            <div class="w-10 h-10 rounded-xl bg-fusee-magenta/20 text-fusee-magenta flex items-center justify-center font-bold">
+                <i class="fa-solid fa-cart-flatbed"></i>
             </div>
-        </details>
+        </div>
 
-        <!-- SECTION 18: QPI Calculator Subject Directory -->
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+            <div>
+                <p class="text-[10px] text-slate-400 uppercase font-techno">Pending Payment Verification</p>
+                <h3 id="stat-pending-orders" class="text-xl font-bold text-amber-400 font-techno mt-0.5">0</h3>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+            <div>
+                <p class="text-[10px] text-slate-400 uppercase font-techno">Total Revenue Collected</p>
+                <h3 id="stat-total-revenue" class="text-xl font-bold text-emerald-400 font-techno mt-0.5">₱0.00</h3>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                <i class="fa-solid fa-sack-dollar"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table Container -->
+    <div class="rounded-2xl bg-slate-900/90 border border-slate-800 overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+                <thead class="bg-slate-950/80 text-[10px] uppercase font-techno text-slate-400 border-b border-slate-800">
+                    <tr>
+                        <th class="p-3">Date / Time</th>
+                        <th class="p-3">Student Name</th>
+                        <th class="p-3">Course & Sec</th>
+                        <th class="p-3">Merch & Size</th>
+                        <th class="p-3">Qty</th>
+                        <th class="p-3">Total</th>
+                        <th class="p-3">GCash Ref #</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-orders-table-body" class="divide-y divide-slate-800/60 font-sans">
+                    <tr>
+                        <td colspan="9" class="p-6 text-center text-slate-500 italic">Loading merch orders...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</details>
+<!-- SECTION 17: Important Events & Academic Calendar Management -->
+<details class="glass-panel rounded-2xl border border-fusee-yellow/30 group transition-all duration-200">
+    <summary class="p-5 md:p-6 cursor-pointer list-none select-none flex items-center justify-between hover:bg-white/5 rounded-2xl transition-colors">
+        <div class="flex items-center space-x-2.5">
+            <i class="fa-solid fa-star text-fusee-yellow"></i>
+            <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">17. Important Events & Academic Calendar</h2>
+        </div>
+        <div class="flex items-center space-x-2 text-slate-400">
+            <span class="text-[10px] font-pixel text-slate-500 uppercase group-open:hidden">Expand</span>
+            <span class="text-[10px] font-pixel text-slate-500 uppercase hidden group-open:inline">Collapse</span>
+            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 text-fusee-yellow"></i>
+        </div>
+    </summary>
+    <div class="px-5 md:px-6 pb-5 md:pb-6 pt-2 space-y-4 border-t border-white/10">
+        <div id="important-events-admin-container" class="space-y-4"></div>
+
+        <button type="button" onclick="addImportantEventRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-plus text-fusee-yellow"></i> Add Important Event Record
+        </button>
+    </div>
+</details>
+<!-- SECTION 18: QPI Calculator Subject Directory -->
         <details class="glass-panel rounded-2xl border border-fusee-cyan/30 group transition-all duration-200">
             <summary class="p-5 md:p-6 cursor-pointer list-none select-none flex items-center justify-between hover:bg-white/5 rounded-2xl transition-colors">
                 <div class="flex items-center space-x-2.5">
@@ -970,30 +918,30 @@
         </details>
     </main>
 
-    <!-- Firebase SDK Scripts -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
-        import { 
-            getFirestore, 
-            doc, 
-            onSnapshot, 
-            updateDoc,
-            setDoc,
-            collection,
-            deleteDoc,
-            query,
-            orderBy 
-        } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+   <!-- Firebase SDK Scripts -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+    import { 
+        getFirestore, 
+        doc, 
+        onSnapshot, 
+        updateDoc,
+        setDoc,
+        collection,
+        deleteDoc,
+        query,
+        orderBy 
+    } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCoydIWpV6ujbc9q-COWxFr9SyAyU7I7D0",
-            authDomain: "fusee-app.firebaseapp.com",
-            projectId: "fusee-app",
-            storageBucket: "fusee-app.firebasestorage.app",
-            messagingSenderId: "1027948046459",
-            appId: "1:1027948046459:web:549cc5e4d6e47dd7e89ade",
-            measurementId: "G-MN7CMTLDZ2"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyCoydIWpV6ujbc9q-COWxFr9SyAyU7I7D0",
+        authDomain: "fusee-app.firebaseapp.com",
+        projectId: "fusee-app",
+        storageBucket: "fusee-app.firebasestorage.app",
+        messagingSenderId: "1027948046459",
+appId: "1:1027948046459:web:549cc5e4d6e47dd7e89ade",
+        measurementId: "G-MN7CMTLDZ2"
+    };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -1013,50 +961,50 @@
                 new Promise((_, reject) => setTimeout(() => reject(new Error("Request timed out. Please check Firebase Rules.")), ms))
             ]);
         }
-
         // SECTION 18: QPI Calculator Directory Builder & Renderer
-        function renderQpiDirectoryAdmin(list = []) {
-            const container = document.getElementById('qpi-directory-container');
-            if (!container) return;
-            container.innerHTML = '';
-            list.forEach(item => window.addQpiSubjectRow(item.code, item.title, item.units, item.curriculum));
-        }
+function renderQpiDirectoryAdmin(list = []) {
+    const container = document.getElementById('qpi-directory-container');
+    if (!container) return;
+    container.innerHTML = '';
+    list.forEach(item => window.addQpiSubjectRow(item.code, item.title, item.units, item.curriculum));
+}
 
-        window.addQpiSubjectRow = function(code = '', title = '', units = 3, curriculum = 'Both Curriculum') {
-            const container = document.getElementById('qpi-directory-container');
-            if (!container) return;
+window.addQpiSubjectRow = function(code = '', title = '', units = 3, curriculum = 'Both Curriculum') {
+    const container = document.getElementById('qpi-directory-container');
+    if (!container) return;
 
-            const div = document.createElement('div');
-            div.className = 'qpi-subject-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative';
-            div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Subject">
-                    <i class="fa-solid fa-trash"></i> Remove
-                </button>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-2 text-xs pt-2">
-                    <input type="text" class="qpi-code-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 uppercase font-mono font-bold" placeholder="Subject Code (e.g. EE 111)" value="${code.replace(/"/g, '&quot;')}">
-                    <input type="text" class="qpi-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 md:col-span-2" placeholder="Subject Title (e.g. Electrical Circuits 1)" value="${title.replace(/"/g, '&quot;')}">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="number" step="0.5" min="0.5" max="12" class="qpi-units-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 font-bold" placeholder="Units" value="${units}">
-                        <select class="qpi-curriculum-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
-                            <option value="Both Curriculum" ${curriculum === 'Both Curriculum' ? 'selected' : ''}>Both Curriculum</option>
-                            <option value="Old Curriculum" ${curriculum === 'Old Curriculum' ? 'selected' : ''}>Old Curriculum</option>
-                            <option value="New Curriculum" ${curriculum === 'New Curriculum' ? 'selected' : ''}>New Curriculum</option>
-                        </select>
-                    </div>
-                </div>
-            `;
-            container.appendChild(div);
-        };
+    const div = document.createElement('div');
+    div.className = 'qpi-subject-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative';
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Subject">
+            <i class="fa-solid fa-trash"></i> Remove
+        </button>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-2 text-xs pt-2">
+            <input type="text" class="qpi-code-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 uppercase font-mono font-bold" placeholder="Subject Code (e.g. EE 111)" value="${code.replace(/"/g, '&quot;')}">
+            <input type="text" class="qpi-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 md:col-span-2" placeholder="Subject Title (e.g. Electrical Circuits 1)" value="${title.replace(/"/g, '&quot;')}">
+            <div class="grid grid-cols-2 gap-2">
+                <input type="number" step="0.5" min="0.5" max="12" class="qpi-units-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 font-bold" placeholder="Units" value="${units}">
+                <select class="qpi-curriculum-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                    <option value="Both Curriculum" ${curriculum === 'Both Curriculum' ? 'selected' : ''}>Both Curriculum</option>
+                    <option value="Old Curriculum" ${curriculum === 'Old Curriculum' ? 'selected' : ''}>Old Curriculum</option>
+                    <option value="New Curriculum" ${curriculum === 'New Curriculum' ? 'selected' : ''}>New Curriculum</option>
+                </select>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+};
+
 
         const defaultData = {
-            qpiSubjects: [
-                { code: "EE 111", title: "Electrical Circuits 1", units: 3, curriculum: "Both Curriculum" },
-                { code: "EE 121", title: "Electrical Circuits 2", units: 3, curriculum: "Both Curriculum" },
-                { code: "MATH 101", title: "Calculus 1", units: 4, curriculum: "Old Curriculum" },
-                { code: "MATH 111", title: "Differential Calculus", units: 3, curriculum: "New Curriculum" },
-                { code: "EE 421", title: "Power Systems 1", units: 3, curriculum: "New Curriculum" }
-            ],
-            peerTutoring: [
+    qpiSubjects: [
+        { code: "EE 111", title: "Electrical Circuits 1", units: 3, curriculum: "Both Curriculum" },
+        { code: "EE 121", title: "Electrical Circuits 2", units: 3, curriculum: "Both Curriculum" },
+        { code: "MATH 101", title: "Calculus 1", units: 4, curriculum: "Old Curriculum" },
+        { code: "MATH 111", title: "Differential Calculus", units: 3, curriculum: "New Curriculum" },
+        { code: "EE 421", title: "Power Systems 1", units: 3, curriculum: "New Curriculum" }
+    ],
+    peerTutoring: [
                 {
                     type: "TUTOR",
                     status: "AVAILABLE",
@@ -1222,78 +1170,124 @@
             ]
         };
 
-        // Render Merch Rows in admin.html
-        function renderMerchRows(list = []) {
-            const container = document.getElementById('merch-container');
-            if (!container) return;
-            container.innerHTML = '';
-            list.forEach((item, index) => window.addMerchRow(
-                item.title, 
-                item.price, 
-                item.badge, 
-                item.description, 
-                item.orderUrl, 
-                item.imageUrl, 
-                item.backImageUrl || '', 
-                index
-            ));
-        }
+        // Auto-Compress Image Uploads to lightweight Base64 for Firestore
+        window.handleMerchImageUpload = function(input, previewId, hiddenInputId) {
+    const file = input.files[0];
+    if (!file) return;
 
-        window.addMerchRow = function(
-            title = '', 
-            price = '', 
-            badge = 'Pre-Orders', 
-            description = '', 
-            orderUrl = '', 
-            imageUrl = '', 
-            backImageUrl = '', 
-            idx = Date.now()
-        ) {
-            const container = document.getElementById('merch-container');
-            if (!container) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const maxDim = 800; // Increased from 400 for crisp high-DPI display
+            let width = img.width;
+            let height = img.height;
 
-            const div = document.createElement('div');
-            div.className = 'merch-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
-            div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Item">
-                    <i class="fa-solid fa-trash"></i> Remove Item
-                </button>
+            if (width > height) {
+                if (width > maxDim) {
+                    height = Math.round((height * maxDim) / width);
+                    width = maxDim;
+                }
+            } else {
+                if (height > maxDim) {
+                    width = Math.round((width * maxDim) / height);
+                    height = maxDim;
+                }
+            }
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
-                    <div class="space-y-3">
-                        <div class="space-y-1">
-                            <label class="block text-slate-400 font-semibold">Front Photo Image URL</label>
-                            <input type="url" class="merch-image-input w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-fusee-magenta focus:outline-none" placeholder="https://raw.githubusercontent.com/... or Imgur URL" value="${imageUrl.replace(/"/g, '&quot;')}">
-                        </div>
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
 
-                        <div class="space-y-1">
-                            <label class="block text-slate-400 font-semibold">Back Photo Image URL (Optional)</label>
-                            <input type="url" class="merch-back-image-input w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-fusee-cyan focus:outline-none" placeholder="https://raw.githubusercontent.com/... or Imgur URL" value="${backImageUrl.replace(/"/g, '&quot;')}">
-                        </div>
-                    </div>
-
-                    <div class="md:col-span-2 space-y-2">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                            <input type="text" class="merch-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 md:col-span-2" placeholder="Item Name" value="${title.replace(/"/g, '&quot;')}">
-                            <input type="text" class="merch-price-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Price (e.g. ₱350.00)" value="${price.replace(/"/g, '&quot;')}">
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            <select class="merch-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
-                                <option value="Pre-Orders" ${badge === 'Pre-Orders' ? 'selected' : ''}>Pre-Orders</option>
-                                <option value="In Stock" ${badge === 'In Stock' ? 'selected' : ''}>In Stock</option>
-                                <option value="Available" ${badge === 'Available' ? 'selected' : ''}>Available</option>
-                                <option value="Sold Out" ${badge === 'Sold Out' ? 'selected' : ''}>Sold Out</option>
-                            </select>
-                            <input type="text" class="merch-url-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Order Form Link" value="${orderUrl.replace(/"/g, '&quot;')}">
-                        </div>
-
-                        <textarea class="merch-desc-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="2" placeholder="Item description...">${description}</textarea>
-                    </div>
-                </div>
-            `;
-            container.appendChild(div);
+            // Compress to WebP with higher quality (0.92) to prevent pixelation
+            const compressedDataUrl = canvas.toDataURL('image/webp', 0.92);
+            document.getElementById(hiddenInputId).value = compressedDataUrl;
+            const preview = document.getElementById(previewId);
+            preview.src = compressedDataUrl;
+            preview.classList.remove('hidden');
         };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
+
+        // Render Merch Rows in admin.html
+function renderMerchRows(list = []) {
+    const container = document.getElementById('merch-container');
+    if (!container) return;
+    container.innerHTML = '';
+    list.forEach((item, index) => window.addMerchRow(
+        item.title, 
+        item.price, 
+        item.badge, 
+        item.description, 
+        item.orderUrl, 
+        item.imageUrl, 
+        item.backImageUrl || '', 
+        index
+    ));
+}
+
+window.addMerchRow = function(
+    title = '', 
+    price = '', 
+    badge = 'Pre-Orders', 
+    description = '', 
+    orderUrl = '', 
+    imageUrl = '', 
+    backImageUrl = '', 
+    idx = Date.now()
+) {
+    const container = document.getElementById('merch-container');
+    if (!container) return;
+
+    const div = document.createElement('div');
+    div.className = 'merch-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Item">
+            <i class="fa-solid fa-trash"></i> Remove Item
+        </button>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
+            <!-- Front & Back Image URL Inputs -->
+            <div class="space-y-3">
+                <div class="space-y-1">
+                    <label class="block text-slate-400 font-semibold">Front Photo Image URL</label>
+                    <input type="url" class="merch-image-input w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-fusee-magenta focus:outline-none" placeholder="https://raw.githubusercontent.com/... or Imgur URL" value="${imageUrl.replace(/"/g, '&quot;')}">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-slate-400 font-semibold">Back Photo Image URL (Optional)</label>
+                    <input type="url" class="merch-back-image-input w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-fusee-cyan focus:outline-none" placeholder="https://raw.githubusercontent.com/... or Imgur URL" value="${backImageUrl.replace(/"/g, '&quot;')}">
+                </div>
+            </div>
+
+            <!-- Merch Text & Pricing Details -->
+            <div class="md:col-span-2 space-y-2">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <input type="text" class="merch-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 md:col-span-2" placeholder="Item Name" value="${title.replace(/"/g, '&quot;')}">
+                    <input type="text" class="merch-price-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Price (e.g. ₱350.00)" value="${price.replace(/"/g, '&quot;')}">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <select class="merch-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                        <option value="Pre-Orders" ${badge === 'Pre-Orders' ? 'selected' : ''}>Pre-Orders</option>
+                        <option value="In Stock" ${badge === 'In Stock' ? 'selected' : ''}>In Stock</option>
+                        <option value="Available" ${badge === 'Available' ? 'selected' : ''}>Available</option>
+                        <option value="Sold Out" ${badge === 'Sold Out' ? 'selected' : ''}>Sold Out</option>
+                    </select>
+                    <input type="text" class="merch-url-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Order Form Link" value="${orderUrl.replace(/"/g, '&quot;')}">
+                </div>
+
+                <textarea class="merch-desc-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="2" placeholder="Item description...">${description}</textarea>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+};
 
         function renderLabPolicies(list = []) {
             const container = document.getElementById('lab-policies-container');
@@ -1302,50 +1296,40 @@
             list.forEach(item => window.addPolicyRow(item.title, item.content));
         }
 
-        // Section 11 EE Laboratory Policies Row Generator with Full Rich Formatting Toolbar
         window.addPolicyRow = function(title = '', content = '') {
-            const container = document.getElementById('lab-policies-container');
-            if (!container) return;
+    const container = document.getElementById('lab-policies-container');
+    if (!container) return;
 
-            const div = document.createElement('div');
-            div.className = 'policy-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative';
-            div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1 z-10" title="Delete Policy">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-                <div class="space-y-2 text-xs pt-2">
-                    <input type="text" class="policy-title-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 font-bold" placeholder="Policy Title (e.g., Computer Laboratory Code of Conduct)" value="${title.replace(/"/g, '&quot;')}">
-                    
-                    <div class="space-y-1">
-                        <label class="block text-slate-400 font-semibold text-[11px]">Policy Content / Rules</label>
-                        
-                        <!-- Rich Formatting Toolbar -->
-                        <div class="flex items-center gap-1 p-1.5 rounded-t-xl bg-slate-950 border border-slate-700 border-b-0 text-slate-300 flex-wrap">
-                            <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('bold')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Bold"><i class="fa-solid fa-bold"></i></button>
-                            <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('italic')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Italic"><i class="fa-solid fa-italic"></i></button>
-                            <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('underline')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Underline"><i class="fa-solid fa-underline"></i></button>
-                            
-                            <div class="h-3 w-[1px] bg-slate-700 mx-1"></div>
-                            
-                            <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyLeft')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
-                            <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyCenter')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
-                            <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyRight')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
-                            <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('justifyFull')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Justify"><i class="fa-solid fa-align-justify"></i></button>
-                            
-                            <div class="h-3 w-[1px] bg-slate-700 mx-1"></div>
-                            
-                            <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('insertUnorderedList')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
-                            <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('insertOrderedList')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
-                        </div>
-
-                        <!-- Rich Text Editable Area -->
-                        <div class="policy-content-input rich-editor-content w-full p-2.5 rounded-b-xl bg-slate-800 border border-slate-700 text-white min-h-[80px] text-xs focus:outline-none focus:border-fusee-cyan font-sans overflow-y-auto leading-relaxed" 
-                             contenteditable="true">${content}</div>
-                    </div>
+    const div = document.createElement('div');
+    div.className = 'policy-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative';
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1 z-10" title="Delete Policy">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+        <div class="space-y-2 text-xs pt-2">
+            <input type="text" class="policy-title-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700 font-bold" placeholder="Policy Title (e.g., Computer Laboratory Code of Conduct)" value="${title.replace(/"/g, '&quot;')}">
+            
+            <div class="space-y-1">
+                <label class="block text-slate-400 font-semibold text-[11px]">Policy Content / Rules</label>
+                
+                <!-- Rich Formatting Toolbar -->
+                <div class="flex items-center gap-1 p-1.5 rounded-t-xl bg-slate-950 border border-slate-700 border-b-0 text-slate-300 flex-wrap">
+                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('bold')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Bold"><i class="fa-solid fa-bold"></i></button>
+                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('italic')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Italic"><i class="fa-solid fa-italic"></i></button>
+                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('underline')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Underline"><i class="fa-solid fa-underline"></i></button>
+                    <div class="h-3 w-[1px] bg-slate-700 mx-1"></div>
+                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('insertUnorderedList')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
+                    <button type="button" onmousedown="event.preventDefault()" onclick="formatEditorText('insertOrderedList')" class="p-1 hover:bg-slate-800 hover:text-fusee-cyan rounded text-xs w-6 h-6 flex items-center justify-center transition" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
                 </div>
-            `;
-            container.appendChild(div);
-        };
+
+                <!-- Rich Text Editable Area -->
+                <div class="policy-content-input rich-editor-content w-full p-2.5 rounded-b-xl bg-slate-800 border border-slate-700 text-white min-h-[80px] text-xs focus:outline-none focus:border-fusee-cyan font-sans overflow-y-auto leading-relaxed" 
+                     contenteditable="true">${content}</div>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+};
 
         function renderCapstoneRows(list = []) {
             const container = document.getElementById('capstone-container');
@@ -1362,59 +1346,62 @@
                 index
             ));
         }
+// Render Admin Rows for Section 17
+function renderImportantEventsAdmin(list = []) {
+    const container = document.getElementById('important-events-admin-container');
+    if (!container) return;
+    container.innerHTML = '';
+    list.forEach((item, index) => window.addImportantEventRow(
+        item.title, item.date, item.endDate, item.category, item.description, index
+    ));
+}
 
-        function renderImportantEventsAdmin(list = []) {
-            const container = document.getElementById('important-events-admin-container');
-            if (!container) return;
-            container.innerHTML = '';
-            list.forEach((item, index) => window.addImportantEventRow(
-                item.title, item.date, item.endDate, item.category, item.description, index
-            ));
-        }
+// Dynamic Row Generator for Section 17
+window.addImportantEventRow = function(title = '', date = '', endDate = '', category = 'Major Exam', description = '', idx = Date.now()) {
+    const container = document.getElementById('important-events-admin-container');
+    if (!container) return;
 
-        window.addImportantEventRow = function(title = '', date = '', endDate = '', category = 'Major Exam', description = '', idx = Date.now()) {
-            const container = document.getElementById('important-events-admin-container');
-            if (!container) return;
+    const div = document.createElement('div');
+    div.className = 'important-event-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Record">
+            <i class="fa-solid fa-trash"></i> Remove Record
+        </button>
 
-            const div = document.createElement('div');
-            div.className = 'important-event-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
-            div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Record">
-                    <i class="fa-solid fa-trash"></i> Remove Record
-                </button>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-2">
+            <input type="text" class="imp-title-input md:col-span-2 p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Event Title (e.g. 1st Sem Midterm Exams)" value="${title.replace(/"/g, '&quot;')}">
+            
+            <select class="imp-category-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                <option value="Major Exam" ${category === 'Major Exam' ? 'selected' : ''}>📝 Major Exam</option>
+                <option value="Ateneo Event" ${category === 'Ateneo Event' ? 'selected' : ''}>🦅 Ateneo Event</option>
+                <option value="Holiday / Suspension" ${category === 'Holiday / Suspension' ? 'selected' : ''}>🏖️ Holiday / Suspension</option>
+                <option value="Departmental" ${category === 'Departmental' ? 'selected' : ''}>⚡ Departmental Milestone</option>
+            </select>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-2">
-                    <input type="text" class="imp-title-input md:col-span-2 p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Event Title (e.g. 1st Sem Midterm Exams)" value="${title.replace(/"/g, '&quot;')}">
-                    
-                    <select class="imp-category-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
-                        <option value="Major Exam" ${category === 'Major Exam' ? 'selected' : ''}>📝 Major Exam</option>
-                        <option value="Ateneo Event" ${category === 'Ateneo Event' ? 'selected' : ''}>🦅 Ateneo Event</option>
-                        <option value="Holiday / Suspension" ${category === 'Holiday / Suspension' ? 'selected' : ''}>🏖️ Holiday / Suspension</option>
-                        <option value="Departmental" ${category === 'Departmental' ? 'selected' : ''}>⚡ Departmental Milestone</option>
-                    </select>
+            <div class="space-y-1">
+                <label class="block text-slate-400 text-[10px]">Start Date</label>
+                <input type="date" class="imp-date-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" value="${date}">
+            </div>
 
-                    <div class="space-y-1">
-                        <label class="block text-slate-400 text-[10px]">Start Date</label>
-                        <input type="date" class="imp-date-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" value="${date}">
-                    </div>
+            <div class="space-y-1">
+                <label class="block text-slate-400 text-[10px]">End Date (Optional)</label>
+                <input type="date" class="imp-enddate-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" value="${endDate || date}">
+            </div>
 
-                    <div class="space-y-1">
-                        <label class="block text-slate-400 text-[10px]">End Date (Optional)</label>
-                        <input type="date" class="imp-enddate-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" value="${endDate || date}">
-                    </div>
-
-                    <div class="md:col-span-3 space-y-1">
-                        <label class="block text-slate-400 text-[10px]">Event Description & Details</label>
-                        <textarea class="imp-desc-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="2" placeholder="Brief event description...">${description}</textarea>
-                    </div>
-                </div>
-            `;
-            container.appendChild(div);
-        };
-
+            <div class="md:col-span-3 space-y-1">
+                <label class="block text-slate-400 text-[10px]">Event Description & Details</label>
+                <textarea class="imp-desc-input w-full p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" rows="2" placeholder="Brief event description...">${description}</textarea>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+};
         window.addCapstoneRow = function(title = '', advisor = '', authors = '', year = 'AY 2025-2026', abstract = '', videoUrl = '', diagramUrl = '', idx = Date.now()) {
             const container = document.getElementById('capstone-container');
             if (!container) return;
+
+            const previewId = `cap-img-preview-${idx}`;
+            const hiddenId = `cap-img-data-${idx}`;
 
             const div = document.createElement('div');
             div.className = 'capstone-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
@@ -1425,14 +1412,14 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
                     <div class="space-y-2">
-                        <label class="block text-slate-400 font-semibold">Circuit Block Diagram Image (URL)</label>
-                        <input 
-                          type="url" 
-                          class="cap-image-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs w-full" 
-                          placeholder="https://example.com/diagram.png" 
-                          value="${diagramUrl || ''}"
-                        >
-                    </div>
+        <label class="block text-slate-400 font-semibold">Circuit Block Diagram Image (URL)</label>
+        <input 
+          type="url" 
+          class="cap-image-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs w-full" 
+          placeholder="https://example.com/diagram.png" 
+          value="${diagramUrl || ''}"
+        >
+      </div>
 
                     <div class="md:col-span-2 space-y-2">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -1457,12 +1444,10 @@
         function populateUI(data) {
             document.getElementById('ticker-text').value = data.tickerText || defaultData.tickerText;
             document.getElementById('global-status-select').value = data.globalStatus || "ALL OPEN";
-            
-            // Payment Receiver Settings
-            document.getElementById('admin-payment-name').value = data.paymentInfo?.name || '';
-            document.getElementById('admin-payment-number').value = data.paymentInfo?.number || '';
-            document.getElementById('admin-payment-qr').value = data.paymentInfo?.qr || '';
-            
+            // Load Payment Receiver Settings
+document.getElementById('admin-payment-name').value = data.paymentInfo?.name || '';
+document.getElementById('admin-payment-number').value = data.paymentInfo?.number || '';
+document.getElementById('admin-payment-qr').value = data.paymentInfo?.qr || '';
             // System 1
             document.getElementById('sys1-tag').value = data.sys1?.tag || defaultData.sys1.tag;
             document.getElementById('sys1-title').value = data.sys1?.title || defaultData.sys1.title;
@@ -1487,7 +1472,7 @@
             document.getElementById('sys2-btn-label').value = data.sys2?.btnLabel || defaultData.sys2.btnLabel;
             document.getElementById('sys2-url').value = data.sys2?.url || defaultData.sys2.url;
             document.getElementById('sys2-policies-title').value = data.sys2?.policiesTitle || defaultData.sys2.policiesTitle;
-            document.getElementById('sys2-policies-content').innerHTML = data.sys2?.policiesContent || defaultData.sys2.policiesContent;
+            document.getElementById('sys2-policies-content').value = data.sys2?.policiesContent || defaultData.sys2.policiesContent;
             document.getElementById('sys2-policies-url').value = data.sys2?.policiesUrl || defaultData.sys2.policiesUrl;
 
             // System 3
@@ -1500,7 +1485,7 @@
             document.getElementById('sys3-btn-label').value = data.sys3?.btnLabel || defaultData.sys3.btnLabel;
             document.getElementById('sys3-url').value = data.sys3?.url || defaultData.sys3.url;
             document.getElementById('sys3-guidelines-title').value = data.sys3?.guidelinesTitle || defaultData.sys3.guidelinesTitle;
-            document.getElementById('sys3-guidelines-content').innerHTML = data.sys3?.guidelinesContent || defaultData.sys3.guidelinesContent;
+            document.getElementById('sys3-guidelines-content').value = data.sys3?.guidelinesContent || defaultData.sys3.guidelinesContent;
             document.getElementById('sys3-guidelines-url').value = data.sys3?.guidelinesUrl || defaultData.sys3.guidelinesUrl;
 
             document.getElementById('banner-title').value = data.banner?.title || defaultData.banner.title;
@@ -1550,18 +1535,18 @@
         }
 
         window.addFacultyRow = function(name = '', specialization = '', imageUrl = '') {
-            const container = document.getElementById('ee-faculty-editor-container');
-            if (!container) return;
-            const div = document.createElement('div');
-            div.className = 'faculty-item-row flex items-center space-x-2 mb-2';
-            div.innerHTML = `
-                <input type="text" class="fac-name-input p-2 rounded bg-slate-800 text-xs text-white" placeholder="Name" value="${name || ''}">
-                <input type="text" class="fac-spec-input p-2 rounded bg-slate-800 text-xs text-white" placeholder="Specialization" value="${specialization || ''}">
-                <input type="url" class="fac-img-input p-2 rounded bg-slate-800 text-xs text-white" placeholder="Photo URL" value="${imageUrl || ''}">
-                <button type="button" onclick="this.parentElement.remove()" class="text-rose-400 p-2"><i class="fa-solid fa-trash"></i></button>
-            `;
-            container.appendChild(div);
-        };
+  const container = document.getElementById('ee-faculty-editor-container');
+  if (!container) return;
+  const div = document.createElement('div');
+  div.className = 'faculty-item-row flex items-center space-x-2 mb-2';
+  div.innerHTML = `
+    <input type="text" class="fac-name-input p-2 rounded bg-slate-800 text-xs text-white" placeholder="Name" value="${name || ''}">
+    <input type="text" class="fac-spec-input p-2 rounded bg-slate-800 text-xs text-white" placeholder="Specialization" value="${specialization || ''}">
+    <input type="url" class="fac-img-input p-2 rounded bg-slate-800 text-xs text-white" placeholder="Photo URL" value="${imageUrl || ''}">
+    <button type="button" onclick="this.parentElement.remove()" class="text-rose-400 p-2"><i class="fa-solid fa-trash"></i></button>
+  `;
+  container.appendChild(div);
+};
 
         function renderFacilityRows(list = []) {
             const container = document.getElementById('ee-facilities-editor-container');
@@ -1583,273 +1568,276 @@
             container.appendChild(div);
         };
 
-        // Helper to collect all form fields and dynamic rows across all sections
-        function gatherFormData() {
-            const importantEvents = [];
-            document.querySelectorAll('.important-event-item-row').forEach(row => {
-                const title = row.querySelector('.imp-title-input')?.value?.trim() || '';
-                const category = row.querySelector('.imp-category-input')?.value || 'Major Exam';
-                const date = row.querySelector('.imp-date-input')?.value || '';
-                const endDate = row.querySelector('.imp-enddate-input')?.value || date;
-                const description = row.querySelector('.imp-desc-input')?.value?.trim() || '';
-                if (title && date) importantEvents.push({ title, category, date, endDate, description });
-            });
+        // Helper to collect all form fields and dynamic rows across all 17 sections
+function gatherFormData() {
+    const importantEvents = [];
+    document.querySelectorAll('.important-event-item-row').forEach(row => {
+        const title = row.querySelector('.imp-title-input')?.value?.trim() || '';
+        const category = row.querySelector('.imp-category-input')?.value || 'Major Exam';
+        const date = row.querySelector('.imp-date-input')?.value || '';
+        const endDate = row.querySelector('.imp-enddate-input')?.value || date;
+        const description = row.querySelector('.imp-desc-input')?.value?.trim() || '';
+        if (title && date) importantEvents.push({ title, category, date, endDate, description });
+    });
 
-            const lostAndFound = [];
-            document.querySelectorAll('.lost-found-item-row').forEach(row => {
-                const type = row.querySelector('.lf-type-input')?.value || 'FOUND';
-                const status = row.querySelector('.lf-status-input')?.value || 'UNCLAIMED';
-                const title = row.querySelector('.lf-title-input')?.value?.trim() || '';
-                const location = row.querySelector('.lf-location-input')?.value?.trim() || '';
-                const date = row.querySelector('.lf-date-input')?.value || '';
-                const contact = row.querySelector('.lf-contact-input')?.value?.trim() || '';
-                const description = row.querySelector('.lf-desc-input')?.value?.trim() || '';
-                const imageUrl = row.querySelector('.lf-image-input')?.value || '';
-                if (title) lostAndFound.push({ type, status, title, location, date, contact, description, imageUrl });
-            });
+    const lostAndFound = [];
+    document.querySelectorAll('.lost-found-item-row').forEach(row => {
+        const type = row.querySelector('.lf-type-input')?.value || 'FOUND';
+        const status = row.querySelector('.lf-status-input')?.value || 'UNCLAIMED';
+        const title = row.querySelector('.lf-title-input')?.value?.trim() || '';
+        const location = row.querySelector('.lf-location-input')?.value?.trim() || '';
+        const date = row.querySelector('.lf-date-input')?.value || '';
+        const contact = row.querySelector('.lf-contact-input')?.value?.trim() || '';
+        const description = row.querySelector('.lf-desc-input')?.value?.trim() || '';
+        const imageUrl = row.querySelector('.lf-image-input')?.value || '';
+        if (title) lostAndFound.push({ type, status, title, location, date, contact, description, imageUrl });
+    });
 
-            const capstoneItems = [];
-            document.querySelectorAll('.capstone-item-row').forEach(row => {
-                const title = row.querySelector('.cap-title-input')?.value?.trim() || '';
-                const advisor = row.querySelector('.cap-advisor-input')?.value?.trim() || '';
-                const authors = row.querySelector('.cap-authors-input')?.value?.trim() || '';
-                const year = row.querySelector('.cap-year-input')?.value?.trim() || '';
-                const videoUrl = row.querySelector('.cap-video-input')?.value?.trim() || '';
-                const abstract = row.querySelector('.cap-abstract-input')?.value?.trim() || '';
-                const diagramUrl = row.querySelector('.cap-image-input')?.value || '';
-                if (title) capstoneItems.push({ title, advisor, authors, year, videoUrl, abstract, diagramUrl });
-            });
+    const capstoneItems = [];
+    document.querySelectorAll('.capstone-item-row').forEach(row => {
+        const title = row.querySelector('.cap-title-input')?.value?.trim() || '';
+        const advisor = row.querySelector('.cap-advisor-input')?.value?.trim() || '';
+        const authors = row.querySelector('.cap-authors-input')?.value?.trim() || '';
+        const year = row.querySelector('.cap-year-input')?.value?.trim() || '';
+        const videoUrl = row.querySelector('.cap-video-input')?.value?.trim() || '';
+        const abstract = row.querySelector('.cap-abstract-input')?.value?.trim() || '';
+        const diagramUrl = row.querySelector('.cap-image-input')?.value || '';
+        if (title) capstoneItems.push({ title, advisor, authors, year, videoUrl, abstract, diagramUrl });
+    });
 
-            const events = [];
-            document.querySelectorAll('.event-item-row').forEach(row => {
-                const title = row.querySelector('.event-title-input')?.value?.trim() || '';
-                const date = row.querySelector('.event-date-input')?.value?.trim() || '';
-                const location = row.querySelector('.event-location-input')?.value?.trim() || '';
-                const link = row.querySelector('.event-link-input')?.value?.trim() || '';
-                if (title) events.push({ title, date, location, link });
-            });
+    const events = [];
+    document.querySelectorAll('.event-item-row').forEach(row => {
+        const title = row.querySelector('.event-title-input')?.value?.trim() || '';
+        const date = row.querySelector('.event-date-input')?.value?.trim() || '';
+        const location = row.querySelector('.event-location-input')?.value?.trim() || '';
+        const link = row.querySelector('.event-link-input')?.value?.trim() || '';
+        if (title) events.push({ title, date, location, link });
+    });
 
-            const academicLinks = [];
-            document.querySelectorAll('.academic-link-item-row').forEach(row => {
-                const title = row.querySelector('.link-title-input')?.value?.trim() || '';
-                const url = row.querySelector('.link-url-input')?.value?.trim() || '';
-                if (title && url) academicLinks.push({ title, url });
-            });
+    const academicLinks = [];
+    document.querySelectorAll('.academic-link-item-row').forEach(row => {
+        const title = row.querySelector('.link-title-input')?.value?.trim() || '';
+        const url = row.querySelector('.link-url-input')?.value?.trim() || '';
+        if (title && url) academicLinks.push({ title, url });
+    });
 
-            const faqs = [];
-            document.querySelectorAll('.faq-item-row').forEach(row => {
-                const q = row.querySelector('.faq-q-input')?.value?.trim() || '';
-                const a = row.querySelector('.faq-a-input')?.value?.trim() || '';
-                if (q && a) faqs.push({ q, a });
-            });
+    const faqs = [];
+    document.querySelectorAll('.faq-item-row').forEach(row => {
+        const q = row.querySelector('.faq-q-input')?.value?.trim() || '';
+        const a = row.querySelector('.faq-a-input')?.value?.trim() || '';
+        if (q && a) faqs.push({ q, a });
+    });
 
-            const officers = [];
-            document.querySelectorAll('.officer-item-row').forEach(row => {
-                const category = row.querySelector('.off-category-input')?.value;
-                const subCategory = row.querySelector('.off-subcategory-input')?.value || 'academics';
-                const badge = row.querySelector('.off-badge-input')?.value;
-                const name = row.querySelector('.off-name-input')?.value?.trim();
-                const title = row.querySelector('.off-title-input')?.value?.trim();
-                const dept = row.querySelector('.off-dept-input')?.value?.trim();
-                const email = row.querySelector('.off-email-input')?.value?.trim();
-                const imageUrl = row.querySelector('.off-img-input')?.value?.trim();
-                if (title || name) officers.push({ name, title, dept, email, category, subCategory, badge, imageUrl });
-            });
+    const officers = [];
+    document.querySelectorAll('.officer-item-row').forEach(row => {
+        const category = row.querySelector('.off-category-input')?.value;
+        const subCategory = row.querySelector('.off-subcategory-input')?.value || 'academics';
+        const badge = row.querySelector('.off-badge-input')?.value;
+        const name = row.querySelector('.off-name-input')?.value?.trim();
+        const title = row.querySelector('.off-title-input')?.value?.trim();
+        const dept = row.querySelector('.off-dept-input')?.value?.trim();
+        const email = row.querySelector('.off-email-input')?.value?.trim();
+        const imageUrl = row.querySelector('.off-img-input')?.value?.trim();
+        if (title || name) officers.push({ name, title, dept, email, category, subCategory, badge, imageUrl });
+    });
 
-            const faculty = [];
-            document.querySelectorAll('.faculty-item-row').forEach(row => {
-                const name = row.querySelector('.fac-name-input')?.value?.trim() || '';
-                const specialization = row.querySelector('.fac-spec-input')?.value?.trim() || '';
-                const imageUrl = row.querySelector('.fac-img-input')?.value?.trim() || '';
-                if (name) faculty.push({ name, specialization, imageUrl });
-            });
+    const faculty = [];
+    document.querySelectorAll('.faculty-item-row').forEach(row => {
+        const name = row.querySelector('.fac-name-input')?.value?.trim() || '';
+        const specialization = row.querySelector('.fac-spec-input')?.value?.trim() || '';
+        const imageUrl = row.querySelector('.fac-img-input')?.value?.trim() || '';
+        if (name) faculty.push({ name, specialization, imageUrl });
+    });
 
-            const facilities = [];
-            document.querySelectorAll('.facility-item-row').forEach(row => {
-                const code = row.querySelector('.facil-code-input')?.value?.trim() || '';
-                const description = row.querySelector('.facil-desc-input')?.value?.trim() || '';
-                if (code && description) facilities.push({ code, description });
-            });
+    const facilities = [];
+    document.querySelectorAll('.facility-item-row').forEach(row => {
+        const code = row.querySelector('.facil-code-input')?.value?.trim() || '';
+        const description = row.querySelector('.facil-desc-input')?.value?.trim() || '';
+        if (code && description) facilities.push({ code, description });
+    });
 
-            const merchItems = [];
-            document.querySelectorAll('.merch-item-row').forEach(row => {
-                const title = row.querySelector('.merch-title-input')?.value?.trim() || 'EE Merchandise Item';
-                const price = row.querySelector('.merch-price-input')?.value?.trim() || '';
-                const badge = row.querySelector('.merch-badge-input')?.value || 'Pre-Orders';
-                const description = row.querySelector('.merch-desc-input')?.value?.trim() || '';
-                const orderUrl = row.querySelector('.merch-url-input')?.value?.trim() || '';
-                const imageUrl = row.querySelector('.merch-image-input')?.value || '';
-                const backImageUrl = row.querySelector('.merch-back-image-input')?.value || '';
-                
-                merchItems.push({ title, price, badge, description, orderUrl, imageUrl, backImageUrl });
-            });
+    const merchItems = [];
+    document.querySelectorAll('.merch-item-row').forEach(row => {
+        const title = row.querySelector('.merch-title-input')?.value?.trim() || 'EE Merchandise Item';
+        const price = row.querySelector('.merch-price-input')?.value?.trim() || '';
+        const badge = row.querySelector('.merch-badge-input')?.value || 'Pre-Orders';
+        const description = row.querySelector('.merch-desc-input')?.value?.trim() || '';
+        const orderUrl = row.querySelector('.merch-url-input')?.value?.trim() || '';
+        const imageUrl = row.querySelector('.merch-image-input')?.value || '';
+        const backImageUrl = row.querySelector('.merch-back-image-input')?.value || '';
+        
+        merchItems.push({ title, price, badge, description, orderUrl, imageUrl, backImageUrl });
+    });
 
-            const labPolicies = [];
-            document.querySelectorAll('.policy-item-row').forEach(row => {
-                const title = row.querySelector('.policy-title-input')?.value?.trim() || '';
-                let content = row.querySelector('.policy-content-input')?.innerHTML?.trim() || '';
-                
-                if (content === '<br>' || content === '<div><br></div>') content = '';
-                if (title || content) labPolicies.push({ title, content });
-            });
+    const labPolicies = [];
+document.querySelectorAll('.policy-item-row').forEach(row => {
+    const title = row.querySelector('.policy-title-input')?.value?.trim() || '';
+    let content = row.querySelector('.policy-content-input')?.innerHTML?.trim() || '';
+    
+    // Clean residual empty tags from contenteditable
+    if (content === '<br>' || content === '<div><br></div>') content = '';
 
-            const weeklySchedule = { eeLab: [], comLab: [] };
-            document.querySelectorAll('.ee-schedule-item-row').forEach(row => {
-                const day = row.querySelector('.sch-day-input')?.value || 'Monday';
-                const startTime = row.querySelector('.sch-start-input')?.value?.trim() || '';
-                const endTime = row.querySelector('.sch-end-input')?.value?.trim() || '';
-                const subjectName = row.querySelector('.sch-subject-input')?.value?.trim() || '';
-                const instructor = row.querySelector('.sch-instructor-input')?.value?.trim() || '';
-                if (subjectName) weeklySchedule.eeLab.push({ day, startTime, endTime, subjectName, instructor });
-            });
+    if (title || content) labPolicies.push({ title, content });
+});
 
-            document.querySelectorAll('.com-schedule-item-row').forEach(row => {
-                const day = row.querySelector('.sch-day-input')?.value || 'Monday';
-                const startTime = row.querySelector('.sch-start-input')?.value?.trim() || '';
-                const endTime = row.querySelector('.sch-end-input')?.value?.trim() || '';
-                const subjectName = row.querySelector('.sch-subject-input')?.value?.trim() || '';
-                const instructor = row.querySelector('.sch-instructor-input')?.value?.trim() || '';
-                if (subjectName) weeklySchedule.comLab.push({ day, startTime, endTime, subjectName, instructor });
-            });
+    const weeklySchedule = { eeLab: [], comLab: [] };
+    document.querySelectorAll('.ee-schedule-item-row').forEach(row => {
+        const day = row.querySelector('.sch-day-input')?.value || 'Monday';
+        const startTime = row.querySelector('.sch-start-input')?.value?.trim() || '';
+        const endTime = row.querySelector('.sch-end-input')?.value?.trim() || '';
+        const subjectName = row.querySelector('.sch-subject-input')?.value?.trim() || '';
+        const instructor = row.querySelector('.sch-instructor-input')?.value?.trim() || '';
+        if (subjectName) weeklySchedule.eeLab.push({ day, startTime, endTime, subjectName, instructor });
+    });
 
-            const activityEvents = [];
-            document.querySelectorAll('.act-event-item-row').forEach(row => {
-                const room = row.querySelector('.act-room-input')?.value || 'both';
-                const eventDate = row.querySelector('.act-date-input')?.value || '';
-                const eventTitle = row.querySelector('.act-title-input')?.value?.trim() || '';
-                const description = row.querySelector('.act-desc-input')?.value?.trim() || '';
-                if (eventTitle) activityEvents.push({ room, eventDate, eventTitle, description });
-            });
+    document.querySelectorAll('.com-schedule-item-row').forEach(row => {
+        const day = row.querySelector('.sch-day-input')?.value || 'Monday';
+        const startTime = row.querySelector('.sch-start-input')?.value?.trim() || '';
+        const endTime = row.querySelector('.sch-end-input')?.value?.trim() || '';
+        const subjectName = row.querySelector('.sch-subject-input')?.value?.trim() || '';
+        const instructor = row.querySelector('.sch-instructor-input')?.value?.trim() || '';
+        if (subjectName) weeklySchedule.comLab.push({ day, startTime, endTime, subjectName, instructor });
+    });
 
-            const qpiSubjects = [];
-            document.querySelectorAll('.qpi-subject-item-row').forEach(row => {
-                const code = row.querySelector('.qpi-code-input')?.value?.trim() || '';
-                const title = row.querySelector('.qpi-title-input')?.value?.trim() || '';
-                const units = parseFloat(row.querySelector('.qpi-units-input')?.value) || 3;
-                const curriculum = row.querySelector('.qpi-curriculum-input')?.value || 'Both Curriculum';
-                if (code && title) {
-                    qpiSubjects.push({ code, title, units, curriculum });
-                }
-            });
-
-            return {
-                qpiSubjects,
-                tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
-                globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
-                paymentInfo: {
-                    name: document.getElementById('admin-payment-name')?.value?.trim() || '',
-                    number: document.getElementById('admin-payment-number')?.value?.trim() || '',
-                    qr: document.getElementById('admin-payment-qr')?.value?.trim() || ''
-                },
-                events, academicLinks, merchItems, labPolicies, capstoneItems, weeklySchedule,
-                activityEvents, lostAndFound, importantEvents, faqs, officers,
-                sys1: {
-                    tag: document.getElementById('sys1-tag')?.value?.trim() || '',
-                    title: document.getElementById('sys1-title')?.value?.trim() || '',
-                    description: document.getElementById('sys1-desc')?.value?.trim() || '',
-                    location: document.getElementById('sys1-location')?.value?.trim() || '',
-                    hours: document.getElementById('sys1-hours')?.value?.trim() || '',
-                    studentLabel: document.getElementById('sys1-student-label')?.value?.trim() || '',
-                    studentUrl: document.getElementById('sys1-student-url')?.value?.trim() || '',
-                    adminLabel: document.getElementById('sys1-admin-label')?.value?.trim() || '',
-                    adminUrl: document.getElementById('sys1-admin-url')?.value?.trim() || '',
-                    guidelinesTitle: document.getElementById('sys1-guidelines-title')?.value?.trim() || '',
-                    guidelinesContent: document.getElementById('sys1-guidelines-content')?.innerHTML?.trim() || '',
-                    guidelinesUrl: document.getElementById('sys1-guidelines-url')?.value?.trim() || ''
-                },
-                sys2: {
-                    tag: document.getElementById('sys2-tag')?.value?.trim() || '',
-                    title: document.getElementById('sys2-title')?.value?.trim() || '',
-                    description: document.getElementById('sys2-desc')?.value?.trim() || '',
-                    location: document.getElementById('sys2-location')?.value?.trim() || '',
-                    hours: document.getElementById('sys2-hours')?.value?.trim() || '',
-                    badge: document.getElementById('sys2-badge')?.value?.trim() || '',
-                    btnLabel: document.getElementById('sys2-btn-label')?.value?.trim() || '',
-                    url: document.getElementById('sys2-url')?.value?.trim() || '',
-                    policiesTitle: document.getElementById('sys2-policies-title')?.value?.trim() || '',
-                    policiesContent: document.getElementById('sys2-policies-content')?.innerHTML?.trim() || '',
-                    policiesUrl: document.getElementById('sys2-policies-url')?.value?.trim() || ''
-                },
-                sys3: {
-                    tag: document.getElementById('sys3-tag')?.value?.trim() || '',
-                    title: document.getElementById('sys3-title')?.value?.trim() || '',
-                    description: document.getElementById('sys3-desc')?.value?.trim() || '',
-                    location: document.getElementById('sys3-location')?.value?.trim() || '',
-                    hours: document.getElementById('sys3-hours')?.value?.trim() || '',
-                    badge: document.getElementById('sys3-badge')?.value?.trim() || '',
-                    btnLabel: document.getElementById('sys3-btn-label')?.value?.trim() || '',
-                    url: document.getElementById('sys3-url')?.value?.trim() || '',
-                    guidelinesTitle: document.getElementById('sys3-guidelines-title')?.value?.trim() || '',
-                    guidelinesContent: document.getElementById('sys3-guidelines-content')?.innerHTML?.trim() || '',
-                    guidelinesUrl: document.getElementById('sys3-guidelines-url')?.value?.trim() || ''
-                },
-                banner: {
-                    title: document.getElementById('banner-title')?.value?.trim() || '',
-                    body: document.getElementById('banner-body')?.value?.trim() || ''
-                },
-                eeDept: {
-                    description: document.getElementById('ee-dept-desc')?.value?.trim() || '',
-                    chairName: document.getElementById('ee-dept-chair-name-input')?.value?.trim() || '',
-                    chairDetails: document.getElementById('ee-dept-chair-details-input')?.value?.trim() || '',
-                    custodianName: document.getElementById('ee-dept-custodian-name-input')?.value?.trim() || '',
-                    custodianDetails: document.getElementById('ee-dept-custodian-details-input')?.value?.trim() || '',
-                    faculty, facilities
-                },
-                fuseeInfo: {
-                    description: document.getElementById('fusee-info-desc-input')?.value?.trim() || '',
-                    email: document.getElementById('fusee-info-email-input')?.value?.trim() || ''
-                }
-            };
+    const activityEvents = [];
+    document.querySelectorAll('.act-event-item-row').forEach(row => {
+        const room = row.querySelector('.act-room-input')?.value || 'both';
+        const eventDate = row.querySelector('.act-date-input')?.value || '';
+        const eventTitle = row.querySelector('.act-title-input')?.value?.trim() || '';
+        const description = row.querySelector('.act-desc-input')?.value?.trim() || '';
+        if (eventTitle) activityEvents.push({ room, eventDate, eventTitle, description });
+    });
+    const qpiSubjects = [];
+    document.querySelectorAll('.qpi-subject-item-row').forEach(row => {
+        const code = row.querySelector('.qpi-code-input')?.value?.trim() || '';
+        const title = row.querySelector('.qpi-title-input')?.value?.trim() || '';
+        const units = parseFloat(row.querySelector('.qpi-units-input')?.value) || 3;
+        const curriculum = row.querySelector('.qpi-curriculum-input')?.value || 'Both Curriculum';
+        if (code && title) {
+            qpiSubjects.push({ code, title, units, curriculum });
         }
+    });
 
-        // Auto-save draft to LocalStorage
-        function saveLocalDraft() {
-            const data = gatherFormData();
-            localStorage.setItem('fusee_admin_draft', JSON.stringify(data));
+    return {
+        qpiSubjects,
+        tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
+        globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
+        paymentInfo: {
+            name: document.getElementById('admin-payment-name')?.value?.trim() || '',
+            number: document.getElementById('admin-payment-number')?.value?.trim() || '',
+            qr: document.getElementById('admin-payment-qr')?.value?.trim() || ''
+        },
+        events, academicLinks, merchItems, labPolicies, capstoneItems, weeklySchedule,
+        activityEvents, lostAndFound, importantEvents, faqs, officers,
+        sys1: {
+            tag: document.getElementById('sys1-tag')?.value?.trim() || '',
+            title: document.getElementById('sys1-title')?.value?.trim() || '',
+            description: document.getElementById('sys1-desc')?.value?.trim() || '',
+            location: document.getElementById('sys1-location')?.value?.trim() || '',
+            hours: document.getElementById('sys1-hours')?.value?.trim() || '',
+            studentLabel: document.getElementById('sys1-student-label')?.value?.trim() || '',
+            studentUrl: document.getElementById('sys1-student-url')?.value?.trim() || '',
+            adminLabel: document.getElementById('sys1-admin-label')?.value?.trim() || '',
+            adminUrl: document.getElementById('sys1-admin-url')?.value?.trim() || '',
+            guidelinesTitle: document.getElementById('sys1-guidelines-title')?.value?.trim() || '',
+            guidelinesContent: document.getElementById('sys1-guidelines-content')?.innerHTML?.trim() || '',
+            guidelinesUrl: document.getElementById('sys1-guidelines-url')?.value?.trim() || ''
+        },
+        sys2: {
+            tag: document.getElementById('sys2-tag')?.value?.trim() || '',
+            title: document.getElementById('sys2-title')?.value?.trim() || '',
+            description: document.getElementById('sys2-desc')?.value?.trim() || '',
+            location: document.getElementById('sys2-location')?.value?.trim() || '',
+            hours: document.getElementById('sys2-hours')?.value?.trim() || '',
+            badge: document.getElementById('sys2-badge')?.value?.trim() || '',
+            btnLabel: document.getElementById('sys2-btn-label')?.value?.trim() || '',
+            url: document.getElementById('sys2-url')?.value?.trim() || '',
+            policiesTitle: document.getElementById('sys2-policies-title')?.value?.trim() || '',
+            policiesContent: document.getElementById('sys2-policies-content')?.innerHTML?.trim() || '',
+            policiesUrl: document.getElementById('sys2-policies-url')?.value?.trim() || ''
+        },
+        sys3: {
+            tag: document.getElementById('sys3-tag')?.value?.trim() || '',
+            title: document.getElementById('sys3-title')?.value?.trim() || '',
+            description: document.getElementById('sys3-desc')?.value?.trim() || '',
+            location: document.getElementById('sys3-location')?.value?.trim() || '',
+            hours: document.getElementById('sys3-hours')?.value?.trim() || '',
+            badge: document.getElementById('sys3-badge')?.value?.trim() || '',
+            btnLabel: document.getElementById('sys3-btn-label')?.value?.trim() || '',
+            url: document.getElementById('sys3-url')?.value?.trim() || '',
+            guidelinesTitle: document.getElementById('sys3-guidelines-title')?.value?.trim() || '',
+            guidelinesContent: document.getElementById('sys3-guidelines-content')?.innerHTML?.trim() || '',
+            guidelinesUrl: document.getElementById('sys3-guidelines-url')?.value?.trim() || ''
+        },
+        banner: {
+            title: document.getElementById('banner-title')?.value?.trim() || '',
+            body: document.getElementById('banner-body')?.value?.trim() || ''
+        },
+        eeDept: {
+            description: document.getElementById('ee-dept-desc')?.value?.trim() || '',
+            chairName: document.getElementById('ee-dept-chair-name-input')?.value?.trim() || '',
+            chairDetails: document.getElementById('ee-dept-chair-details-input')?.value?.trim() || '',
+            custodianName: document.getElementById('ee-dept-custodian-name-input')?.value?.trim() || '',
+            custodianDetails: document.getElementById('ee-dept-custodian-details-input')?.value?.trim() || '',
+            faculty, facilities
+        },
+        fuseeInfo: {
+            description: document.getElementById('fusee-info-desc-input')?.value?.trim() || '',
+            email: document.getElementById('fusee-info-email-input')?.value?.trim() || ''
         }
+    };
+}
 
-        let draftTimeout;
-        function saveLocalDraftDebounced() {
-            clearTimeout(draftTimeout);
-            draftTimeout = setTimeout(() => {
-                saveLocalDraft();
-            }, 400);
-        }
+// Auto-save draft to LocalStorage as user types or modifies inputs
+function saveLocalDraft() {
+    const data = gatherFormData();
+    localStorage.setItem('fusee_admin_draft', JSON.stringify(data));
+}
 
-        document.addEventListener('input', saveLocalDraftDebounced);
-        document.addEventListener('change', saveLocalDraftDebounced);
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('button')) {
-                setTimeout(saveLocalDraft, 100);
-            }
-        });
+// Debounce wrapper to prevent lag while typing
+let draftTimeout;
+function saveLocalDraftDebounced() {
+    clearTimeout(draftTimeout);
+    draftTimeout = setTimeout(() => {
+        saveLocalDraft();
+    }, 400); // Waits 400ms after you stop typing
+}
 
-        // Publish to Firebase function
-        window.saveDataToFirebase = async function() {
-            const saveBtn = document.getElementById('save-all-btn');
-            if (!saveBtn) return;
+// Listen for form inputs and row modifications globally
+document.addEventListener('input', saveLocalDraftDebounced);
+document.addEventListener('change', saveLocalDraftDebounced);
+document.addEventListener('click', (e) => {
+    // If a button inside a section is clicked (e.g. Add Row or Delete Row), update local draft after DOM updates
+    if (e.target.closest('button')) {
+        setTimeout(saveLocalDraft, 100);
+    }
+});
 
-            saveBtn.disabled = true;
-            saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
+// Publish to Firebase function
+window.saveDataToFirebase = async function() {
+    const saveBtn = document.getElementById('save-all-btn');
+    if (!saveBtn) return;
 
-            try {
-                const updatedData = {
-                    ...gatherFormData(),
-                    updatedAt: new Date().toISOString()
-                };
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
 
-                await withTimeout(setDoc(docRef, updatedData, { merge: true }), 8000);
-                localStorage.removeItem('fusee_admin_draft');
-                showToast("All changes published to FUSEE Hub live!");
-            } catch (err) {
-                console.error("Save error:", err);
-                showToast(err.message || "Failed to save changes. Check Firebase Security Rules.", true);
-            } font-bold
-            finally {
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk text-sm"></i> <span>Publish Changes</span>';
-            }
+    try {
+        const updatedData = {
+            ...gatherFormData(),
+            updatedAt: new Date().toISOString()
         };
+
+        await withTimeout(setDoc(docRef, updatedData, { merge: true }), 8000);
+        localStorage.removeItem('fusee_admin_draft');
+        showToast("All changes published to FUSEE Hub live!");
+    } catch (err) {
+        console.error("Save error:", err);
+        showToast(err.message || "Failed to save changes. Check Firebase Security Rules.", true);
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk text-sm"></i> <span>Publish Changes</span>';
+    }
+};
 
         function renderEvents(list = []) {
             const container = document.getElementById('events-container');
@@ -1926,58 +1914,58 @@
         };
 
         function renderOfficers(list = []) {
-            const container = document.getElementById('officers-container');
-            if (!container) return;
-            container.innerHTML = '';
-            list.forEach(item => window.addOfficerRow(
-                item.title, 
-                item.dept, 
-                item.email, 
-                item.badge, 
-                item.category,
-                item.name || '',
-                item.imageUrl || item.photo || item.image || '',
-                item.subCategory || 'academics'
-            ));
-        }
+    const container = document.getElementById('officers-container');
+    if (!container) return;
+    container.innerHTML = '';
+    list.forEach(item => window.addOfficerRow(
+        item.title, 
+        item.dept, 
+        item.email, 
+        item.badge, 
+        item.category,
+        item.name || '',
+        item.imageUrl || item.photo || item.image || '',
+        item.subCategory || 'academics' // <-- Add 8th argument here
+    ));
+}
 
-        window.addOfficerRow = function(title = '', dept = '', email = '', badge = 'PRES', category = 'executive', name = '', imageUrl = '', subCategory = 'academics') {
-            const container = document.getElementById('officers-container');
-            if (!container) return;
+window.addOfficerRow = function(title = '', dept = '', email = '', badge = 'PRES', category = 'executive', name = '', imageUrl = '', subCategory = 'academics') {
+    const container = document.getElementById('officers-container');
+    if (!container) return;
+    
+    const div = document.createElement('div');
+    div.className = 'officer-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative';
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Officer">
+            <i class="fa-solid fa-trash"></i> Remove Contact
+        </button>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-2">
+            <input type="text" class="off-name-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Officer Name" value="${name.replace(/"/g, '&quot;')}">
+            <input type="text" class="off-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Title / Position" value="${title.replace(/"/g, '&quot;')}">
+            <input type="text" class="off-dept-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Department / Year Level" value="${dept.replace(/"/g, '&quot;')}">
+            <input type="email" class="off-email-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="AdDU Email" value="${email.replace(/"/g, '&quot;')}">
+            <input type="text" class="off-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Badge (e.g. PRES, VP)" value="${badge.replace(/"/g, '&quot;')}">
             
-            const div = document.createElement('div');
-            div.className = 'officer-item-row p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 relative';
-            div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1" title="Delete Officer">
-                    <i class="fa-solid fa-trash"></i> Remove Contact
-                </button>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-2">
-                    <input type="text" class="off-name-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Officer Name" value="${name.replace(/"/g, '&quot;')}">
-                    <input type="text" class="off-title-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Title / Position" value="${title.replace(/"/g, '&quot;')}">
-                    <input type="text" class="off-dept-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Department / Year Level" value="${dept.replace(/"/g, '&quot;')}">
-                    <input type="email" class="off-email-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="AdDU Email" value="${email.replace(/"/g, '&quot;')}">
-                    <input type="text" class="off-badge-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Badge (e.g. PRES, VP)" value="${badge.replace(/"/g, '&quot;')}">
-                    
-                    <select class="off-category-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
-                        <option value="executive" ${category === 'executive' ? 'selected' : ''}>Executive Board</option>
-                        <option value="reps" ${category === 'reps' ? 'selected' : ''}>Batch / Course Reps</option>
-                        <option value="committees" ${category === 'committees' ? 'selected' : ''}>Committees</option>
-                    </select>
-                    
-                    <select class="off-subcategory-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
-                        <option value="academics" ${subCategory === 'academics' ? 'selected' : ''}>Academics & Scholarship</option>
-                        <option value="creatives" ${subCategory === 'creatives' ? 'selected' : ''}>Creatives</option>
-                        <option value="documentations" ${subCategory === 'documentations' ? 'selected' : ''}>Documentations</option>
-                        <option value="communications" ${subCategory === 'communications' ? 'selected' : ''}>Communications</option>
-                        <option value="logistics" ${subCategory === 'logistics' ? 'selected' : ''}>Logistics</option>
-                        <option value="projects" ${subCategory === 'projects' ? 'selected' : ''}>FUSEE Projects</option>
-                    </select>
-                    
-                    <input type="text" class="off-img-input md:col-span-2 p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Photo URL or Filename (e.g. Nicolas.png)" value="${imageUrl.replace(/"/g, '&quot;')}">
-                </div>
-            `;
-            container.appendChild(div);
-        };
+            <select class="off-category-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                <option value="executive" ${category === 'executive' ? 'selected' : ''}>Executive Board</option>
+                <option value="reps" ${category === 'reps' ? 'selected' : ''}>Batch / Course Reps</option>
+                <option value="committees" ${category === 'committees' ? 'selected' : ''}>Committees</option>
+            </select>
+            
+            <select class="off-subcategory-input p-2 rounded bg-slate-800 text-xs text-white border border-slate-700">
+                <option value="academics" ${subCategory === 'academics' ? 'selected' : ''}>Academics & Scholarship</option>
+                <option value="creatives" ${subCategory === 'creatives' ? 'selected' : ''}>Creatives</option>
+                <option value="documentations" ${subCategory === 'documentations' ? 'selected' : ''}>Documentations</option>
+                <option value="communications" ${subCategory === 'communications' ? 'selected' : ''}>Communications</option>
+                <option value="logistics" ${subCategory === 'logistics' ? 'selected' : ''}>Logistics</option>
+                <option value="projects" ${subCategory === 'projects' ? 'selected' : ''}>FUSEE Projects</option>
+            </select>
+            
+            <input type="text" class="off-img-input md:col-span-2 p-2 rounded bg-slate-800 text-xs text-white border border-slate-700" placeholder="Photo URL or Filename (e.g. Nicolas.png)" value="${imageUrl.replace(/"/g, '&quot;')}">
+        </div>
+    `;
+    container.appendChild(div);
+};
 
         function renderScheduleAdmin(sched = { eeLab: [], comLab: [] }) {
             const eeContainer = document.getElementById('ee-schedule-container');
@@ -1993,30 +1981,30 @@
         }
 
         window.addScheduleRow = function(type = 'ee', day = 'Monday', startTime = '08:00 AM', endTime = '10:00 AM', subjectName = '', instructor = '') {
-            const container = document.getElementById(type === 'ee' ? 'ee-schedule-container' : 'com-schedule-container');
-            if (!container) return;
-            const div = document.createElement('div');
-            div.className = `${type === 'ee' ? 'ee-schedule-item-row' : 'com-schedule-item-row'} p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2 relative`;
-            div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1"><i class="fa-solid fa-trash"></i></button>
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-2 text-xs pt-1">
-                    <select class="sch-day-input p-2 rounded bg-slate-800 text-white border border-slate-700">
-                        <option value="Sunday" ${day === 'Sunday' ? 'selected' : ''}>Sunday</option>
-                        <option value="Monday" ${day === 'Monday' ? 'selected' : ''}>Monday</option>
-                        <option value="Tuesday" ${day === 'Tuesday' ? 'selected' : ''}>Tuesday</option>
-                        <option value="Wednesday" ${day === 'Wednesday' ? 'selected' : ''}>Wednesday</option>
-                        <option value="Thursday" ${day === 'Thursday' ? 'selected' : ''}>Thursday</option>
-                        <option value="Friday" ${day === 'Friday' ? 'selected' : ''}>Friday</option>
-                        <option value="Saturday" ${day === 'Saturday' ? 'selected' : ''}>Saturday</option>
-                    </select>
-                    <input type="text" class="sch-start-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Start (e.g. 08:00 AM)" value="${startTime}">
-                    <input type="text" class="sch-end-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="End (e.g. 10:00 AM)" value="${endTime}">
-                    <input type="text" class="sch-subject-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Subject Name" value="${subjectName}">
-                    <input type="text" class="sch-instructor-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Instructor" value="${instructor}">
-                </div>
-            `;
-            container.appendChild(div);
-        };
+    const container = document.getElementById(type === 'ee' ? 'ee-schedule-container' : 'com-schedule-container');
+    if (!container) return;
+    const div = document.createElement('div');
+    div.className = `${type === 'ee' ? 'ee-schedule-item-row' : 'com-schedule-item-row'} p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2 relative`;
+    div.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-rose-400 hover:text-rose-300 text-xs px-2 py-1"><i class="fa-solid fa-trash"></i></button>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-2 text-xs pt-1">
+            <select class="sch-day-input p-2 rounded bg-slate-800 text-white border border-slate-700">
+                <option value="Sunday" ${day === 'Sunday' ? 'selected' : ''}>Sunday</option>
+                <option value="Monday" ${day === 'Monday' ? 'selected' : ''}>Monday</option>
+                <option value="Tuesday" ${day === 'Tuesday' ? 'selected' : ''}>Tuesday</option>
+                <option value="Wednesday" ${day === 'Wednesday' ? 'selected' : ''}>Wednesday</option>
+                <option value="Thursday" ${day === 'Thursday' ? 'selected' : ''}>Thursday</option>
+                <option value="Friday" ${day === 'Friday' ? 'selected' : ''}>Friday</option>
+                <option value="Saturday" ${day === 'Saturday' ? 'selected' : ''}>Saturday</option>
+            </select>
+            <input type="text" class="sch-start-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Start (e.g. 08:00 AM)" value="${startTime}">
+            <input type="text" class="sch-end-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="End (e.g. 10:00 AM)" value="${endTime}">
+            <input type="text" class="sch-subject-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Subject Name" value="${subjectName}">
+            <input type="text" class="sch-instructor-input p-2 rounded bg-slate-800 text-white border border-slate-700" placeholder="Instructor" value="${instructor}">
+        </div>
+    `;
+    container.appendChild(div);
+};
 
         function renderActivityEventsAdmin(events = []) {
             const container = document.getElementById('activity-events-container');
@@ -2073,6 +2061,9 @@
             const container = document.getElementById('lost-found-container');
             if (!container) return;
 
+            const previewId = `lf-img-preview-${idx}`;
+            const hiddenId = `lf-img-data-${idx}`;
+
             const div = document.createElement('div');
             div.className = 'lost-found-item-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 relative';
             div.innerHTML = `
@@ -2082,8 +2073,15 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
                     <div class="space-y-2">
-                        <label class="block text-slate-400 font-semibold">Item Photo (URL)</label>
-                        <input type="url" class="lf-image-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs w-full" placeholder="https://example.com/item.png" value="${imageUrl || ''}">
+                        <label class="block text-slate-400 font-semibold">Item Photo (Optional)</label>
+                        <div class="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-700 rounded-xl bg-slate-950/50 text-center space-y-2">
+                            <input 
+  type="url" 
+  class="cap-image-input p-2 rounded bg-slate-800 border border-slate-700 text-white text-xs w-full" 
+  placeholder="https://example.com/diagram.png" 
+  value="${diagramUrl || ''}"
+>
+                        </div>
                     </div>
 
                     <div class="md:col-span-2 space-y-2">
@@ -2119,155 +2117,162 @@
         };
 
         let draftLoaded = false;
-        onSnapshot(docRef, (docSnap) => {
-            const localDraft = localStorage.getItem('fusee_admin_draft');
-            if (localDraft && !draftLoaded) {
-                try {
-                    populateUI(JSON.parse(localDraft));
-                    draftLoaded = true;
-                    return;
-                } catch (e) {
-                    console.error("Error parsing local draft:", e);
-                }
-            }
+onSnapshot(docRef, (docSnap) => {
+    const localDraft = localStorage.getItem('fusee_admin_draft');
+    if (localDraft && !draftLoaded) {
+        try {
+            populateUI(JSON.parse(localDraft));
+            draftLoaded = true;
+            return;
+        } catch (e) {
+            console.error("Error parsing local draft:", e);
+        }
+    }
 
-            if (!draftLoaded) {
-                if (docSnap.exists()) {
-                    populateUI(docSnap.data());
-                } else {
-                    populateUI(defaultData);
-                }
+    if (!draftLoaded) {
+        if (docSnap.exists()) {
+            populateUI(docSnap.data());
+        } else {
+            populateUI(defaultData);
+        }
+    }
+}, (err) => {
+    console.warn("Firestore listener fallback:", err);
+    const localDraft = localStorage.getItem('fusee_admin_draft');
+    if (localDraft) {
+        populateUI(JSON.parse(localDraft));
+    } else {
+        populateUI(defaultData);
+    }
+});
+
+// ===================================================
+// ADMIN LIVE MERCH ORDERS MANAGEMENT ENGINE
+// ===================================================
+
+// 1. Real-Time Listener for merch_orders collection
+window.initMerchOrdersListener = function() {
+    const ordersRef = collection(db, "merch_orders");
+    const q = query(ordersRef, orderBy("createdAt", "desc"));
+
+    onSnapshot(q, (snapshot) => {
+        const orders = [];
+        let totalRev = 0;
+        let pendingCnt = 0;
+
+        snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            orders.push({ id: docSnap.id, ...data });
+
+            if (data.status === "VERIFIED" || data.status === "CLAIMED") {
+                totalRev += parseFloat(data.totalAmount) || 0;
             }
-        }, (err) => {
-            console.warn("Firestore listener fallback:", err);
-            const localDraft = localStorage.getItem('fusee_admin_draft');
-            if (localDraft) {
-                populateUI(JSON.parse(localDraft));
-            } else {
-                populateUI(defaultData);
+            if (data.status === "PENDING") {
+                pendingCnt++;
             }
         });
 
-        // ADMIN LIVE MERCH ORDERS MANAGEMENT ENGINE
-        window.initMerchOrdersListener = function() {
-            const ordersRef = collection(db, "merch_orders");
-            const q = query(ordersRef, orderBy("createdAt", "desc"));
+        const totalOrdersEl = document.getElementById('stat-total-orders');
+        const pendingOrdersEl = document.getElementById('stat-pending-orders');
+        const totalRevenueEl = document.getElementById('stat-total-revenue');
 
-            onSnapshot(q, (snapshot) => {
-                const orders = [];
-                let totalRev = 0;
-                let pendingCnt = 0;
+        if (totalOrdersEl) totalOrdersEl.innerText = orders.length;
+        if (pendingOrdersEl) pendingOrdersEl.innerText = pendingCnt;
+        if (totalRevenueEl) totalRevenueEl.innerText = `₱${totalRev.toFixed(2)}`;
 
-                snapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    orders.push({ id: docSnap.id, ...data });
+        renderOrdersTable(orders);
+    }, (err) => {
+        console.error("Error fetching merch orders:", err);
+    });
+};
 
-                    if (data.status === "VERIFIED" || data.status === "CLAIMED") {
-                        totalRev += parseFloat(data.totalAmount) || 0;
-                    }
-                    if (data.status === "PENDING") {
-                        pendingCnt++;
-                    }
-                });
+// 2. Render Orders Table
+function renderOrdersTable(orders) {
+    const tbody = document.getElementById('admin-orders-table-body');
+    if (!tbody) return;
 
-                const totalOrdersEl = document.getElementById('stat-total-orders');
-                const pendingOrdersEl = document.getElementById('stat-pending-orders');
-                const totalRevenueEl = document.getElementById('stat-total-revenue');
+    if (orders.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="9" class="p-6 text-center text-slate-500 italic">
+                    No orders placed yet.
+                </td>
+            </tr>
+        `;
+        return;
+    }
 
-                if (totalOrdersEl) totalOrdersEl.innerText = orders.length;
-                if (pendingOrdersEl) pendingOrdersEl.innerText = pendingCnt;
-                if (totalRevenueEl) totalRevenueEl.innerText = `₱${totalRev.toFixed(2)}`;
+    tbody.innerHTML = orders.map((order) => {
+        const dateFormatted = order.createdAt?.toDate 
+            ? order.createdAt.toDate().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) 
+            : 'Just now';
 
-                renderOrdersTable(orders);
-            }, (err) => {
-                console.error("Error fetching merch orders:", err);
-            });
-        };
-
-        function renderOrdersTable(orders) {
-            const tbody = document.getElementById('admin-orders-table-body');
-            if (!tbody) return;
-
-            if (orders.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="9" class="p-6 text-center text-slate-500 italic">
-                            No orders placed yet.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = orders.map((order) => {
-                const dateFormatted = order.createdAt?.toDate 
-                    ? order.createdAt.toDate().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) 
-                    : 'Just now';
-
-                let statusBadge = '';
-                if (order.status === 'PENDING') {
-                    statusBadge = `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[9px] font-bold font-techno">🟡 PENDING</span>`;
-                } else if (order.status === 'VERIFIED') {
-                    statusBadge = `<span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] font-bold font-techno">🔵 PAID / VERIFIED</span>`;
-                } else if (order.status === 'CLAIMED') {
-                    statusBadge = `<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold font-techno">🟢 CLAIMED</span>`;
-                }
-
-                return `
-                    <tr class="hover:bg-slate-800/40 transition">
-                        <td class="p-3 text-slate-400 text-[10px]">${dateFormatted}</td>
-                        <td class="p-3 font-bold text-white">
-                            ${order.studentName || 'N/A'}<br>
-                            <span class="text-[10px] text-slate-400 font-normal">${order.studentId || ''} (${order.studentEmail || ''})</span>
-                        </td>
-                        <td class="p-3 text-slate-300">${order.courseYearSec || 'N/A'}</td>
-                        <td class="p-3">
-                            <strong class="text-white">${order.itemTitle || 'Merch'}</strong><br>
-                            <span class="text-[10px] text-fusee-magenta font-techno">Size: ${order.size || 'N/A'}</span>
-                        </td>
-                        <td class="p-3 font-bold text-white text-center">${order.quantity || 1}</td>
-                        <td class="p-3 font-bold text-fusee-magenta font-techno">₱${(parseFloat(order.totalAmount) || 0).toFixed(2)}</td>
-                        <td class="p-3 font-techno text-fusee-yellow tracking-wider font-bold">${order.gcashRefNo || 'N/A'}</td>
-                        <td class="p-3">${statusBadge}</td>
-                        <td class="p-3 text-center">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <select onchange="updateOrderStatus('${order.id}', this.value)" class="bg-slate-950 border border-slate-700 text-slate-300 text-[10px] rounded-lg p-1 focus:outline-none">
-                                    <option value="PENDING" ${order.status === 'PENDING' ? 'selected' : ''}>Set Pending 🟡</option>
-                                    <option value="VERIFIED" ${order.status === 'VERIFIED' ? 'selected' : ''}>Verify Paid 🔵</option>
-                                    <option value="CLAIMED" ${order.status === 'CLAIMED' ? 'selected' : ''}>Mark Claimed 🟢</option>
-                                </select>
-                                <button onclick="deleteMerchOrder('${order.id}')" class="w-6 h-6 rounded-lg bg-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white flex items-center justify-center transition">
-                                    <i class="fa-solid fa-trash text-[10px]"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+        let statusBadge = '';
+        if (order.status === 'PENDING') {
+            statusBadge = `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[9px] font-bold font-techno">🟡 PENDING</span>`;
+        } else if (order.status === 'VERIFIED') {
+            statusBadge = `<span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] font-bold font-techno">🔵 PAID / VERIFIED</span>`;
+        } else if (order.status === 'CLAIMED') {
+            statusBadge = `<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold font-techno">🟢 CLAIMED</span>`;
         }
 
-        window.updateOrderStatus = async function(orderId, newStatus) {
-            try {
-                const orderDocRef = doc(db, "merch_orders", orderId);
-                await updateDoc(orderDocRef, { status: newStatus });
-            } catch (err) {
-                console.error("Error updating order status:", err);
-                alert("Failed to update status: " + err.message);
-            }
-        };
+        return `
+            <tr class="hover:bg-slate-800/40 transition">
+                <td class="p-3 text-slate-400 text-[10px]">${dateFormatted}</td>
+                <td class="p-3 font-bold text-white">
+                    ${order.studentName || 'N/A'}<br>
+                    <span class="text-[10px] text-slate-400 font-normal">${order.studentId || ''} (${order.studentEmail || ''})</span>
+                </td>
+                <td class="p-3 text-slate-300">${order.courseYearSec || 'N/A'}</td>
+                <td class="p-3">
+                    <strong class="text-white">${order.itemTitle || 'Merch'}</strong><br>
+                    <span class="text-[10px] text-fusee-magenta font-techno">Size: ${order.size || 'N/A'}</span>
+                </td>
+                <td class="p-3 font-bold text-white text-center">${order.quantity || 1}</td>
+                <td class="p-3 font-bold text-fusee-magenta font-techno">₱${(parseFloat(order.totalAmount) || 0).toFixed(2)}</td>
+                <td class="p-3 font-techno text-fusee-yellow tracking-wider font-bold">${order.gcashRefNo || 'N/A'}</td>
+                <td class="p-3">${statusBadge}</td>
+                <td class="p-3 text-center">
+                    <div class="flex items-center justify-center gap-1.5">
+                        <select onchange="updateOrderStatus('${order.id}', this.value)" class="bg-slate-950 border border-slate-700 text-slate-300 text-[10px] rounded-lg p-1 focus:outline-none">
+                            <option value="PENDING" ${order.status === 'PENDING' ? 'selected' : ''}>Set Pending 🟡</option>
+                            <option value="VERIFIED" ${order.status === 'VERIFIED' ? 'selected' : ''}>Verify Paid 🔵</option>
+                            <option value="CLAIMED" ${order.status === 'CLAIMED' ? 'selected' : ''}>Mark Claimed 🟢</option>
+                        </select>
+                        <button onclick="deleteMerchOrder('${order.id}')" class="w-6 h-6 rounded-lg bg-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white flex items-center justify-center transition">
+                            <i class="fa-solid fa-trash text-[10px]"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
 
-        window.deleteMerchOrder = async function(orderId) {
-            if (!confirm("Are you sure you want to delete this order document?")) return;
-            try {
-                await deleteDoc(doc(db, "merch_orders", orderId));
-            } catch (err) {
-                console.error("Error deleting order:", err);
-                alert("Failed to delete order: " + err.message);
-            }
-        };
+// 3. Update Order Status
+window.updateOrderStatus = async function(orderId, newStatus) {
+    try {
+        const orderDocRef = doc(db, "merch_orders", orderId);
+        await updateDoc(orderDocRef, { status: newStatus });
+    } catch (err) {
+        console.error("Error updating order status:", err);
+        alert("Failed to update status: " + err.message);
+    }
+};
 
-        // Auto-start listener on page load
-        window.initMerchOrdersListener();
+// 4. Delete Order Document
+window.deleteMerchOrder = async function(orderId) {
+    if (!confirm("Are you sure you want to delete this order document?")) return;
+    try {
+        await deleteDoc(doc(db, "merch_orders", orderId));
+    } catch (err) {
+        console.error("Error deleting order:", err);
+        alert("Failed to delete order: " + err.message);
+    }
+};
+
+// Auto-start listener on page load
+window.initMerchOrdersListener();
     </script>
 </body>
 </html>
