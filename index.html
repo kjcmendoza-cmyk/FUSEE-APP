@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-<link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FUSEE Hub | Electrical Engineering Portal - Ateneo de Davao</title>
-    <!-- Favicon & App Shortcut Icons -->
-<link rel="icon" type="image/png" href="fusee-logo.png">
-<link rel="shortcut icon" href="fusee-logo.png" type="image/png">
-<link rel="apple-touch-icon" href="fusee-logo.png">
+   <!-- Favicon & App Shortcut Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="fusee-logo.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="fusee-logo.png">
+    <link rel="shortcut icon" href="fusee-logo.png" type="image/png">
+    <link rel="apple-touch-icon" sizes="180x180" href="fusee-logo.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00F0FF">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -492,6 +494,55 @@ if (data.eeDept) {
                 }
             }
         });
+        // Automatically transmutes Midterm Raw Scores to 40-Base Grades
+function updateMidtermSubBreakdown() {
+    const rawScore = parseFloat(document.getElementById('tg-subMT-dept-raw')?.value);
+    const totalItems = parseFloat(document.getElementById('tg-subMT-dept-total')?.value) || 100;
+    const topicRawPct = parseFloat(document.getElementById('tg-subMT-topic-raw')?.value);
+
+    const deptBadge = document.getElementById('tg-mtDeptTransmutedBadge');
+    const topicBadge = document.getElementById('tg-mtTopicTransmutedBadge');
+    const mtMainInput = document.getElementById('tg-gradeMT');
+
+    let deptTransmuted = null;
+    if (!isNaN(rawScore) && totalItems > 0) {
+        const rawPct = Math.min(100, Math.max(0, (rawScore / totalItems) * 100));
+        deptTransmuted = 40 + (0.60 * rawPct);
+        if (deptBadge) deptBadge.textContent = `40-Base: ${deptTransmuted.toFixed(1)}%`;
+    } else if (deptBadge) {
+        deptBadge.textContent = `40-Base: --%`;
+    }
+
+    let topicTransmuted = null;
+    if (!isNaN(topicRawPct)) {
+        const topicPct = Math.min(100, Math.max(0, topicRawPct));
+        topicTransmuted = 40 + (0.60 * topicPct);
+        if (topicBadge) topicBadge.textContent = `40-Base: ${topicTransmuted.toFixed(1)}%`;
+    } else if (topicBadge) {
+        topicBadge.textContent = `40-Base: --%`;
+    }
+
+    // Weighted Midterm calculation (80% Dept Exam + 20% Topic Exams)
+    if (deptTransmuted !== null || topicTransmuted !== null) {
+        const finalDept = deptTransmuted !== null ? deptTransmuted : 40;
+        const finalTopic = topicTransmuted !== null ? topicTransmuted : 40;
+
+        const overallMidtermTransmuted = (finalDept * 0.80) + (finalTopic * 0.20);
+        if (mtMainInput) {
+            mtMainInput.value = overallMidtermTransmuted.toFixed(1);
+            calculateTargetGrade();
+        }
+    }
+}
+
+// Add these input listeners inside your initTargetGradeEvents() function:
+['tg-subMT-dept-raw', 'tg-subMT-dept-total', 'tg-subMT-topic-raw'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.dataset.hasMtListener) {
+        el.addEventListener('input', updateMidtermSubBreakdown);
+        el.dataset.hasMtListener = 'true';
+    }
+});
 </script>
 
     <script>
@@ -3804,15 +3855,23 @@ window.renderMatrixGrid = function() {
 
         // Bottom Sheet & Modal Controls
         function openModal(modalId) {
-            const backdrop = document.getElementById('modal-backdrop');
-            const modal = document.getElementById(modalId);
-
-            if (backdrop && modal) {
-                backdrop.classList.remove('hidden');
-                setTimeout(() => backdrop.classList.add('opacity-100'), 10);
-                modal.classList.remove('hidden-sheet');
-            }
+    // Hide all currently open bottom-sheets to prevent overlap/attaching bugs
+    const openSheets = document.querySelectorAll('.bottom-sheet:not(.hidden-sheet)');
+    openSheets.forEach(sheet => {
+        if (sheet.id !== modalId) {
+            sheet.classList.add('hidden-sheet');
         }
+    });
+
+    const backdrop = document.getElementById('modal-backdrop');
+    const modal = document.getElementById(modalId);
+
+    if (backdrop && modal) {
+        backdrop.classList.remove('hidden');
+        setTimeout(() => backdrop.classList.add('opacity-100'), 10);
+        modal.classList.remove('hidden-sheet');
+    }
+}
 
         function closeModal(modalId) {
             const backdrop = document.getElementById('modal-backdrop');
@@ -4713,6 +4772,8 @@ const QPI_GRADE_SCALE = [
 ];
 
 window.openQpiCalculatorModal = function() {
+    closeAllModals(); // Close any currently open modal sheets first
+
     const saved = localStorage.getItem('fusee_qpi_student_list');
     const savedMode = localStorage.getItem('fusee_qpi_curriculum_mode');
 
@@ -5018,32 +5079,28 @@ window.clearQpiCalculator = function() {
 <!-- Custom Confirmation Modal -->
 <div id="confirm-modal" class="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
     <div id="confirm-modal-box" class="w-full max-w-sm glass-card rounded-2xl p-5 border border-fusee-cyan/40 shadow-2xl space-y-4 text-center transform scale-95 transition-transform duration-200">
-        <div class="w-12 h-12 rounded-full bg-fusee-cyan/20 text-fusee-cyan flex items-center justify-center mx-auto text-xl">
+        <div class="w-12 h-12 rounded-full bg-fusee-cyan/20 text-fusee-cyan flex items-center justify-center mx-auto text-xl border border-fusee-cyan/40">
             <i id="confirm-modal-icon" class="fa-solid fa-circle-question"></i>
         </div>
         <div class="space-y-1">
-            <h4 id="confirm-modal-title" class="text-sm font-bold text-white font-display">Confirmation Required</h4>
-            <p id="confirm-modal-msg" class="text-xs text-slate-300 leading-relaxed">Are you sure you want to perform this action?</p>
+            <h4 id="confirm-modal-title" class="text-sm font-bold text-white font-techno">Confirmation Required</h4>
+            <p id="confirm-modal-msg" class="text-xs text-slate-300 leading-relaxed"></p>
         </div>
-        <div class="flex items-center gap-2 pt-2">
-            <button id="confirm-btn-cancel" class="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700">
-                Cancel
-            </button>
-            <button id="confirm-btn-ok" class="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-fusee-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs transition shadow-neon-cyan">
-                Confirm
-            </button>
+        <div class="grid grid-cols-2 gap-2 pt-2">
+            <button id="confirm-btn-cancel" type="button" class="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700">Cancel</button>
+            <button id="confirm-btn-ok" type="button" class="py-2 px-3 rounded-xl bg-gradient-to-r from-fusee-cyan to-blue-600 text-slate-950 font-bold text-xs transition shadow-neon-cyan">Confirm</button>
         </div>
     </div>
 </div>
 
 <!-- Toast Notification Container (Top-Centered) -->
-<div id="toast-container" class="fixed top-5 left-1/2 -translate-x-1/2 z-[200] flex flex-col items-center gap-2.5 max-w-sm w-full pointer-events-none px-4">
+<div id="toast-container" class="fixed top-5 left-1/2 -translate-x-1/2 z-[300] flex flex-col gap-2 pointer-events-none">
 </div>
 
 <script>
-// ===================================================
+// ==============================================================
 // IN-APP MERCH CHECKOUT SYSTEM ENGINE
-// ===================================================
+// ==============================================================
 let activeCheckoutItem = null;
 let currentQuantity = 1;
 let unitNumericPrice = 0;
@@ -5051,82 +5108,101 @@ let unitNumericPrice = 0;
 // 1. Open Order Modal
 window.openMerchOrderModal = function(index) {
     if (!window.currentMerchItems || !window.currentMerchItems[index]) {
-        alert("Item data unavailable. Please try again.");
+        if (window.showToast) window.showToast("Item data unavailable. Please try again.", "error");
+        else alert("Item data unavailable. Please try again.");
         return;
     }
 
     activeCheckoutItem = window.currentMerchItems[index];
-    currentQuantity = 1;
+    currentQuantity = 1; // Reset quantity state for new item
 
-    const rawPrice = activeCheckoutItem.price ? activeCheckoutItem.price.replace(/[^0-9.]/g, '') : '0';
+    const rawPrice = activeCheckoutItem.price ? activeCheckoutItem.price : 0;
     unitNumericPrice = parseFloat(rawPrice) || 0;
 
     const imgEl = document.getElementById('checkout-item-img');
     const iconEl = document.getElementById('checkout-item-icon');
-    if (activeCheckoutItem.imageUrl) {
-        imgEl.src = activeCheckoutItem.imageUrl;
-        imgEl.classList.remove('hidden');
-        iconEl.classList.add('hidden');
-    } else {
-        imgEl.classList.add('hidden');
-        iconEl.classList.remove('hidden');
-    }
-
-    document.getElementById('checkout-item-title').innerText = activeCheckoutItem.title || "EE Merchandise";
-    document.getElementById('checkout-item-badge').innerText = activeCheckoutItem.badge || "PRE-ORDER";
-    document.getElementById('checkout-item-unit-price').innerText = `₱${unitNumericPrice.toFixed(2)}`;
-
-    if (window.paymentInfo) {
-        document.getElementById('checkout-payment-name').innerText = window.paymentInfo.name || "FUSEE Treasurer";
-        document.getElementById('checkout-payment-number').innerText = window.paymentInfo.number || "N/A";
-        
-        const qrContainer = document.getElementById('checkout-qr-container');
-        const qrImg = document.getElementById('checkout-qr-img');
-        if (window.paymentInfo.qrUrl) {
-            qrImg.src = window.paymentInfo.qrUrl;
-            qrContainer.classList.remove('hidden');
+    if (imgEl && iconEl) {
+        if (activeCheckoutItem.imageUrl) {
+            imgEl.src = activeCheckoutItem.imageUrl;
+            imgEl.classList.remove('hidden');
+            iconEl.classList.add('hidden');
         } else {
-            qrContainer.classList.add('hidden');
+            imgEl.classList.add('hidden');
+            iconEl.classList.remove('hidden');
         }
     }
 
+    const titleEl = document.getElementById('checkout-item-title');
+    if (titleEl) titleEl.innerText = activeCheckoutItem.title || 'EE Merch Item';
+
+    const badgeEl = document.getElementById('checkout-item-badge');
+    if (badgeEl) badgeEl.innerText = activeCheckoutItem.badge || 'Official Merch';
+
+    const unitPriceEl = document.getElementById('checkout-item-unit-price');
+    if (unitPriceEl) unitPriceEl.innerText = `₱${unitNumericPrice.toFixed(2)}`;
+
+    // Payment Details Setup
+    if (window.paymentInfo) {
+        const nameEl = document.getElementById('checkout-payment-name');
+        const numEl = document.getElementById('checkout-payment-number');
+        if (nameEl) nameEl.innerText = window.paymentInfo.name || 'N/A';
+        if (numEl) numEl.innerText = window.paymentInfo.number || 'N/A';
+
+        const qrContainer = document.getElementById('checkout-qr-container');
+        const qrImg = document.getElementById('checkout-qr-img');
+        if (qrContainer && qrImg) {
+            if (window.paymentInfo.qrUrl) {
+                qrImg.src = window.paymentInfo.qrUrl;
+                qrContainer.classList.remove('hidden');
+            } else {
+                qrContainer.classList.add('hidden');
+            }
+        }
+    }
+
+    // Size Selection Setup & Reset
     const sizeContainer = document.getElementById('checkout-size-container');
     const selectedSizeInput = document.getElementById('checkout-selected-size');
-    selectedSizeInput.value = "";
-    
+    if (selectedSizeInput) selectedSizeInput.value = "";
+
     document.querySelectorAll('#size-pill-group .size-pill').forEach(btn => {
         btn.classList.remove('border-fusee-magenta', 'bg-fusee-magenta/20', 'text-fusee-magenta');
         btn.classList.add('border-slate-700', 'bg-slate-900', 'text-white');
     });
 
     if (activeCheckoutItem.requiresSize === false) {
-        sizeContainer.classList.add('hidden');
-        selectedSizeInput.value = "N/A";
+        if (sizeContainer) sizeContainer.classList.add('hidden');
+        if (selectedSizeInput) selectedSizeInput.value = "N/A";
     } else {
-        sizeContainer.classList.remove('hidden');
+        if (sizeContainer) sizeContainer.classList.remove('hidden');
     }
 
+    // Auto-fill logged-in student info
     if (window.currentUser) {
         if (window.currentUser.displayName) {
-            document.getElementById('checkout-student-name').value = window.currentUser.displayName;
+            const nameInp = document.getElementById('checkout-student-name');
+            if (nameInp) nameInp.value = window.currentUser.displayName;
         }
         if (window.currentUser.email) {
-            document.getElementById('checkout-student-email').value = window.currentUser.email;
+            const emailInp = document.getElementById('checkout-student-email');
+            if (emailInp) emailInp.value = window.currentUser.email;
         }
     }
 
-    updateMerchQty(0);
+    window.updateMerchQty(0);
 
     if (typeof window.openModal === 'function') {
         window.openModal('merch-order-modal');
     } else {
-        document.getElementById('merch-order-modal').classList.remove('hidden-sheet');
+        document.getElementById('merch-order-modal')?.classList.remove('hidden');
     }
 };
 
 // 2. Select Size Pill Handler
 window.selectMerchSize = function(size) {
-    document.getElementById('checkout-selected-size').value = size;
+    const input = document.getElementById('checkout-selected-size');
+    if (input) input.value = size;
+
     document.querySelectorAll('#size-pill-group .size-pill').forEach(btn => {
         if (btn.getAttribute('data-size') === size) {
             btn.classList.remove('border-slate-700', 'bg-slate-900', 'text-white');
@@ -5142,10 +5218,13 @@ window.selectMerchSize = function(size) {
 window.updateMerchQty = function(change) {
     currentQuantity += change;
     if (currentQuantity < 1) currentQuantity = 1;
-    
-    document.getElementById('checkout-qty-display').innerText = currentQuantity;
+
+    const qtyDisplay = document.getElementById('checkout-qty-display');
+    if (qtyDisplay) qtyDisplay.innerText = currentQuantity;
+
     const grandTotal = unitNumericPrice * currentQuantity;
-    document.getElementById('checkout-total-price').innerText = `₱${grandTotal.toFixed(2)}`;
+    const totalPriceEl = document.getElementById('checkout-total-price');
+    if (totalPriceEl) totalPriceEl.innerText = `₱${grandTotal.toFixed(2)}`;
 };
 
 // 4. Handle Order Submission to Firestore
@@ -5153,38 +5232,43 @@ window.handleMerchOrderSubmit = async function(event) {
     event.preventDefault();
 
     const submitBtn = document.getElementById('submit-order-btn');
-    const selectedSize = document.getElementById('checkout-selected-size').value;
+    const selectedSize = document.getElementById('checkout-selected-size')?.value;
 
-    if (activeCheckoutItem.requiresSize !== false && !selectedSize) {
-        alert("Please select a size before placing your order.");
+    if (activeCheckoutItem && activeCheckoutItem.requiresSize !== false && !selectedSize) {
+        if (window.showToast) window.showToast("Please select a size before placing your order.", "error");
+        else alert("Please select a size before placing your order.");
         return;
     }
 
-    const studentName = document.getElementById('checkout-student-name').value.trim();
-    const studentEmail = document.getElementById('checkout-student-email').value.trim();
-    const studentId = document.getElementById('checkout-student-id').value.trim();
-    const courseYearSec = document.getElementById('checkout-student-course').value.trim();
-    const gcashRefNo = document.getElementById('checkout-gcash-ref').value.trim();
+    const studentName = document.getElementById('checkout-student-name')?.value?.trim();
+    const studentEmail = document.getElementById('checkout-student-email')?.value?.trim();
+    const studentId = document.getElementById('checkout-student-id')?.value?.trim();
+    const courseYearSec = document.getElementById('checkout-student-course')?.value?.trim();
+    const gcashRefNo = document.getElementById('checkout-gcash-ref')?.value?.trim();
 
     if (!studentName || !studentEmail || !studentId || !courseYearSec || !gcashRefNo) {
-        alert("Please fill in all required fields.");
+        if (window.showToast) window.showToast("Please fill in all required fields.", "error");
+        else alert("Please fill in all required fields.");
         return;
     }
 
     if (gcashRefNo.length < 10) {
-        alert("Please enter a valid GCash / Maya Reference Number (at least 10–13 digits).");
+        if (window.showToast) window.showToast("Please enter a valid GCash / Maya Reference Number (at least 10 digits).", "error");
+        else alert("Please enter a valid GCash / Maya Reference Number (at least 10 digits).");
         return;
     }
 
     const grandTotal = unitNumericPrice * currentQuantity;
 
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting Order...`;
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
+    }
 
     try {
-        await addDoc(collection(db, "merch_orders"), {
-            itemTitle: activeCheckoutItem.title || "EE Merch",
-            itemPrice: activeCheckoutItem.price || `₱${unitNumericPrice.toFixed(2)}`,
+        const orderPayload = {
+            itemTitle: activeCheckoutItem?.title || "EE Merch",
+            itemPrice: activeCheckoutItem?.price || `₱${unitNumericPrice.toFixed(2)}`,
             size: selectedSize || "N/A",
             quantity: currentQuantity,
             totalAmount: grandTotal,
@@ -5194,23 +5278,41 @@ window.handleMerchOrderSubmit = async function(event) {
             courseYearSec: courseYearSec,
             gcashRefNo: gcashRefNo,
             status: "PENDING",
-            createdAt: serverTimestamp()
-        });
+            createdAt: window.serverTimestamp ? window.serverTimestamp() : (typeof serverTimestamp === 'function' ? serverTimestamp() : new Date().toISOString())
+        };
 
-        alert("🎉 Order submitted successfully! FUSEE officers will verify your payment reference shortly.");
+        const dbRef = window.db || (typeof db !== 'undefined' ? db : null);
+        const addDocFn = window.addDoc || (typeof addDoc === 'function' ? addDoc : null);
+        const collectionFn = window.collection || (typeof collection === 'function' ? collection : null);
 
-        document.getElementById('merch-checkout-form').reset();
+        if (dbRef && addDocFn && collectionFn) {
+            await addDocFn(collectionFn(dbRef, "merch_orders"), orderPayload);
+        } else {
+            throw new Error("Firestore instance is not initialized.");
+        }
+
+        if (window.showToast) {
+            window.showToast("Order submitted successfully! FUSEE officers will verify your payment.", "success");
+        } else {
+            alert("🎉 Order submitted successfully! FUSEE officers will verify your payment.");
+        }
+
+        document.getElementById('merch-checkout-form')?.reset();
+
         if (typeof window.closeModal === 'function') {
             window.closeModal('merch-order-modal');
         } else {
-            document.getElementById('merch-order-modal').classList.add('hidden-sheet');
+            document.getElementById('merch-order-modal')?.classList.add('hidden');
         }
     } catch (err) {
         console.error("Error placing order:", err);
-        alert("Failed to submit order: " + err.message);
+        if (window.showToast) window.showToast("Failed to submit order: " + err.message, "error");
+        else alert("Failed to submit order: " + err.message);
     } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>Confirm & Submit Order</span>`;
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Order`;
+        }
     }
 };
 
@@ -5462,6 +5564,8 @@ const ADDU_GRADE_CHIPS = [
 ];
 
 window.openTargetGradeCalculatorModal = function() {
+    closeAllModals(); // Close any currently open modal sheets first
+
     renderGradeChips();
     initTargetGradeEvents();
     calculateTargetGrade();
@@ -5501,78 +5605,107 @@ window.selectTargetGrade = function(pct) {
 };
 
 function calculateTargetGrade() {
-    const wPL = parseFloat(document.getElementById('tg-wPL')?.value) || 25;
-    const wMT = parseFloat(document.getElementById('tg-wMT')?.value) || 25;
-    const wPF = parseFloat(document.getElementById('tg-wPF')?.value) || 25;
-    const wFR = parseFloat(document.getElementById('tg-wFR')?.value) || 25;
+    // Read period weights (Defaults: PL 20%, MT 20%, PF 20%, FR 40%)
+    const wPL = parseFloat(document.getElementById('tg-wPL')?.value) || 10;
+    const wMT = parseFloat(document.getElementById('tg-wMT')?.value) || 45;
+    const wPF = parseFloat(document.getElementById('tg-wPF')?.value) || 45;
 
     const gPL = parseFloat(document.getElementById('tg-gradePL')?.value) || 0;
     const gMT = parseFloat(document.getElementById('tg-gradeMT')?.value) || 0;
-    const pfSliderVal = parseFloat(document.getElementById('tg-pfSlider')?.value) || 85;
 
+    // 1. Calculate accumulated points earned so far
     const accumPts = (gPL * (wPL / 100)) + (gMT * (wMT / 100));
     const accumPtsEl = document.getElementById('tg-accumulatedPtsText');
     if (accumPtsEl) {
         accumPtsEl.textContent = `${accumPts.toFixed(2)} / ${tgTargetPercent.toFixed(2)} pts`;
     }
 
-    const remWeight = wPF + wFR;
+    // 2. Solve for Needed Grade in the remaining weight (wPF)
     const ptsNeeded = tgTargetPercent - accumPts;
-    const reqAvg = remWeight > 0 ? (ptsNeeded / (remWeight / 100)) : 0;
+    const reqPrefi = wPF > 0 ? (ptsNeeded / (wPF / 100)) : 0;
 
     const reqAvgDisplay = document.getElementById('tg-reqAvgDisplay');
-    const feasibilityBadge = document.getElementById('tg-feasibilityBadge');
     const reqRawDisplay = document.getElementById('tg-reqRawDisplay');
+    const feasibilityBadge = document.getElementById('tg-feasibilityBadge');
 
-    if (reqAvgDisplay) reqAvgDisplay.textContent = `${reqAvg.toFixed(1)}%`;
-
-    // Base-40 Conversion: Transmuted = 40 + 0.6 * Raw => Raw = (Transmuted - 40) / 0.6
-    const reqRawPct = (reqAvg - 40) / 0.6;
-    if (reqRawDisplay) {
-        if (reqRawPct > 100) reqRawDisplay.textContent = `>100% Raw`;
-        else if (reqRawPct <= 0) reqRawDisplay.textContent = `0% Raw`;
-        else reqRawDisplay.textContent = `~${reqRawPct.toFixed(1)}% Raw`;
-    }
-
-    if (feasibilityBadge) {
-        if (reqAvg <= 100 && reqAvg >= 0) {
-            feasibilityBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
-            feasibilityBadge.textContent = 'Achievable 🟢';
-        } else if (reqAvg > 100) {
-            feasibilityBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-rose-500/20 text-rose-400 border border-rose-500/30';
-            feasibilityBadge.textContent = 'Impossible 🔴';
+    // 3. Render required prefinal percentage
+    if (reqAvgDisplay) {
+        if (reqPrefi > 100) {
+            reqAvgDisplay.textContent = `>100%`;
+        } else if (reqPrefi <= 0) {
+            reqAvgDisplay.textContent = `0.0%`;
         } else {
-            feasibilityBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-fusee-cyan/20 text-fusee-cyan border border-fusee-cyan/30';
-            feasibilityBadge.textContent = 'Secured 🌟';
+            reqAvgDisplay.textContent = `${reqPrefi.toFixed(1)}%`;
         }
     }
 
-    // "What-If" Prefinal Slider calculation
-    const sliderBadge = document.getElementById('tg-sliderValueBadge');
-    if (sliderBadge) sliderBadge.textContent = `PF: ${pfSliderVal}%`;
-
-    const ptsAfterPF = accumPts + (pfSliderVal * (wPF / 100));
-    const finalPtsNeeded = tgTargetPercent - ptsAfterPF;
-    const finalGradeNeeded = wFR > 0 ? (finalPtsNeeded / (wFR / 100)) : 0;
-
-    const neededFinalDisplay = document.getElementById('tg-neededFinalDisplay');
-    const finalRawNeededText = document.getElementById('tg-finalRawNeededText');
-
-    if (neededFinalDisplay) {
-        if (finalGradeNeeded <= 0) neededFinalDisplay.textContent = '0.0%';
-        else neededFinalDisplay.textContent = `${finalGradeNeeded.toFixed(1)}%`;
+    // 4. Convert Transmuted Grade to Base-40 Raw Exam Score %
+    // Formula: Raw % = (Transmuted % - 40) / 0.60
+    const reqRawPct = (reqPrefi - 40) / 0.60;
+    if (reqRawDisplay) {
+        if (reqPrefi > 100 || reqRawPct > 100) {
+            reqRawDisplay.textContent = `N/A (Impossible)`;
+        } else if (reqRawPct <= 0) {
+            reqRawDisplay.textContent = `0.0% Raw`;
+        } else {
+            reqRawDisplay.textContent = `~${reqRawPct.toFixed(1)}% Raw`;
+        }
     }
 
-    if (finalRawNeededText) {
-        const finalRaw = (finalGradeNeeded - 40) / 0.6;
-        if (finalRaw > 100) finalRawNeededText.textContent = `Raw exam score: >100 / 100 (Out of range)`;
-        else if (finalRaw <= 0) finalRawNeededText.textContent = `Raw exam score: Guaranteed pass`;
-        else finalRawNeededText.textContent = `Raw exam score: ~${finalRaw.toFixed(1)} / 100`;
+    // 5. Calculate required Final Departmental Exam (80%) if Topic Exam (20%) is set
+    const pfTopicInput = parseFloat(document.getElementById('tg-subPF-topic')?.value);
+    const neededDeptExamEl = document.getElementById('tg-neededFinalDeptExam');
+    if (neededDeptExamEl) {
+        if (!isNaN(pfTopicInput) && reqPrefi <= 100) {
+            // Prefi = (Dept * 0.80) + (Topic * 0.20) => Dept = (Prefi - Topic * 0.20) / 0.80
+            const neededDept = (reqPrefi - (pfTopicInput * 0.20)) / 0.80;
+            const rawDept = (neededDept - 40) / 0.60;
+            if (neededDept > 100) {
+                neededDeptExamEl.textContent = `>100% (Impossible)`;
+            } else {
+                neededDeptExamEl.textContent = `${neededDept.toFixed(1)}% (~${Math.max(0, rawDept).toFixed(1)}% Raw)`;
+            }
+        } else if (reqPrefi > 100) {
+            neededDeptExamEl.textContent = `N/A`;
+        } else {
+            neededDeptExamEl.textContent = `--%`;
+        }
+    }
+
+    // 6. Feasibility Badge Status
+    if (feasibilityBadge) {
+        if (reqPrefi <= 100 && reqPrefi >= 0) {
+            feasibilityBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+            feasibilityBadge.textContent = 'Achievable 🟢';
+        } else if (reqPrefi > 100) {
+            feasibilityBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-rose-500/20 text-rose-400 border border-rose-500/30';
+            feasibilityBadge.textContent = 'Unreachable 🔴';
+        } else {
+            feasibilityBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-fusee-cyan/20 text-fusee-cyan border border-fusee-cyan/30';
+            feasibilityBadge.textContent = 'Target Met 🌟';
+        }
+    }
+}
+
+// Sub-breakdown Auto-calculation Listener
+function computeSubBreakdown(deptId, topicId, ratioDept, ratioTopic, targetInputId) {
+    const val1 = parseFloat(document.getElementById(deptId)?.value);
+    const val2 = parseFloat(document.getElementById(topicId)?.value);
+    
+    if (!isNaN(val1) || !isNaN(val2)) {
+        const score1 = isNaN(val1) ? 0 : val1;
+        const score2 = isNaN(val2) ? 0 : val2;
+        const calculated = (score1 * ratioDept) + (score2 * ratioTopic);
+        const targetInput = document.getElementById(targetInputId);
+        if (targetInput) {
+            targetInput.value = calculated.toFixed(1);
+            calculateTargetGrade();
+        }
     }
 }
 
 function initTargetGradeEvents() {
-    ['tg-wPL', 'tg-wMT', 'tg-wPF', 'tg-wFR', 'tg-gradePL', 'tg-gradeMT', 'tg-pfSlider'].forEach(id => {
+    ['tg-wPL', 'tg-wMT', 'tg-wPF', 'tg-gradePL', 'tg-gradeMT', 'tg-subPF-topic'].forEach(id => {
         const el = document.getElementById(id);
         if (el && !el.dataset.hasListener) {
             el.addEventListener('input', calculateTargetGrade);
@@ -5580,29 +5713,45 @@ function initTargetGradeEvents() {
         }
     });
 
-    const presetEqual = document.getElementById('tg-presetEqualBtn');
-    if (presetEqual && !presetEqual.dataset.hasListener) {
-        presetEqual.addEventListener('click', () => {
-            document.getElementById('tg-wPL').value = 25;
-            document.getElementById('tg-wMT').value = 25;
-            document.getElementById('tg-wPF').value = 25;
-            document.getElementById('tg-wFR').value = 25;
-            calculateTargetGrade();
-        });
-        presetEqual.dataset.hasListener = 'true';
-    }
+    // Optional Sub-component event bindings
+    const subInputs = [
+        { d: 'tg-subPL-topic', t: 'tg-subPL-psets', r1: 0.90, r2: 0.10, target: 'tg-gradePL' },
+        { d: 'tg-subMT-dept', t: 'tg-subMT-topic', r1: 0.80, r2: 0.20, target: 'tg-gradeMT' }
+    ];
+
+    subInputs.forEach(item => {
+        const el1 = document.getElementById(item.d);
+        const el2 = document.getElementById(item.t);
+        const handler = () => computeSubBreakdown(item.d, item.t, item.r1, item.r2, item.target);
+        if (el1) el1.addEventListener('input', handler);
+        if (el2) el2.addEventListener('input', handler);
+    });
+
+    const preset104545 = document.getElementById('tg-preset104545Btn');
+if (preset104545 && !preset104545.dataset.hasListener) {
+    preset104545.addEventListener('click', () => {
+        const wPL = document.getElementById('tg-wPL');
+        const wMT = document.getElementById('tg-wMT');
+        const wPF = document.getElementById('tg-wPF');
+        if (wPL) wPL.value = 10;
+        if (wMT) wMT.value = 45;
+        if (wPF) wPF.value = 45;
+        calculateTargetGrade();
+    });
+    preset104545.dataset.hasListener = 'true';
+}
 
     const presetEngg = document.getElementById('tg-presetEnggBtn');
-    if (presetEngg && !presetEngg.dataset.hasListener) {
-        presetEngg.addEventListener('click', () => {
-            document.getElementById('tg-wPL').value = 20;
-            document.getElementById('tg-wMT').value = 20;
-            document.getElementById('tg-wPF').value = 20;
-            document.getElementById('tg-wFR').value = 40;
-            calculateTargetGrade();
-        });
-        presetEngg.dataset.hasListener = 'true';
-    }
+if (presetEngg && !presetEngg.dataset.hasListener) {
+    presetEngg.addEventListener('click', () => {
+        if (document.getElementById('tg-wPL')) document.getElementById('tg-wPL').value = 20;
+        if (document.getElementById('tg-wMT')) document.getElementById('tg-wMT').value = 20;
+        if (document.getElementById('tg-wPF')) document.getElementById('tg-wPF').value = 20;
+        const wFR = document.getElementById('tg-wFR');
+        if (wFR) wFR.value = 40;
+        calculateTargetGrade();
+    });
+    presetEngg.dataset.hasListener = 'true';
 }
 
 // Base-40 Modal Logic
@@ -5647,6 +5796,7 @@ window.applyTargetGradeBase40 = function() {
 
 document.getElementById('tg-b40Raw')?.addEventListener('input', updateBase40ModalCalc);
 document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40ModalCalc);
+}
 </script>
 
 
@@ -5768,11 +5918,11 @@ document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40Mo
             </div>
         </div>
 
-        <!-- 2. Current Grades (Prelim & Midterm) -->
+        <!-- 2. Current Period Grades (Inputs) -->
         <div class="space-y-2.5">
             <div class="flex items-center justify-between">
                 <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 font-techno">
-                    2. Current Period Grades (%)
+                    2. Input Current Period Grades
                 </label>
                 <button onclick="document.getElementById('tg-weightsDrawer').classList.toggle('hidden')" class="text-[11px] font-bold text-fusee-cyan hover:underline flex items-center gap-1">
                     <i class="fa-solid fa-sliders"></i>
@@ -5784,164 +5934,155 @@ document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40Mo
             <div id="tg-weightsDrawer" class="hidden p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2">
                 <div class="flex items-center justify-between text-xs font-bold text-slate-300">
                     <span>Period Weights (%)</span>
-                    <div class="space-x-1">
-                        <button id="tg-presetEqualBtn" class="px-2 py-0.5 text-[10px] bg-slate-800 rounded text-slate-300 hover:bg-slate-700 transition">Equal 25%</button>
-                        <button id="tg-presetEnggBtn" class="px-2 py-0.5 text-[10px] bg-slate-800 rounded text-slate-300 hover:bg-slate-700 transition">20/20/20/40</button>
-                    </div>
+                    <button id="tg-preset104545Btn" type="button" class="px-2 py-0.5 text-[10px] bg-fusee-yellow/20 text-fusee-yellow border border-fusee-yellow/40 rounded font-bold hover:bg-fusee-yellow/30 transition">10 / 45 / 45 Default</button>
                 </div>
-                <div class="grid grid-cols-4 gap-2">
+                <div class="grid grid-cols-3 gap-2">
                     <div>
                         <span class="text-[10px] text-slate-400 block">Prelim</span>
-                        <input type="number" id="tg-wPL" value="25" min="0" max="100" class="w-full text-center bg-slate-950 text-xs font-bold py-1 rounded border border-slate-700 focus:outline-none focus:border-fusee-cyan text-white">
+                        <input type="number" id="tg-wPL" value="10" min="0" max="100" class="w-full text-center bg-slate-950 text-xs font-bold py-1 rounded border border-slate-700 focus:outline-none focus:border-fusee-cyan text-white">
                     </div>
                     <div>
                         <span class="text-[10px] text-slate-400 block">Midterm</span>
-                        <input type="number" id="tg-wMT" value="25" min="0" max="100" class="w-full text-center bg-slate-950 text-xs font-bold py-1 rounded border border-slate-700 focus:outline-none focus:border-fusee-cyan text-white">
+                        <input type="number" id="tg-wMT" value="45" min="0" max="100" class="w-full text-center bg-slate-950 text-xs font-bold py-1 rounded border border-slate-700 focus:outline-none focus:border-fusee-cyan text-white">
                     </div>
                     <div>
                         <span class="text-[10px] text-slate-400 block">Prefinal</span>
-                        <input type="number" id="tg-wPF" value="25" min="0" max="100" class="w-full text-center bg-slate-950 text-xs font-bold py-1 rounded border border-slate-700 focus:outline-none focus:border-fusee-cyan text-white">
-                    </div>
-                    <div>
-                        <span class="text-[10px] text-slate-400 block">Final</span>
-                        <input type="number" id="tg-wFR" value="25" min="0" max="100" class="w-full text-center bg-slate-950 text-xs font-bold py-1 rounded border border-slate-700 focus:outline-none focus:border-fusee-cyan text-white">
+                        <input type="number" id="tg-wPF" value="45" min="0" max="100" class="w-full text-center bg-slate-950 text-xs font-bold py-1 rounded border border-slate-700 focus:outline-none focus:border-fusee-cyan text-white">
                     </div>
                 </div>
             </div>
 
-            <!-- Prelim & Midterm Inputs -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+            <!-- Inputs: Prelim (10%) & Midterm (45%) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- PRELIM (10%) -->
+                <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-300">Prelim</span>
-                        <button onclick="openTargetGradeBase40('pl')" class="text-[10px] font-bold text-fusee-yellow bg-fusee-yellow/10 hover:bg-fusee-yellow/20 px-1.5 py-0.5 rounded border border-fusee-yellow/30 transition flex items-center gap-1">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Base-40
+                        <span class="text-xs font-semibold text-slate-300">Prelim Grade (10%)</span>
+                        <button type="button" onclick="document.getElementById('tg-subPL').classList.toggle('hidden')" class="text-[10px] text-fusee-cyan hover:underline flex items-center gap-1 font-bold">
+                            <i class="fa-solid fa-calculator"></i> 90/10 Break
                         </button>
                     </div>
                     <div class="relative">
-                        <input type="number" id="tg-gradePL" value="85" min="0" max="100" step="0.5" class="w-full bg-slate-950 text-white font-extrabold text-lg px-3 py-1.5 rounded-xl border border-slate-700 focus:outline-none focus:border-fusee-yellow pr-7">
+                        <input type="number" id="tg-gradePL" value="85" min="0" max="100" step="0.5" placeholder="Direct Grade %" class="w-full bg-slate-950 text-white font-extrabold text-lg px-3 py-1.5 rounded-xl border border-slate-700 focus:outline-none focus:border-fusee-cyan pr-7">
                         <span class="absolute right-2.5 top-2.5 text-xs font-bold text-slate-400">%</span>
+                    </div>
+
+                    <!-- Optional 90/10 Sub-breakdown -->
+                    <div id="tg-subPL" class="hidden pt-2 border-t border-slate-800 space-y-1.5">
+                        <div>
+                            <span class="text-[9px] text-slate-400 block">Topic Exams (90%)</span>
+                            <input type="number" id="tg-subPL-topic" placeholder="Grade %" min="0" max="100" class="w-full bg-slate-950 text-xs text-white p-1 rounded border border-slate-800 focus:border-fusee-cyan">
+                        </div>
+                        <div>
+                            <span class="text-[9px] text-slate-400 block">Problem Sets (10%)</span>
+                            <input type="number" id="tg-subPL-psets" placeholder="Grade %" min="0" max="100" class="w-full bg-slate-950 text-xs text-white p-1 rounded border border-slate-800 focus:border-fusee-cyan">
+                        </div>
                     </div>
                 </div>
 
-                <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-300">Midterm</span>
-                        <button onclick="openTargetGradeBase40('mt')" class="text-[10px] font-bold text-fusee-yellow bg-fusee-yellow/10 hover:bg-fusee-yellow/20 px-1.5 py-0.5 rounded border border-fusee-yellow/30 transition flex items-center gap-1">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Base-40
-                        </button>
-                    </div>
-                    <div class="relative">
-                        <input type="number" id="tg-gradeMT" value="80" min="0" max="100" step="0.5" class="w-full bg-slate-950 text-white font-extrabold text-lg px-3 py-1.5 rounded-xl border border-slate-700 focus:outline-none focus:border-fusee-yellow pr-7">
-                        <span class="absolute right-2.5 top-2.5 text-xs font-bold text-slate-400">%</span>
-                    </div>
+                <!-- MIDTERM (45%) Card with 40-Base Raw Score Option -->
+<div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
+    <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold text-slate-300">Midterm Grade (45%)</span>
+        <button type="button" onclick="document.getElementById('tg-subMT').classList.toggle('hidden')" class="text-[10px] text-fusee-cyan hover:underline flex items-center gap-1 font-bold">
+            <i class="fa-solid fa-calculator"></i> 80/20 Break
+        </button>
+    </div>
+    
+    <!-- Main Transmuted Grade Input -->
+    <div class="relative">
+        <input type="number" id="tg-gradeMT" value="80" min="0" max="100" step="0.1" placeholder="Transmuted Grade %" class="w-full bg-slate-950 text-white font-extrabold text-lg px-3 py-1.5 rounded-xl border border-slate-700 focus:outline-none focus:border-fusee-cyan pr-7">
+        <span class="absolute right-2.5 top-2.5 text-xs font-bold text-slate-400">%</span>
+    </div>
+
+    <!-- Sub-breakdown for Midterm Exam Raw Score & Topic Exams -->
+    <div id="tg-subMT" class="hidden pt-2 border-t border-slate-800 space-y-2">
+        <!-- Midterm Dept Exam (80% Weight) -->
+        <div>
+            <div class="flex items-center justify-between text-[9px] text-slate-400 mb-1">
+                <span class="font-bold text-slate-300">Midterm Dept Exam (80%)</span>
+                <span id="tg-mtDeptTransmutedBadge" class="font-extrabold text-fusee-yellow px-1.5 py-0.5 rounded bg-fusee-yellow/10 border border-fusee-yellow/30">
+                    40-Base: --%
+                </span>
+            </div>
+            <div class="grid grid-cols-2 gap-1.5">
+                <div>
+                    <input type="number" id="tg-subMT-dept-raw" placeholder="Raw Score" min="0" step="0.1" class="w-full bg-slate-950 text-xs text-white p-1.5 rounded-lg border border-slate-800 focus:border-fusee-cyan">
+                    <span class="text-[8px] text-slate-500 block mt-0.5">Score Earned</span>
+                </div>
+                <div>
+                    <input type="number" id="tg-subMT-dept-total" value="100" placeholder="Total Items" min="1" class="w-full bg-slate-950 text-xs text-white p-1.5 rounded-lg border border-slate-800 focus:border-fusee-cyan">
+                    <span class="text-[8px] text-slate-500 block mt-0.5">Total Items</span>
                 </div>
             </div>
         </div>
 
-        <!-- 3. High Impact Result Card -->
-        <div id="tg-resultCard" class="p-4 rounded-2xl bg-gradient-to-br from-slate-900 via-[#130e2e] to-slate-950 border border-fusee-cyan/30 shadow-neon-cyan space-y-2 relative overflow-hidden">
+        <!-- Topic Exams (20% Weight) -->
+        <div>
+            <div class="flex items-center justify-between text-[9px] text-slate-400 mb-1">
+                <span class="font-bold text-slate-300">Topic Exams (20%)</span>
+                <span id="tg-mtTopicTransmutedBadge" class="font-extrabold text-fusee-cyan px-1.5 py-0.5 rounded bg-fusee-cyan/10 border border-fusee-cyan/30">
+                    40-Base: --%
+                </span>
+            </div>
+            <input type="number" id="tg-subMT-topic-raw" placeholder="Raw % Score (0-100)" min="0" max="100" step="0.1" class="w-full bg-slate-950 text-xs text-white p-1.5 rounded-lg border border-slate-800 focus:border-fusee-cyan">
+            <span class="text-[8px] text-slate-500 block mt-0.5">Enter raw topic exam average %</span>
+        </div>
+    </div>
+</div>
+
+        <!-- 3. Output Card: Needed Prefinal Grade -->
+        <div id="tg-resultCard" class="p-4 rounded-2xl bg-gradient-to-br from-slate-900 via-[#130e2e] to-slate-950 border border-fusee-yellow/40 shadow-neon-yellow space-y-3 relative overflow-hidden">
             <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold tracking-wider text-slate-300 uppercase font-techno">Required Remaining Avg</span>
+                <span class="text-[11px] font-bold tracking-wider text-fusee-yellow uppercase font-techno">Needed Prefinal Grade (45%)</span>
                 <span id="tg-feasibilityBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                    On Track 🟢
+                    Achievable 🟢
                 </span>
             </div>
 
             <div class="flex items-baseline justify-between py-1">
                 <div>
                     <div class="text-3xl sm:text-4xl font-black text-white font-techno" id="tg-reqAvgDisplay">
-                        84.5%
+                        --%
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-1" id="tg-reqSubtext">
-                        Average needed across Prefinals & Finals
+                    <p class="text-[10px] text-slate-400 mt-1">
+                        Required overall Prefinal grade to reach target
                     </p>
                 </div>
 
                 <div class="text-right border-l border-white/10 pl-4">
-                    <span class="text-[9px] text-slate-400 block uppercase font-medium">Equiv. Base-40 Raw Score</span>
-                    <span class="text-base font-bold text-fusee-yellow font-techno" id="tg-reqRawDisplay">~74.2%</span>
+                    <span class="text-[9px] text-slate-400 block uppercase font-medium">Equiv. Raw Exam %</span>
+                    <span class="text-base font-bold text-fusee-cyan font-techno" id="tg-reqRawDisplay">~--%</span>
                 </div>
             </div>
 
-            <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[11px]">
-                <span class="text-slate-400">Accumulated Points:</span>
-                <span id="tg-accumulatedPtsText" class="font-bold text-fusee-yellow font-techno">41.25 / 92.00 pts</span>
-            </div>
-        </div>
-
-        <!-- 4. Interactive "What-If" Prefinal Slider -->
-        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h4 class="text-xs font-bold text-white font-techno flex items-center gap-1.5">
-                        <i class="fa-solid fa-sliders text-fusee-yellow"></i>
-                        Prefinal "What-If" Scenario
-                    </h4>
-                    <p class="text-[10px] text-slate-400">Slide expected Prefinal to calculate exact Final Exam needed.</p>
+            <!-- Optional breakdown for Prefinal Sub-components (80% Final Dept Exam + 20% Topic Exams) -->
+            <div class="pt-3 border-t border-white/10 space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold text-slate-300">Prefinal Sub-Breakdown Calculator</span>
+                    <button type="button" onclick="document.getElementById('tg-subPF-box').classList.toggle('hidden')" class="text-[10px] text-fusee-yellow hover:underline flex items-center gap-1 font-bold">
+                        <i class="fa-solid fa-calculator"></i> Topic Exams (20%)
+                    </button>
                 </div>
-                <span id="tg-sliderValueBadge" class="text-xs font-bold px-2 py-0.5 rounded-lg bg-fusee-yellow text-slate-950 font-techno">
-                    PF: 85%
-                </span>
-            </div>
 
-            <div>
-                <input type="range" id="tg-pfSlider" min="40" max="100" value="85" step="1" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-400">
-            </div>
-
-            <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                <div>
-                    <span class="text-[11px] font-semibold text-slate-300 block">Required Final Exam Grade:</span>
-                    <span id="tg-finalRawNeededText" class="text-[10px] text-slate-400">Raw exam score: ~68 / 100</span>
+                <div id="tg-subPF-box" class="hidden p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
+                    <div>
+                        <span class="text-[10px] text-slate-400 block mb-1">Enter Prefinal Topic Exams Grade (20% of Prefinal):</span>
+                        <input type="number" id="tg-subPF-topic" value="85" placeholder="Topic Exams %" min="0" max="100" class="w-full bg-slate-900 text-xs text-white p-1.5 rounded border border-slate-700 focus:border-fusee-yellow">
+                    </div>
+                    <div class="p-2 rounded-lg bg-slate-900 border border-slate-800 flex justify-between items-center text-xs">
+                        <span class="text-slate-300">Needed Final Dept Exam (80%):</span>
+                        <span id="tg-neededFinalDeptExam" class="font-bold text-fusee-yellow font-techno">--%</span>
+                    </div>
                 </div>
-                <div id="tg-neededFinalDisplay" class="text-base font-black text-fusee-cyan font-techno">
-                    84.0%
+
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-slate-400">Points Earned (Prelim + Midterm):</span>
+                    <span id="tg-accumulatedPtsText" class="font-bold text-fusee-yellow font-techno">0.00 / 0.00 pts</span>
                 </div>
             </div>
         </div>
-
-    </div>
-</div>
-
-<!-- INLINE BASE-40 POPUP MODAL -->
-<div id="tg-base40Modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-[220] flex items-center justify-center p-4">
-    <div class="glass-card rounded-2xl max-w-xs w-full p-4 shadow-2xl border border-fusee-yellow/40 space-y-3">
-        <div class="flex items-center justify-between border-b border-white/10 pb-2">
-            <h3 class="text-xs font-bold text-white font-techno flex items-center gap-1.5">
-                <i class="fa-solid fa-wand-magic-sparkles text-fusee-yellow"></i>
-                Base-40 Raw Converter
-            </h3>
-            <button onclick="closeTargetGradeBase40()" class="text-slate-400 hover:text-white text-xs">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-
-        <div class="space-y-2 text-xs">
-            <div>
-                <label class="text-[10px] text-slate-400 block mb-0.5">Your Raw Score</label>
-                <input type="number" id="tg-b40Raw" value="40" min="0" class="w-full bg-slate-900 text-white font-bold p-2 rounded-lg border border-slate-700 focus:outline-none">
-            </div>
-            <div>
-                <label class="text-[10px] text-slate-400 block mb-0.5">Total Exam Items</label>
-                <input type="number" id="tg-b40Total" value="50" min="1" class="w-full bg-slate-900 text-white font-bold p-2 rounded-lg border border-slate-700 focus:outline-none">
-            </div>
-
-            <div class="p-2 rounded-lg bg-fusee-yellow/10 border border-fusee-yellow/30 text-center">
-                <span class="text-[10px] text-fusee-yellow block font-medium">Calculated Transmuted Grade</span>
-                <span id="tg-b40ResultText" class="text-base font-black text-white font-techno">88.0%</span>
-            </div>
-        </div>
-
-        <div class="flex gap-2 pt-1">
-            <button onclick="closeTargetGradeBase40()" class="w-1/2 py-1.5 rounded-xl border border-slate-700 text-xs font-medium text-slate-300">
-                Cancel
-            </button>
-            <button onclick="applyTargetGradeBase40()" class="w-1/2 py-1.5 rounded-xl bg-fusee-yellow text-slate-950 text-xs font-bold font-techno">
-                Apply
-            </button>
-        </div>
-    </div>
-</div>
+    </div> 
 
 <!-- MODAL: QPI Calculator -->
 <div id="qpi-calc-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-cyan/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[90vh] shadow-2xl overflow-hidden flex flex-col">
@@ -6018,5 +6159,6 @@ document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40Mo
         </div>
     </div>
 </div>
+  </main>
 </body>
 </html>
