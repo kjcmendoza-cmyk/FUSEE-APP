@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FUSEE Hub | Electrical Engineering Portal - Ateneo de Davao</title>
     <!-- Favicon & App Shortcut Icons -->
-<link rel="icon" type="image/png" href="fusee-logo.png">
-<link rel="shortcut icon" href="fusee-logo.png" type="image/png">
-<link rel="apple-touch-icon" href="fusee-logo.png">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="shortcut icon" href="icon.png" type="image/png">
+<link rel="apple-touch-icon" href="icon.png">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -1213,6 +1213,16 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
     text-shadow: 0 0 8px rgba(0, 240, 255, 0.7) !important;
 }
     </style>
+<!-- Register Service Worker for PWA Android WebAPK Install -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('PWA Service Worker registered:', reg.scope))
+        .catch(err => console.error('Service Worker registration failed:', err));
+    });
+  }
+</script>
 </head>
 <body class="relative min-h-screen text-slate-100 antialiased selection:bg-fusee-cyan selection:text-black">
 

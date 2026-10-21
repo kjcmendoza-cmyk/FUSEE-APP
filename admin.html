@@ -944,15 +944,24 @@ appId: "1:1027948046459:web:549cc5e4d6e47dd7e89ade",
     };
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const docRef = doc(db, "fusee_hub", "landing_content");
+const db = getFirestore(app);
+const docRef = doc(db, "fusee_hub", "landing_content");
 
-        // Global function to expand or collapse all details sections
-        window.toggleAllSections = function(open) {
-            document.querySelectorAll('main details').forEach(detail => {
-                detail.open = open;
-            });
-        };
+function setVal(id, val, isHtml = false) {
+  const el = document.getElementById(id);
+  if (el) {
+    if (isHtml) el.innerHTML = val ?? '';
+    else el.value = val ?? '';
+  }
+}
+
+// Global function to expand or collapse all details sections
+window.toggleAllSections = function(open) {
+  document.querySelectorAll('main details').forEach(detail => {
+    detail.open = open;
+  });
+};
+
 
         // Timeout promise wrapper to prevent infinite loading state
         function withTimeout(promise, ms = 7000) {
@@ -1442,54 +1451,57 @@ window.addImportantEventRow = function(title = '', date = '', endDate = '', cate
         };
 
         function populateUI(data) {
-            document.getElementById('ticker-text').value = data.tickerText || defaultData.tickerText;
-            document.getElementById('global-status-select').value = data.globalStatus || "ALL OPEN";
+            setVal('ticker-text', data.tickerText || defaultData.tickerText);
+            setVal('global-status-select', data.globalStatus || "ALL OPEN");
+            
             // Load Payment Receiver Settings
-document.getElementById('admin-payment-name').value = data.paymentInfo?.name || '';
-document.getElementById('admin-payment-number').value = data.paymentInfo?.number || '';
-document.getElementById('admin-payment-qr').value = data.paymentInfo?.qr || '';
+            setVal('admin-payment-name', data.paymentInfo?.name || '');
+            setVal('admin-payment-number', data.paymentInfo?.number || '');
+            setVal('admin-payment-qr', data.paymentInfo?.qr || '');
+            
             // System 1
-            document.getElementById('sys1-tag').value = data.sys1?.tag || defaultData.sys1.tag;
-            document.getElementById('sys1-title').value = data.sys1?.title || defaultData.sys1.title;
-            document.getElementById('sys1-desc').value = data.sys1?.description || defaultData.sys1.description;
-            document.getElementById('sys1-location').value = data.sys1?.location || defaultData.sys1.location;
-            document.getElementById('sys1-hours').value = data.sys1?.hours || defaultData.sys1.hours;
-            document.getElementById('sys1-student-label').value = data.sys1?.studentLabel || defaultData.sys1.studentLabel;
-            document.getElementById('sys1-student-url').value = data.sys1?.studentUrl || defaultData.sys1.studentUrl;
-            document.getElementById('sys1-admin-label').value = data.sys1?.adminLabel || defaultData.sys1.adminLabel;
-            document.getElementById('sys1-admin-url').value = data.sys1?.adminUrl || defaultData.sys1.adminUrl;
-            document.getElementById('sys1-guidelines-title').value = data.sys1?.guidelinesTitle || defaultData.sys1.guidelinesTitle;
-            document.getElementById('sys1-guidelines-content').innerHTML = data.sys1?.guidelinesContent || defaultData.sys1.guidelinesContent;
-            document.getElementById('sys1-guidelines-url').value = data.sys1?.guidelinesUrl || defaultData.sys1.guidelinesUrl;
+            setVal('sys1-tag', data.sys1?.tag || defaultData.sys1.tag);
+            setVal('sys1-title', data.sys1?.title || defaultData.sys1.title);
+            setVal('sys1-desc', data.sys1?.description || defaultData.sys1.description);
+            setVal('sys1-location', data.sys1?.location || defaultData.sys1.location);
+            setVal('sys1-hours', data.sys1?.hours || defaultData.sys1.hours);
+            setVal('sys1-student-label', data.sys1?.studentLabel || defaultData.sys1.studentLabel);
+            setVal('sys1-student-url', data.sys1?.studentUrl || defaultData.sys1.studentUrl);
+            setVal('sys1-admin-label', data.sys1?.adminLabel || defaultData.sys1.adminLabel);
+            setVal('sys1-admin-url', data.sys1?.adminUrl || defaultData.sys1.adminUrl);
+            setVal('sys1-guidelines-title', data.sys1?.guidelinesTitle || defaultData.sys1.guidelinesTitle);
+            setVal('sys1-guidelines-content', data.sys1?.guidelinesContent || defaultData.sys1.guidelinesContent, true);
+            setVal('sys1-guidelines-url', data.sys1?.guidelinesUrl || defaultData.sys1.guidelinesUrl);
 
             // System 2
-            document.getElementById('sys2-tag').value = data.sys2?.tag || defaultData.sys2.tag;
-            document.getElementById('sys2-title').value = data.sys2?.title || defaultData.sys2.title;
-            document.getElementById('sys2-desc').value = data.sys2?.description || defaultData.sys2.description;
-            document.getElementById('sys2-location').value = data.sys2?.location || defaultData.sys2.location;
-            document.getElementById('sys2-hours').value = data.sys2?.hours || defaultData.sys2.hours;
-            document.getElementById('sys2-badge').value = data.sys2?.badge || defaultData.sys2.badge;
-            document.getElementById('sys2-btn-label').value = data.sys2?.btnLabel || defaultData.sys2.btnLabel;
-            document.getElementById('sys2-url').value = data.sys2?.url || defaultData.sys2.url;
-            document.getElementById('sys2-policies-title').value = data.sys2?.policiesTitle || defaultData.sys2.policiesTitle;
-            document.getElementById('sys2-policies-content').value = data.sys2?.policiesContent || defaultData.sys2.policiesContent;
-            document.getElementById('sys2-policies-url').value = data.sys2?.policiesUrl || defaultData.sys2.policiesUrl;
+            setVal('sys2-tag', data.sys2?.tag || defaultData.sys2.tag);
+            setVal('sys2-title', data.sys2?.title || defaultData.sys2.title);
+            setVal('sys2-desc', data.sys2?.description || defaultData.sys2.description);
+            setVal('sys2-location', data.sys2?.location || defaultData.sys2.location);
+            setVal('sys2-hours', data.sys2?.hours || defaultData.sys2.hours);
+            setVal('sys2-badge', data.sys2?.badge || defaultData.sys2.badge);
+            setVal('sys2-btn-label', data.sys2?.btnLabel || defaultData.sys2.btnLabel);
+            setVal('sys2-url', data.sys2?.url || defaultData.sys2.url);
+            setVal('sys2-policies-title', data.sys2?.policiesTitle || defaultData.sys2.policiesTitle);
+            setVal('sys2-policies-content', data.sys2?.policiesContent || defaultData.sys2.policiesContent);
+            setVal('sys2-policies-url', data.sys2?.policiesUrl || defaultData.sys2.policiesUrl);
 
             // System 3
-            document.getElementById('sys3-tag').value = data.sys3?.tag || defaultData.sys3.tag;
-            document.getElementById('sys3-title').value = data.sys3?.title || defaultData.sys3.title;
-            document.getElementById('sys3-desc').value = data.sys3?.description || defaultData.sys3.description;
-            document.getElementById('sys3-location').value = data.sys3?.location || defaultData.sys3.location;
-            document.getElementById('sys3-hours').value = data.sys3?.hours || defaultData.sys3.hours;
-            document.getElementById('sys3-badge').value = data.sys3?.badge || defaultData.sys3.badge;
-            document.getElementById('sys3-btn-label').value = data.sys3?.btnLabel || defaultData.sys3.btnLabel;
-            document.getElementById('sys3-url').value = data.sys3?.url || defaultData.sys3.url;
-            document.getElementById('sys3-guidelines-title').value = data.sys3?.guidelinesTitle || defaultData.sys3.guidelinesTitle;
-            document.getElementById('sys3-guidelines-content').value = data.sys3?.guidelinesContent || defaultData.sys3.guidelinesContent;
-            document.getElementById('sys3-guidelines-url').value = data.sys3?.guidelinesUrl || defaultData.sys3.guidelinesUrl;
+            setVal('sys3-tag', data.sys3?.tag || defaultData.sys3.tag);
+            setVal('sys3-title', data.sys3?.title || defaultData.sys3.title);
+            setVal('sys3-desc', data.sys3?.description || defaultData.sys3.description);
+            setVal('sys3-location', data.sys3?.location || defaultData.sys3.location);
+            setVal('sys3-hours', data.sys3?.hours || defaultData.sys3.hours);
+            setVal('sys3-badge', data.sys3?.badge || defaultData.sys3.badge);
+            setVal('sys3-btn-label', data.sys3?.btnLabel || defaultData.sys3.btnLabel);
+            setVal('sys3-url', data.sys3?.url || defaultData.sys3.url);
+            setVal('sys3-guidelines-title', data.sys3?.guidelinesTitle || defaultData.sys3.guidelinesTitle);
+            setVal('sys3-guidelines-content', data.sys3?.guidelinesContent || defaultData.sys3.guidelinesContent);
+            setVal('sys3-guidelines-url', data.sys3?.guidelinesUrl || defaultData.sys3.guidelinesUrl);
 
-            document.getElementById('banner-title').value = data.banner?.title || defaultData.banner.title;
-            document.getElementById('banner-body').value = data.banner?.body || defaultData.banner.body;
+            // Banner
+            setVal('banner-title', data.banner?.title || defaultData.banner.title);
+            setVal('banner-body', data.banner?.body || defaultData.banner.body);
 
             renderEvents(data.events || defaultData.events);
             renderQpiDirectoryAdmin(data.qpiSubjects || defaultData.qpiSubjects);
@@ -1510,11 +1522,11 @@ document.getElementById('admin-payment-qr').value = data.paymentInfo?.qr || '';
 
             const eeDescEl = document.getElementById('ee-dept-desc');
             if (eeDescEl) {
-                eeDescEl.value = data.eeDept?.description || defaultData.eeDept.description;
-                document.getElementById('ee-dept-chair-name-input').value = data.eeDept?.chairName || defaultData.eeDept.chairName;
-                document.getElementById('ee-dept-chair-details-input').value = data.eeDept?.chairDetails || defaultData.eeDept.chairDetails;
-                document.getElementById('ee-dept-custodian-name-input').value = data.eeDept?.custodianName || defaultData.eeDept.custodianName;
-                document.getElementById('ee-dept-custodian-details-input').value = data.eeDept?.custodianDetails || defaultData.eeDept.custodianDetails;
+               setVal('ee-dept-desc', data.eeDept?.description || defaultData.eeDept.description);
+        setVal('ee-dept-chair-name-input', data.eeDept?.chairName || defaultData.eeDept.chairName);
+        setVal('ee-dept-chair-details-input', data.eeDept?.chairDetails || defaultData.eeDept.chairDetails);
+        setVal('ee-dept-custodian-name-input', data.eeDept?.custodianName || defaultData.eeDept.custodianName);
+        setVal('ee-dept-custodian-details-input', data.eeDept?.custodianDetails || defaultData.eeDept.custodianDetails);
 
                 renderFacultyRows(data.eeDept?.faculty || defaultData.eeDept.faculty);
                 renderFacilityRows(data.eeDept?.facilities || defaultData.eeDept.facilities);
@@ -1522,8 +1534,8 @@ document.getElementById('admin-payment-qr').value = data.paymentInfo?.qr || '';
 
             const fuseeDescEl = document.getElementById('fusee-info-desc-input');
             if (fuseeDescEl) {
-                fuseeDescEl.value = data.fuseeInfo?.description || defaultData.fuseeInfo.description;
-                document.getElementById('fusee-info-email-input').value = data.fuseeInfo?.email || defaultData.fuseeInfo.email;
+                setVal('fusee-info-desc-input', data.fuseeInfo?.description || defaultData.fuseeInfo.description);
+        setVal('fusee-info-email-input', data.fuseeInfo?.email || defaultData.fuseeInfo.email);
             }
         }
 
