@@ -1365,7 +1365,6 @@ function renderImportantEventsAdmin(list = []) {
         item.title, item.date, item.endDate, item.category, item.description, index
     ));
 }
-// admin.html (Line 610)
 window.addImportantEventRow = function(title = '', date = '', endDate = '', category = 'Major Exam', description = '', idx = Date.now()) {
     const container = document.getElementById('important-events-admin-container');
     if (!container) return;
@@ -1587,7 +1586,7 @@ function gatherFormData() {
         const title = row.querySelector('.imp-title-input')?.value?.trim() || '';
         const category = row.querySelector('.imp-category-input')?.value || 'Major Exam';
         const date = row.querySelector('.imp-date-input')?.value || '';
-        const endDate = row.querySelector('.imp-enddate-input')?.value || date;
+        const endDate = row.querySelector('.imp-end-date-input')?.value || date;
         const description = row.querySelector('.imp-desc-input')?.value?.trim() || '';
         if (title && date) importantEvents.push({ title, category, date, endDate, description });
     });
@@ -1834,15 +1833,15 @@ window.saveDataToFirebase = async function() {
     saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
 
     try {
-        const eventRows = document.querySelectorAll('#important-events-admin-container .important-event-item-row');
-        const importantEvents = Array.from(eventRows).map(row => ({
-            id: row.dataset.id || Date.now(),
-            title: row.querySelector('.imp-title-input')?.value.trim() || '',
-            category: row.querySelector('.imp-category-input')?.value || 'General',
-            startDate: row.querySelector('.imp-date-input')?.value || '',
-            endDate: row.querySelector('.imp-end-date-input')?.value || '',
-            description: row.querySelector('.imp-desc-input')?.value.trim() || ''
-        }));
+        // admin_2.html inside saveDataToFirebase()
+const importantEvents = Array.from(eventRows).map(row => ({
+    id: row.dataset.id || Date.now(),
+    title: row.querySelector('.imp-title-input')?.value.trim() || '',
+    category: row.querySelector('.imp-category-input')?.value || 'General',
+    date: row.querySelector('.imp-date-input')?.value || '', // Changed from startDate to date
+    endDate: row.querySelector('.imp-end-date-input')?.value || '',
+    description: row.querySelector('.imp-desc-input')?.value.trim() || ''
+}));
 
         const updatedData = {
             ...gatherFormData(),
@@ -2316,9 +2315,9 @@ onSnapshot(docRef, (docSnap) => {
         const data = docSnap.data();
 
         // Render Important Events into admin rows
-        if (data.importantEvents && Array.isArray(data.importantEvents)) {
-            renderAdminImportantEvents(data.importantEvents);
-        }
+if (data.importantEvents && Array.isArray(data.importantEvents)) {
+    renderImportantEventsAdmin(data.importantEvents);
+}
 
         // (Other existing renders, e.g. labPolicies, tickerText, etc.)
     });
