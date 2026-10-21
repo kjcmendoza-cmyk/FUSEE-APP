@@ -453,28 +453,29 @@ if (data.eeDept) {
                 const icons = ['fa-shield', 'fa-clock', 'fa-pen-to-square', 'fa-circle-info', 'fa-triangle-exclamation'];
 
                 const renderAccordionItem = (item, idx, isTab4 = false) => {
-                    const color = colors[idx % colors.length];
-                    const icon = icons[idx % icons.length];
-                    
-                    let formattedContent = item.content || '';
-                    formattedContent = formattedContent.replace(/^([0-9]+\.\s*[^:\n]+:)/gm, `<strong class="text-${color} font-extrabold tracking-wide block mb-1">$1</strong>`);
-                    formattedContent = formattedContent.replace(/^([^:\n]+:)/gm, `<strong class="text-white font-bold">$1</strong>`);
+    const color = colors[idx % colors.length];
+    const icon = icons[idx % icons.length];
+    
+    let formattedContent = item.content || '';
 
-                    return `
-                        <details class="group p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 transition hover:border-${color}/40">
-                            <summary class="font-extrabold text-white cursor-pointer list-none flex justify-between items-center select-none">
-                                <span class="text-xs md:text-sm flex items-center gap-2 text-${color}">
-                                    <i class="fa-solid ${icon} text-xs"></i> 
-                                    <span class="text-white font-extrabold">${item.title || 'Policy Rule'}</span>
-                                </span>
-                                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-open:rotate-180 transition-transform duration-200"></i>
-                            </summary>
-                            <div class="mt-2.5 text-xs leading-relaxed text-slate-100 whitespace-pre-line border-t border-slate-800/80 pt-2.5">
-                                ${formattedContent}
-                            </div>
-                        </details>
-                    `;
-                };
+    // Bold only explicit numbered headers (e.g., "1. General Rules:") instead of any line with a colon
+    formattedContent = formattedContent.replace(/^([0-9]+\.\s*[^:\n]+:)/gm, `<strong class="text-${color} font-extrabold tracking-wide block mb-1">$1</strong>`);
+
+    return `
+        <details class="group p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 transition hover:border-${color}/40">
+            <summary class="font-extrabold text-white cursor-pointer list-none flex justify-between items-center select-none">
+                <span class="text-xs md:text-sm flex items-center gap-2 text-${color}">
+                    <i class="fa-solid ${icon} text-xs"></i> 
+                    <span class="text-white font-extrabold">${item.title || 'Policy Rule'}</span>
+                </span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-open:rotate-180 transition-transform duration-200"></i>
+            </summary>
+            <div class="mt-2.5 text-xs leading-relaxed text-slate-100 whitespace-pre-line border-t border-slate-800/80 pt-2.5 font-normal">
+                ${formattedContent}
+            </div>
+        </details>
+    `;
+};
 
                 const modalContainer = document.getElementById('lab-policies-display-container');
                 if (modalContainer) {
