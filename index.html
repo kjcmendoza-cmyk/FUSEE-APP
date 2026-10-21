@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-<link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FUSEE Hub | Electrical Engineering Portal - Ateneo de Davao</title>
@@ -28,7 +27,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
         import { getFirestore, doc, onSnapshot, updateDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
-        // 1. Add Firebase Auth import
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -89,12 +87,6 @@ if (typeof window.renderTutorManagementUI === 'function') {
     window.renderTutorManagementUI();
 }
         });
-
-        // 4. Global trigger for Google Sign-In
-        window.loginWithAdDU = function() {
-            return signInWithPopup(auth, provider);
-        };
-
         // Real-Time Listener for Cloud Firestore Content Updates
         onSnapshot(doc(db, "fusee_hub", "landing_content"), (docSnap) => {
             if (!docSnap.exists()) return;
@@ -3391,9 +3383,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('fusee_selected_theme') || 'fusee';
     window.setTheme(savedTheme);
 
+    // INSERT THE FIX HERE
+    ['tg-subMT-dept-raw', 'tg-subMT-dept-total', 'tg-subMT-topic-raw'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && !el.dataset.hasMtListener) {
+            el.addEventListener('input', updateMidtermSubBreakdown);
+            el.dataset.hasMtListener = 'true';
+        }
+    });
+
     if (window.refreshAllSystemStatuses) window.refreshAllSystemStatuses();
     if (window.evaluateLiveRoomStatuses) window.evaluateLiveRoomStatuses();
-
+    
     // Attach debounced live search listener
     const tutorSearchInput = document.getElementById('tutoring-search-input');
     if (tutorSearchInput) {
@@ -6109,10 +6110,10 @@ document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40Mo
                         <h3 id="qpi-result-display" class="text-xl font-black text-fusee-cyan font-techno">0.00</h3>
                         <span id="qpi-honors-badge" class="text-[10px] text-slate-500">No Subjects Added</span>
                     </div>
-                </div>
+                </div>  
             </div>
         </div>
     </div>
-</div>
-</body>
-</html>
+    </div>
+    </body>
+    </html>
