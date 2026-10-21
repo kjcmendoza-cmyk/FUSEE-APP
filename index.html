@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
+<link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FUSEE Hub | Electrical Engineering Portal - Ateneo de Davao</title>
@@ -5079,28 +5080,32 @@ window.clearQpiCalculator = function() {
 <!-- Custom Confirmation Modal -->
 <div id="confirm-modal" class="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
     <div id="confirm-modal-box" class="w-full max-w-sm glass-card rounded-2xl p-5 border border-fusee-cyan/40 shadow-2xl space-y-4 text-center transform scale-95 transition-transform duration-200">
-        <div class="w-12 h-12 rounded-full bg-fusee-cyan/20 text-fusee-cyan flex items-center justify-center mx-auto text-xl border border-fusee-cyan/40">
+        <div class="w-12 h-12 rounded-full bg-fusee-cyan/20 text-fusee-cyan flex items-center justify-center mx-auto text-xl">
             <i id="confirm-modal-icon" class="fa-solid fa-circle-question"></i>
         </div>
         <div class="space-y-1">
-            <h4 id="confirm-modal-title" class="text-sm font-bold text-white font-techno">Confirmation Required</h4>
-            <p id="confirm-modal-msg" class="text-xs text-slate-300 leading-relaxed"></p>
+            <h4 id="confirm-modal-title" class="text-sm font-bold text-white font-display">Confirmation Required</h4>
+            <p id="confirm-modal-msg" class="text-xs text-slate-300 leading-relaxed">Are you sure you want to perform this action?</p>
         </div>
-        <div class="grid grid-cols-2 gap-2 pt-2">
-            <button id="confirm-btn-cancel" type="button" class="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700">Cancel</button>
-            <button id="confirm-btn-ok" type="button" class="py-2 px-3 rounded-xl bg-gradient-to-r from-fusee-cyan to-blue-600 text-slate-950 font-bold text-xs transition shadow-neon-cyan">Confirm</button>
+        <div class="flex items-center gap-2 pt-2">
+            <button id="confirm-btn-cancel" class="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700">
+                Cancel
+            </button>
+            <button id="confirm-btn-ok" class="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-fusee-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs transition shadow-neon-cyan">
+                Confirm
+            </button>
         </div>
     </div>
 </div>
 
 <!-- Toast Notification Container (Top-Centered) -->
-<div id="toast-container" class="fixed top-5 left-1/2 -translate-x-1/2 z-[300] flex flex-col gap-2 pointer-events-none">
+<div id="toast-container" class="fixed top-5 left-1/2 -translate-x-1/2 z-[200] flex flex-col items-center gap-2.5 max-w-sm w-full pointer-events-none px-4">
 </div>
 
 <script>
-// ==============================================================
+// ===================================================
 // IN-APP MERCH CHECKOUT SYSTEM ENGINE
-// ==============================================================
+// ===================================================
 let activeCheckoutItem = null;
 let currentQuantity = 1;
 let unitNumericPrice = 0;
@@ -5108,101 +5113,82 @@ let unitNumericPrice = 0;
 // 1. Open Order Modal
 window.openMerchOrderModal = function(index) {
     if (!window.currentMerchItems || !window.currentMerchItems[index]) {
-        if (window.showToast) window.showToast("Item data unavailable. Please try again.", "error");
-        else alert("Item data unavailable. Please try again.");
+        alert("Item data unavailable. Please try again.");
         return;
     }
 
     activeCheckoutItem = window.currentMerchItems[index];
-    currentQuantity = 1; // Reset quantity state for new item
+    currentQuantity = 1;
 
-    const rawPrice = activeCheckoutItem.price ? activeCheckoutItem.price : 0;
+    const rawPrice = activeCheckoutItem.price ? activeCheckoutItem.price.replace(/[^0-9.]/g, '') : '0';
     unitNumericPrice = parseFloat(rawPrice) || 0;
 
     const imgEl = document.getElementById('checkout-item-img');
     const iconEl = document.getElementById('checkout-item-icon');
-    if (imgEl && iconEl) {
-        if (activeCheckoutItem.imageUrl) {
-            imgEl.src = activeCheckoutItem.imageUrl;
-            imgEl.classList.remove('hidden');
-            iconEl.classList.add('hidden');
-        } else {
-            imgEl.classList.add('hidden');
-            iconEl.classList.remove('hidden');
-        }
+    if (activeCheckoutItem.imageUrl) {
+        imgEl.src = activeCheckoutItem.imageUrl;
+        imgEl.classList.remove('hidden');
+        iconEl.classList.add('hidden');
+    } else {
+        imgEl.classList.add('hidden');
+        iconEl.classList.remove('hidden');
     }
 
-    const titleEl = document.getElementById('checkout-item-title');
-    if (titleEl) titleEl.innerText = activeCheckoutItem.title || 'EE Merch Item';
+    document.getElementById('checkout-item-title').innerText = activeCheckoutItem.title || "EE Merchandise";
+    document.getElementById('checkout-item-badge').innerText = activeCheckoutItem.badge || "PRE-ORDER";
+    document.getElementById('checkout-item-unit-price').innerText = `₱${unitNumericPrice.toFixed(2)}`;
 
-    const badgeEl = document.getElementById('checkout-item-badge');
-    if (badgeEl) badgeEl.innerText = activeCheckoutItem.badge || 'Official Merch';
-
-    const unitPriceEl = document.getElementById('checkout-item-unit-price');
-    if (unitPriceEl) unitPriceEl.innerText = `₱${unitNumericPrice.toFixed(2)}`;
-
-    // Payment Details Setup
     if (window.paymentInfo) {
-        const nameEl = document.getElementById('checkout-payment-name');
-        const numEl = document.getElementById('checkout-payment-number');
-        if (nameEl) nameEl.innerText = window.paymentInfo.name || 'N/A';
-        if (numEl) numEl.innerText = window.paymentInfo.number || 'N/A';
-
+        document.getElementById('checkout-payment-name').innerText = window.paymentInfo.name || "FUSEE Treasurer";
+        document.getElementById('checkout-payment-number').innerText = window.paymentInfo.number || "N/A";
+        
         const qrContainer = document.getElementById('checkout-qr-container');
         const qrImg = document.getElementById('checkout-qr-img');
-        if (qrContainer && qrImg) {
-            if (window.paymentInfo.qrUrl) {
-                qrImg.src = window.paymentInfo.qrUrl;
-                qrContainer.classList.remove('hidden');
-            } else {
-                qrContainer.classList.add('hidden');
-            }
+        if (window.paymentInfo.qrUrl) {
+            qrImg.src = window.paymentInfo.qrUrl;
+            qrContainer.classList.remove('hidden');
+        } else {
+            qrContainer.classList.add('hidden');
         }
     }
 
-    // Size Selection Setup & Reset
     const sizeContainer = document.getElementById('checkout-size-container');
     const selectedSizeInput = document.getElementById('checkout-selected-size');
-    if (selectedSizeInput) selectedSizeInput.value = "";
-
+    selectedSizeInput.value = "";
+    
     document.querySelectorAll('#size-pill-group .size-pill').forEach(btn => {
         btn.classList.remove('border-fusee-magenta', 'bg-fusee-magenta/20', 'text-fusee-magenta');
         btn.classList.add('border-slate-700', 'bg-slate-900', 'text-white');
     });
 
     if (activeCheckoutItem.requiresSize === false) {
-        if (sizeContainer) sizeContainer.classList.add('hidden');
-        if (selectedSizeInput) selectedSizeInput.value = "N/A";
+        sizeContainer.classList.add('hidden');
+        selectedSizeInput.value = "N/A";
     } else {
-        if (sizeContainer) sizeContainer.classList.remove('hidden');
+        sizeContainer.classList.remove('hidden');
     }
 
-    // Auto-fill logged-in student info
     if (window.currentUser) {
         if (window.currentUser.displayName) {
-            const nameInp = document.getElementById('checkout-student-name');
-            if (nameInp) nameInp.value = window.currentUser.displayName;
+            document.getElementById('checkout-student-name').value = window.currentUser.displayName;
         }
         if (window.currentUser.email) {
-            const emailInp = document.getElementById('checkout-student-email');
-            if (emailInp) emailInp.value = window.currentUser.email;
+            document.getElementById('checkout-student-email').value = window.currentUser.email;
         }
     }
 
-    window.updateMerchQty(0);
+    updateMerchQty(0);
 
     if (typeof window.openModal === 'function') {
         window.openModal('merch-order-modal');
     } else {
-        document.getElementById('merch-order-modal')?.classList.remove('hidden');
+        document.getElementById('merch-order-modal').classList.remove('hidden-sheet');
     }
 };
 
 // 2. Select Size Pill Handler
 window.selectMerchSize = function(size) {
-    const input = document.getElementById('checkout-selected-size');
-    if (input) input.value = size;
-
+    document.getElementById('checkout-selected-size').value = size;
     document.querySelectorAll('#size-pill-group .size-pill').forEach(btn => {
         if (btn.getAttribute('data-size') === size) {
             btn.classList.remove('border-slate-700', 'bg-slate-900', 'text-white');
@@ -5218,13 +5204,10 @@ window.selectMerchSize = function(size) {
 window.updateMerchQty = function(change) {
     currentQuantity += change;
     if (currentQuantity < 1) currentQuantity = 1;
-
-    const qtyDisplay = document.getElementById('checkout-qty-display');
-    if (qtyDisplay) qtyDisplay.innerText = currentQuantity;
-
+    
+    document.getElementById('checkout-qty-display').innerText = currentQuantity;
     const grandTotal = unitNumericPrice * currentQuantity;
-    const totalPriceEl = document.getElementById('checkout-total-price');
-    if (totalPriceEl) totalPriceEl.innerText = `₱${grandTotal.toFixed(2)}`;
+    document.getElementById('checkout-total-price').innerText = `₱${grandTotal.toFixed(2)}`;
 };
 
 // 4. Handle Order Submission to Firestore
@@ -5232,43 +5215,38 @@ window.handleMerchOrderSubmit = async function(event) {
     event.preventDefault();
 
     const submitBtn = document.getElementById('submit-order-btn');
-    const selectedSize = document.getElementById('checkout-selected-size')?.value;
+    const selectedSize = document.getElementById('checkout-selected-size').value;
 
-    if (activeCheckoutItem && activeCheckoutItem.requiresSize !== false && !selectedSize) {
-        if (window.showToast) window.showToast("Please select a size before placing your order.", "error");
-        else alert("Please select a size before placing your order.");
+    if (activeCheckoutItem.requiresSize !== false && !selectedSize) {
+        alert("Please select a size before placing your order.");
         return;
     }
 
-    const studentName = document.getElementById('checkout-student-name')?.value?.trim();
-    const studentEmail = document.getElementById('checkout-student-email')?.value?.trim();
-    const studentId = document.getElementById('checkout-student-id')?.value?.trim();
-    const courseYearSec = document.getElementById('checkout-student-course')?.value?.trim();
-    const gcashRefNo = document.getElementById('checkout-gcash-ref')?.value?.trim();
+    const studentName = document.getElementById('checkout-student-name').value.trim();
+    const studentEmail = document.getElementById('checkout-student-email').value.trim();
+    const studentId = document.getElementById('checkout-student-id').value.trim();
+    const courseYearSec = document.getElementById('checkout-student-course').value.trim();
+    const gcashRefNo = document.getElementById('checkout-gcash-ref').value.trim();
 
     if (!studentName || !studentEmail || !studentId || !courseYearSec || !gcashRefNo) {
-        if (window.showToast) window.showToast("Please fill in all required fields.", "error");
-        else alert("Please fill in all required fields.");
+        alert("Please fill in all required fields.");
         return;
     }
 
     if (gcashRefNo.length < 10) {
-        if (window.showToast) window.showToast("Please enter a valid GCash / Maya Reference Number (at least 10 digits).", "error");
-        else alert("Please enter a valid GCash / Maya Reference Number (at least 10 digits).");
+        alert("Please enter a valid GCash / Maya Reference Number (at least 10–13 digits).");
         return;
     }
 
     const grandTotal = unitNumericPrice * currentQuantity;
 
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
-    }
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting Order...`;
 
     try {
-        const orderPayload = {
-            itemTitle: activeCheckoutItem?.title || "EE Merch",
-            itemPrice: activeCheckoutItem?.price || `₱${unitNumericPrice.toFixed(2)}`,
+        await addDoc(collection(db, "merch_orders"), {
+            itemTitle: activeCheckoutItem.title || "EE Merch",
+            itemPrice: activeCheckoutItem.price || `₱${unitNumericPrice.toFixed(2)}`,
             size: selectedSize || "N/A",
             quantity: currentQuantity,
             totalAmount: grandTotal,
@@ -5278,41 +5256,23 @@ window.handleMerchOrderSubmit = async function(event) {
             courseYearSec: courseYearSec,
             gcashRefNo: gcashRefNo,
             status: "PENDING",
-            createdAt: window.serverTimestamp ? window.serverTimestamp() : (typeof serverTimestamp === 'function' ? serverTimestamp() : new Date().toISOString())
-        };
+            createdAt: serverTimestamp()
+        });
 
-        const dbRef = window.db || (typeof db !== 'undefined' ? db : null);
-        const addDocFn = window.addDoc || (typeof addDoc === 'function' ? addDoc : null);
-        const collectionFn = window.collection || (typeof collection === 'function' ? collection : null);
+        alert("🎉 Order submitted successfully! FUSEE officers will verify your payment reference shortly.");
 
-        if (dbRef && addDocFn && collectionFn) {
-            await addDocFn(collectionFn(dbRef, "merch_orders"), orderPayload);
-        } else {
-            throw new Error("Firestore instance is not initialized.");
-        }
-
-        if (window.showToast) {
-            window.showToast("Order submitted successfully! FUSEE officers will verify your payment.", "success");
-        } else {
-            alert("🎉 Order submitted successfully! FUSEE officers will verify your payment.");
-        }
-
-        document.getElementById('merch-checkout-form')?.reset();
-
+        document.getElementById('merch-checkout-form').reset();
         if (typeof window.closeModal === 'function') {
             window.closeModal('merch-order-modal');
         } else {
-            document.getElementById('merch-order-modal')?.classList.add('hidden');
+            document.getElementById('merch-order-modal').classList.add('hidden-sheet');
         }
     } catch (err) {
         console.error("Error placing order:", err);
-        if (window.showToast) window.showToast("Failed to submit order: " + err.message, "error");
-        else alert("Failed to submit order: " + err.message);
+        alert("Failed to submit order: " + err.message);
     } finally {
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Order`;
-        }
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>Confirm & Submit Order</span>`;
     }
 };
 
@@ -5728,31 +5688,28 @@ function initTargetGradeEvents() {
     });
 
     const preset104545 = document.getElementById('tg-preset104545Btn');
-if (preset104545 && !preset104545.dataset.hasListener) {
-    preset104545.addEventListener('click', () => {
-        const wPL = document.getElementById('tg-wPL');
-        const wMT = document.getElementById('tg-wMT');
-        const wPF = document.getElementById('tg-wPF');
-        if (wPL) wPL.value = 10;
-        if (wMT) wMT.value = 45;
-        if (wPF) wPF.value = 45;
-        calculateTargetGrade();
-    });
-    preset104545.dataset.hasListener = 'true';
+    if (preset104545 && !preset104545.dataset.hasListener) {
+        preset104545.addEventListener('click', () => {
+            document.getElementById('tg-wPL').value = 10;
+            document.getElementById('tg-wMT').value = 45;
+            document.getElementById('tg-wPF').value = 45;
+            calculateTargetGrade();
+        });
+        preset104545.dataset.hasListener = 'true';
+    }
 }
 
     const presetEngg = document.getElementById('tg-presetEnggBtn');
-if (presetEngg && !presetEngg.dataset.hasListener) {
-    presetEngg.addEventListener('click', () => {
-        if (document.getElementById('tg-wPL')) document.getElementById('tg-wPL').value = 20;
-        if (document.getElementById('tg-wMT')) document.getElementById('tg-wMT').value = 20;
-        if (document.getElementById('tg-wPF')) document.getElementById('tg-wPF').value = 20;
-        const wFR = document.getElementById('tg-wFR');
-        if (wFR) wFR.value = 40;
-        calculateTargetGrade();
-    });
-    presetEngg.dataset.hasListener = 'true';
-}
+    if (presetEngg && !presetEngg.dataset.hasListener) {
+        presetEngg.addEventListener('click', () => {
+            document.getElementById('tg-wPL').value = 20;
+            document.getElementById('tg-wMT').value = 20;
+            document.getElementById('tg-wPF').value = 20;
+            document.getElementById('tg-wFR').value = 40;
+            calculateTargetGrade();
+        });
+        presetEngg.dataset.hasListener = 'true';
+    }
 
 // Base-40 Modal Logic
 window.openTargetGradeBase40 = function(period) {
@@ -5796,7 +5753,6 @@ window.applyTargetGradeBase40 = function() {
 
 document.getElementById('tg-b40Raw')?.addEventListener('input', updateBase40ModalCalc);
 document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40ModalCalc);
-}
 </script>
 
 
@@ -6082,7 +6038,6 @@ document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40Mo
                 </div>
             </div>
         </div>
-    </div> 
 
 <!-- MODAL: QPI Calculator -->
 <div id="qpi-calc-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-cyan/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[90vh] shadow-2xl overflow-hidden flex flex-col">
@@ -6159,6 +6114,5 @@ document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40Mo
         </div>
     </div>
 </div>
-  </main>
 </body>
 </html>
