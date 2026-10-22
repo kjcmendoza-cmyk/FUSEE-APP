@@ -5565,9 +5565,17 @@ window.selectTargetGrade = function(pct) {
     renderGradeChips();
     calculateTargetGrade();
 };
+// Preset Helper Function for Assumed Quiz Score
+window.setAssumedQuizGrade = function(pct) {
+    const el = document.getElementById('tg-subPF-topic');
+    if (el) {
+        el.value = pct;
+        calculateTargetGrade();
+    }
+};
 
 function calculateTargetGrade() {
-    // Read period weights (Defaults: PL 20%, MT 20%, PF 20%, FR 40%)
+    // Read period weights (Defaults: PL 10%, MT 45%, PF 45%)
     const wPL = parseFloat(document.getElementById('tg-wPL')?.value) || 10;
     const wMT = parseFloat(document.getElementById('tg-wMT')?.value) || 45;
     const wPF = parseFloat(document.getElementById('tg-wPF')?.value) || 45;
@@ -5614,23 +5622,38 @@ function calculateTargetGrade() {
         }
     }
 
-    // 5. Calculate required Final Departmental Exam (80%) if Topic Exam (20%) is set
+    // 5. Calculate required 80% Prefinal Dept Exam Grade based on Assumed 20% Quiz/Topic Exam
     const pfTopicInput = parseFloat(document.getElementById('tg-subPF-topic')?.value);
+    const pfTotalItems = parseFloat(document.getElementById('tg-subPF-dept-total')?.value) || 100;
     const neededDeptExamEl = document.getElementById('tg-neededFinalDeptExam');
+    const neededDeptRawScoreEl = document.getElementById('tg-neededDeptRawScore');
+
     if (neededDeptExamEl) {
         if (!isNaN(pfTopicInput) && reqPrefi <= 100) {
-            // Prefi = (Dept * 0.80) + (Topic * 0.20) => Dept = (Prefi - Topic * 0.20) / 0.80
+            // Formula: Prefi = (Dept * 0.80) + (Topic * 0.20) => Dept = (Prefi - Topic * 0.20) / 0.80
             const neededDept = (reqPrefi - (pfTopicInput * 0.20)) / 0.80;
-            const rawDept = (neededDept - 40) / 0.60;
+
             if (neededDept > 100) {
-                neededDeptExamEl.textContent = `>100% (Impossible)`;
+                neededDeptExamEl.textContent = `>100% (Unreachable)`;
+                if (neededDeptRawScoreEl) neededDeptRawScoreEl.textContent = `N/A (>100%)`;
+            } else if (neededDept <= 40) {
+                neededDeptExamEl.textContent = `${Math.max(0, neededDept).toFixed(1)}%`;
+                if (neededDeptRawScoreEl) neededDeptRawScoreEl.textContent = `0 / ${pfTotalItems} items (0.0% Raw)`;
             } else {
-                neededDeptExamEl.textContent = `${neededDept.toFixed(1)}% (~${Math.max(0, rawDept).toFixed(1)}% Raw)`;
+                // Transmutation Base-40 Conversion: Raw % = (Transmuted - 40) / 0.60
+                const rawDept = (neededDept - 40) / 0.60;
+                const itemsNeeded = Math.ceil((rawDept / 100) * pfTotalItems);
+                neededDeptExamEl.textContent = `${neededDept.toFixed(1)}%`;
+                if (neededDeptRawScoreEl) {
+                    neededDeptRawScoreEl.textContent = `~${itemsNeeded} / ${pfTotalItems} items (~${rawDept.toFixed(1)}% Raw)`;
+                }
             }
         } else if (reqPrefi > 100) {
-            neededDeptExamEl.textContent = `N/A`;
+            neededDeptExamEl.textContent = `N/A (>100%)`;
+            if (neededDeptRawScoreEl) neededDeptRawScoreEl.textContent = `N/A`;
         } else {
             neededDeptExamEl.textContent = `--%`;
+            if (neededDeptRawScoreEl) neededDeptRawScoreEl.textContent = `-- / 100 items`;
         }
     }
 
@@ -5667,7 +5690,7 @@ function computeSubBreakdown(deptId, topicId, ratioDept, ratioTopic, targetInput
 }
 
 function initTargetGradeEvents() {
-    ['tg-wPL', 'tg-wMT', 'tg-wPF', 'tg-gradePL', 'tg-gradeMT', 'tg-subPF-topic'].forEach(id => {
+    ['tg-wPL', 'tg-wMT', 'tg-wPF', 'tg-gradePL', 'tg-gradeMT', 'tg-subPF-topic', 'tg-subPF-dept-total'].forEach(id => {
         const el = document.getElementById(id);
         if (el && !el.dataset.hasListener) {
             el.addEventListener('input', calculateTargetGrade);
@@ -5986,10 +6009,12 @@ document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40Mo
             <input type="number" id="tg-subMT-topic-raw" placeholder="Raw % Score (0-100)" min="0" max="100" step="0.1" class="w-full bg-slate-950 text-xs text-white p-1.5 rounded-lg border border-slate-800 focus:border-fusee-cyan">
             <span class="text-[8px] text-slate-500 block mt-0.5">Enter raw topic exam average %</span>
         </div>
-    </div>
-</div>
+    </div> <!-- Closes #tg-subMT -->
+</div> <!-- Closes Midterm Card -->
+</div> <!-- ADD THIS 1: Closes .grid grid-cols-1 sm:grid-cols-2 (line 5914) -->
+</div> <!-- ADD THIS 2: Closes .space-y-2.5 Section 2 (line 5880) -->
 
-        <!-- 3. Output Card: Needed Prefinal Grade -->
+        <!-- 3. Output Card: Needed Prefinal Grade & 80/20 Exam Breakdown -->
         <div id="tg-resultCard" class="p-4 rounded-2xl bg-gradient-to-br from-slate-900 via-[#130e2e] to-slate-950 border border-fusee-yellow/40 shadow-neon-yellow space-y-3 relative overflow-hidden">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold tracking-wider text-fusee-yellow uppercase font-techno">Needed Prefinal Grade (45%)</span>
@@ -6009,41 +6034,69 @@ document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40Mo
                 </div>
 
                 <div class="text-right border-l border-white/10 pl-4">
-                    <span class="text-[9px] text-slate-400 block uppercase font-medium">Equiv. Raw Exam %</span>
+                    <span class="text-[9px] text-slate-400 block uppercase font-medium">Equiv. Raw Overall %</span>
                     <span class="text-base font-bold text-fusee-cyan font-techno" id="tg-reqRawDisplay">~--%</span>
                 </div>
             </div>
 
-            <!-- Optional breakdown for Prefinal Sub-components (80% Final Dept Exam + 20% Topic Exams) -->
-            <div class="pt-3 border-t border-white/10 space-y-2">
+            <!-- Dedicated 80/20 Prefinal Departmental Exam Breakdown -->
+            <div class="pt-3 border-t border-white/10 space-y-2.5">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold text-slate-300">Prefinal Sub-Breakdown Calculator</span>
-                    <button type="button" onclick="document.getElementById('tg-subPF-box').classList.toggle('hidden')" class="text-[10px] text-fusee-yellow hover:underline flex items-center gap-1 font-bold">
-                        <i class="fa-solid fa-calculator"></i> Topic Exams (20%)
-                    </button>
+                    <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5 font-techno">
+                        <i class="fa-solid fa-calculator text-fusee-yellow"></i> 80/20 Exam Required Score
+                    </span>
+                    <span class="text-[9px] text-fusee-yellow font-bold bg-fusee-yellow/10 px-2 py-0.5 rounded border border-fusee-yellow/30">
+                        80% Exam + 20% Quizzes
+                    </span>
                 </div>
 
-                <div id="tg-subPF-box" class="hidden p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
-                    <div>
-                        <span class="text-[10px] text-slate-400 block mb-1">Enter Prefinal Topic Exams Grade (20% of Prefinal):</span>
-                        <input type="number" id="tg-subPF-topic" value="85" placeholder="Topic Exams %" min="0" max="100" class="w-full bg-slate-900 text-xs text-white p-1.5 rounded border border-slate-700 focus:border-fusee-yellow">
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900 border border-slate-800 flex justify-between items-center text-xs">
-                            <span class="text-slate-300">Needed Final Dept Exam (80%):</span>
-                            <span id="tg-neededFinalDeptExam" class="font-bold text-fusee-yellow font-techno">--%</span>
+                <!-- Assumed Quiz / Topic Score & Quick Presets -->
+                <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label class="text-[10px] font-bold text-slate-300">
+                            Assumed Quiz / Topic Exam Score (20% Weight):
+                        </label>
+                        <div class="flex items-center gap-1">
+                            <input type="number" id="tg-subPF-topic" value="85" min="0" max="100" step="0.5" class="w-16 bg-slate-900 text-center font-bold text-xs text-fusee-yellow p-1 rounded-lg border border-slate-700 focus:outline-none focus:border-fusee-yellow">
+                            <span class="text-xs text-slate-400 font-bold">%</span>
                         </div>
-                    </div> <!-- Closes #tg-subPF-box -->
-
-                    <div class="flex items-center justify-between text-[11px]">
-                        <span class="text-slate-400">Points Earned (Prelim + Midterm):</span>
-                        <span id="tg-accumulatedPtsText" class="font-bold text-fusee-yellow font-techno">0.00 / 0.00 pts</span>
                     </div>
-                </div> <!-- Closes .pt-3 border-t -->
-            </div> <!-- Closes #tg-resultCard -->
-        </div> <!-- Closes .space-y-4 flex-1 -->
-    </div> <!-- Closes #target-grade-calc-modal -->
 
-    <!-- MODAL: QPI Calculator -->
+                    <!-- Quick Preset Buttons -->
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="text-[9px] text-slate-500 font-medium">Assume:</span>
+                        <button type="button" onclick="setAssumedQuizGrade(75)" class="px-2 py-0.5 rounded-md bg-slate-900 hover:bg-fusee-yellow/20 text-slate-300 hover:text-fusee-yellow border border-slate-700 text-[9px] font-bold transition">75%</button>
+                        <button type="button" onclick="setAssumedQuizGrade(80)" class="px-2 py-0.5 rounded-md bg-slate-900 hover:bg-fusee-yellow/20 text-slate-300 hover:text-fusee-yellow border border-slate-700 text-[9px] font-bold transition">80%</button>
+                        <button type="button" onclick="setAssumedQuizGrade(85)" class="px-2 py-0.5 rounded-md bg-slate-900 hover:bg-fusee-yellow/20 text-slate-300 hover:text-fusee-yellow border border-slate-700 text-[9px] font-bold transition">85%</button>
+                        <button type="button" onclick="setAssumedQuizGrade(90)" class="px-2 py-0.5 rounded-md bg-slate-900 hover:bg-fusee-yellow/20 text-slate-300 hover:text-fusee-yellow border border-slate-700 text-[9px] font-bold transition">90%</button>
+                        <button type="button" onclick="setAssumedQuizGrade(100)" class="px-2 py-0.5 rounded-md bg-slate-900 hover:bg-fusee-yellow/20 text-slate-300 hover:text-fusee-yellow border border-slate-700 text-[9px] font-bold transition">100%</button>
+                    </div>
+
+                    <!-- Exam Results Display -->
+                    <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5 mt-1">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-300 font-semibold">Needed Prefinal Dept Exam (80% Weight):</span>
+                            <span id="tg-neededFinalDeptExam" class="font-extrabold text-fusee-yellow font-techno text-sm">--%</span>
+                        </div>
+                        <div class="flex items-center justify-between text-[10px] text-slate-400 border-t border-slate-800/80 pt-1.5">
+                            <span class="flex items-center gap-1">
+                                <span>Total Exam Items:</span>
+                                <input type="number" id="tg-subPF-dept-total" value="100" min="1" max="500" class="w-12 bg-slate-950 text-center font-bold text-[10px] text-white p-0.5 rounded border border-slate-800 focus:border-fusee-cyan">
+                            </span>
+                            <span id="tg-neededDeptRawScore" class="font-bold text-fusee-cyan font-techno">-- / 100 items</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-[11px] pt-1">
+                    <span class="text-slate-400">Points Earned (Prelim + Midterm):</span>
+                    <span id="tg-accumulatedPtsText" class="font-bold text-fusee-yellow font-techno">0.00 / 0.00 pts</span>
+                </div>
+            </div> <!-- Closes .pt-3 border-t -->
+        </div> <!-- Closes #tg-resultCard -->
+    </div> <!-- Closes .space-y-4 flex-1 -->
+</div> <!-- Closes #target-grade-calc-modal -->
+
 <!-- MODAL: QPI Calculator -->
 <div id="qpi-calc-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-cyan/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[90vh] shadow-2xl overflow-hidden flex flex-col">
     <!-- Modal Header -->
