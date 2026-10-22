@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FUSEE Hub | Electrical Engineering Portal - Ateneo de Davao</title>
    <!-- Favicon & App Shortcut Icons -->
-    <link rel="icon" type="image/png" sizes="192x192" href="fusee-logo.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="fusee-logo.png">
-    <link rel="shortcut icon" href="fusee-logo.png" type="image/png">
-    <link rel="apple-touch-icon" sizes="180x180" href="fusee-logo.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="FUSEE-icon.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="FUSEE-icon.png">
+    <link rel="shortcut icon" href="FUSEE-icon.png" type="image/png">
+    <link rel="apple-touch-icon" sizes="180x180" href="FUSEE-icon.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00F0FF">
     <!-- Tailwind CSS CDN -->
@@ -6029,18 +6029,21 @@ document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40Mo
                         <input type="number" id="tg-subPF-topic" value="85" placeholder="Topic Exams %" min="0" max="100" class="w-full bg-slate-900 text-xs text-white p-1.5 rounded border border-slate-700 focus:border-fusee-yellow">
                     </div>
                     <div class="p-2 rounded-lg bg-slate-900 border border-slate-800 flex justify-between items-center text-xs">
-                        <span class="text-slate-300">Needed Final Dept Exam (80%):</span>
-                        <span id="tg-neededFinalDeptExam" class="font-bold text-fusee-yellow font-techno">--%</span>
+                            <span class="text-slate-300">Needed Final Dept Exam (80%):</span>
+                            <span id="tg-neededFinalDeptExam" class="font-bold text-fusee-yellow font-techno">--%</span>
+                        </div>
+                    </div> <!-- Closes #tg-subPF-box -->
+
+                    <div class="flex items-center justify-between text-[11px]">
+                        <span class="text-slate-400">Points Earned (Prelim + Midterm):</span>
+                        <span id="tg-accumulatedPtsText" class="font-bold text-fusee-yellow font-techno">0.00 / 0.00 pts</span>
                     </div>
-                </div>
+                </div> <!-- Closes .pt-3 border-t -->
+            </div> <!-- Closes #tg-resultCard -->
+        </div> <!-- Closes .space-y-4 flex-1 -->
+    </div> <!-- Closes #target-grade-calc-modal -->
 
-                <div class="flex items-center justify-between text-[11px]">
-                    <span class="text-slate-400">Points Earned (Prelim + Midterm):</span>
-                    <span id="tg-accumulatedPtsText" class="font-bold text-fusee-yellow font-techno">0.00 / 0.00 pts</span>
-                </div>
-            </div>
-        </div>
-
+    <!-- MODAL: QPI Calculator -->
 <!-- MODAL: QPI Calculator -->
 <div id="qpi-calc-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-cyan/40 rounded-t-3xl z-50 p-5 md:p-6 space-y-4 max-h-[90vh] shadow-2xl overflow-hidden flex flex-col">
     <!-- Modal Header -->
@@ -6104,7 +6107,7 @@ document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40Mo
                 <div id="qpi-student-subjects-container" class="space-y-2"></div>
             </div>
 
-            <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between flex-shrink-0">
+           <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between flex-shrink-0">
                 <div>
                     <p class="text-[10px] text-slate-400 font-techno uppercase tracking-wider">Calculated QPI</p>
                     <div class="flex items-baseline gap-2 mt-0.5">
@@ -6112,9 +6115,8 @@ document.getElementById('tg-b40Total')?.addEventListener('input', updateBase40Mo
                         <span id="qpi-honors-badge" class="text-[10px] text-slate-500">No Subjects Added</span>
                     </div>
                 </div>  
-            </div>
-        </div>
-    </div>
-    </div>
-    </body>
-    </html>
+            </div> <!-- Closes p-3.5 flex container -->
+        </div> <!-- Closes #qpi-workspace-screen -->
+    </div> <!-- Closes #qpi-calc-modal -->
+</body>
+</html>
