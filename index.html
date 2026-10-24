@@ -381,40 +381,38 @@ if (data.events && Array.isArray(data.events)) {
     const container = document.getElementById('events-display-container');
     if (container) {
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Start of today
+        today.setHours(0, 0, 0, 0);
 
-        // Filter out events that ended before today
         const upcomingEvents = data.events.filter(event => {
-            if (!event.date) return true; // Keep if no date is set
+            if (!event.date) return true;
             
             const eventDate = new Date(typeof event.date === 'string' ? event.date.replace(/-/g, '/') : event.date);
-            if (isNaN(eventDate.getTime())) return true; // Keep if date parsing isn't a standard format
+            if (isNaN(eventDate.getTime())) return true;
 
-            // Set to end of event day so events stay visible on the day they occur
             eventDate.setHours(23, 59, 59, 999);
             return eventDate >= today;
         });
 
         if (upcomingEvents.length === 0) {
             container.innerHTML = `<p class="text-[10px] text-slate-400 italic p-2">No upcoming events scheduled.</p>`;
-       } else {
-    container.innerHTML = upcomingEvents.map(event => {
-        const hasLink = event.link && event.link.trim() !== '';
-        return `
-            <${hasLink ? `a href="${event.link}" target="_blank" rel="noopener noreferrer"` : 'div'} 
-                class="block p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1 text-xs ${hasLink ? 'hover:border-fusee-cyan/50 hover:bg-slate-800/80 transition-all cursor-pointer' : ''}">
-                <div class="flex justify-between font-semibold text-white">
-                    <span>⚡ ${event.title || 'Upcoming Event'}</span>
-                    <span class="text-fusee-cyan text-[10px]">${event.location || ''}</span>
-                </div>
-                <div class="flex items-center justify-between mt-1">
-                    <p class="text-[10px] text-slate-400">${event.date || 'Upcoming FUSEE event'}</p>
-                    ${hasLink ? `<span class="text-[10px] font-bold text-fusee-cyan underline flex items-center gap-1">Register <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i></span>` : ''}
-                </div>
-            </${hasLink ? 'a' : 'div'}>
-        `;
-    }).join('');
-}
+        } else {
+            container.innerHTML = upcomingEvents.map(event => {
+                const hasLink = event.link && event.link.trim() !== '';
+                return `
+                    <${hasLink ? `a href="${event.link}" target="_blank" rel="noopener noreferrer" onclick="return checkEEAccess('Event Registration', event)"` : 'div'} 
+                        class="block p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1 text-xs ${hasLink ? 'hover:border-fusee-cyan/50 hover:bg-slate-800/80 transition-all cursor-pointer' : ''}">
+                        <div class="flex justify-between font-semibold text-white">
+                            <span>⚡ ${event.title || 'Upcoming Event'}</span>
+                            <span class="text-fusee-cyan text-[10px]">${event.location || ''}</span>
+                        </div>
+                        <div class="flex items-center justify-between mt-1">
+                            <p class="text-[10px] text-slate-400">${event.date || 'Upcoming FUSEE event'}</p>
+                            ${hasLink ? `<span class="text-[10px] font-bold text-fusee-cyan underline flex items-center gap-1">Register <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i></span>` : ''}
+                        </div>
+                    </${hasLink ? 'a' : 'div'}>
+                `;
+            }).join('');
+        }
     }
 }
 
@@ -1806,13 +1804,13 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
 </button>
 
                         <!-- 5. Lost & Found -->
-                        <button onclick="openModal('lost-found-modal')" class="glass-card p-3 rounded-xl text-left hover:border-rose-400/50 transition group">
-                            <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
-                                <i class="fa-solid fa-box-open text-rose-400"></i>
-                            </div>
-                            <h4 class="text-xs font-bold text-white mb-0.5">Lost & Found</h4>
-                            <p class="text-[10px] text-slate-400">R202B Storage Room/R202C Lost & Found Desk</p>
-                        </button>
+<button onclick="if (checkEEAccess('Lost & Found')) openModal('lost-found-modal')" class="glass-card p-3 rounded-xl text-left hover:border-rose-400/50 transition group">
+    <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
+        <i class="fa-solid fa-box-open text-rose-400"></i>
+    </div>
+    <h4 class="text-xs font-bold text-white mb-0.5">Lost & Found</h4>
+    <p class="text-[10px] text-slate-400">R202B Storage Room/R202C Lost & Found Desk</p>
+</button>
 
                         <!-- 6. EE Merch -->
                         <button onclick="if (checkEEAccess('EE Merch')) openModal('merch-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-magenta/50 transition group">
