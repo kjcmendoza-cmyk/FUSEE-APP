@@ -239,20 +239,39 @@ if (data.officers && Array.isArray(data.officers)) {
 }
 
             // 9. Upcoming Events Sync
-            if (data.events && Array.isArray(data.events)) {
-                const container = document.getElementById('events-display-container');
-                if (container) {
-                    container.innerHTML = data.events.map(event => `
-                        <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1 text-xs">
-                            <div class="flex justify-between font-semibold text-white">
-                                <span>⚡ ${event.title || 'Upcoming Event'}</span>
-                                <span class="text-fusee-cyan text-[10px]">${event.location || ''}</span>
-                            </div>
-                            <p class="text-[10px] text-slate-400">${event.date || 'Upcoming FUSEE event'}</p>
-                        </div>
-                    `).join('');
-                }
-            }
+if (data.events && Array.isArray(data.events)) {
+    const container = document.getElementById('events-display-container');
+    if (container) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Start of today
+
+        // Filter out events that ended before today
+        const upcomingEvents = data.events.filter(event => {
+            if (!event.date) return true; // Keep if no date is set
+            
+            const eventDate = new Date(typeof event.date === 'string' ? event.date.replace(/-/g, '/') : event.date);
+            if (isNaN(eventDate.getTime())) return true; // Keep if date parsing isn't a standard format
+
+            // Set to end of event day so events stay visible on the day they occur
+            eventDate.setHours(23, 59, 59, 999);
+            return eventDate >= today;
+        });
+
+        if (upcomingEvents.length === 0) {
+            container.innerHTML = `<p class="text-[10px] text-slate-400 italic p-2">No upcoming events scheduled.</p>`;
+        } else {
+            container.innerHTML = upcomingEvents.map(event => `
+                <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1 text-xs">
+                    <div class="flex justify-between font-semibold text-white">
+                        <span>⚡ ${event.title || 'Upcoming Event'}</span>
+                        <span class="text-fusee-cyan text-[10px]">${event.location || ''}</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400">${event.date || 'Upcoming FUSEE event'}</p>
+                </div>
+            `).join('');
+        }
+    }
+}
 
             // 10. EE Academic Drive Sync
 if (data.academicLinks && Array.isArray(data.academicLinks)) {
@@ -3381,6 +3400,14 @@ window.setTheme = function(themeName) {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Automatically set timetable dropdown to current day
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const todayName = days[new Date().getDay()];
+    const daySelect = document.getElementById('matrix-day-select');
+    if (daySelect && daySelect.querySelector(`option[value="${todayName}"]`)) {
+        daySelect.value = todayName;
+    }
+
     const savedTheme = localStorage.getItem('fusee_selected_theme') || 'fusee';
     window.setTheme(savedTheme);
 
@@ -3858,13 +3885,32 @@ window.renderMatrixGrid = function() {
 
         // Bottom Sheet & Modal Controls
         function openModal(modalId) {
-    // Hide all currently open bottom-sheets to prevent overlap/attaching bugs
+    // Hide all currently open bottom-sheets to prevent overlap
     const openSheets = document.querySelectorAll('.bottom-sheet:not(.hidden-sheet)');
     openSheets.forEach(sheet => {
         if (sheet.id !== modalId) {
             sheet.classList.add('hidden-sheet');
         }
     });
+
+    // Default the Day Select dropdown to Today when opening the Room Schedule Modal
+    if (modalId === 'room-schedule-modal') {
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const todayName = days[new Date().getDay()];
+        const daySelect = document.getElementById('matrix-day-select');
+        
+        if (daySelect) {
+            // Set to today if available in options (defaults to Monday on Sundays)
+            if (daySelect.querySelector(`option[value="${todayName}"]`)) {
+                daySelect.value = todayName;
+            } else {
+                daySelect.value = 'Monday';
+            }
+        }
+        if (typeof window.renderMatrixGrid === 'function') {
+            window.renderMatrixGrid();
+        }
+    }
 
     const backdrop = document.getElementById('modal-backdrop');
     const modal = document.getElementById(modalId);
