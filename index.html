@@ -231,6 +231,66 @@ window.checkEEAccess = function(featureName = "this feature", event = null) {
             const data = docSnap.data();
             console.log("🔥 Firestore Landing Content Data:", data);
 
+// 1. System 01 Data Sync
+    if (data.sys1) {
+        const loc = document.getElementById('sys1-display-location');
+        if (loc && data.sys1.location) loc.textContent = data.sys1.location;
+        
+        const hours = document.getElementById('sys1-display-hours');
+        if (hours && data.sys1.hours) hours.textContent = data.sys1.hours;
+
+        const modalHours = document.getElementById('sys1-modal-hours');
+        if (modalHours && data.sys1.hours) modalHours.textContent = data.sys1.hours;
+
+        const studentUrl = document.getElementById('sys1-display-student-url');
+        if (studentUrl && data.sys1.studentUrl) studentUrl.href = data.sys1.studentUrl;
+
+        const sys1Rules = document.getElementById('sys1-display-rules');
+        if (sys1Rules && data.sys1?.guidelinesContent) {
+            sys1Rules.innerHTML = data.sys1.guidelinesContent;
+        }
+    }
+
+    // 2. System 02 Data Sync
+    if (data.sys2) {
+        const loc = document.getElementById('sys2-display-location');
+        if (loc && data.sys2.location) loc.textContent = data.sys2.location;
+
+        const hours = document.getElementById('sys2-display-hours');
+        if (hours && data.sys2.hours) hours.textContent = data.sys2.hours;
+
+        const modalHours = document.getElementById('sys2-modal-hours');
+        if (modalHours && data.sys2.hours) modalHours.textContent = data.sys2.hours;
+
+        const url = document.getElementById('sys2-display-url');
+        if (url && data.sys2.url) url.href = data.sys2.url;
+
+        const sys2Rules = document.getElementById('sys2-display-rules');
+        if (sys2Rules && data.sys2?.policiesContent) {
+            sys2Rules.innerHTML = data.sys2.policiesContent;
+        }
+    }
+
+    // 3. System 03 Data Sync
+    if (data.sys3) {
+        const loc = document.getElementById('sys3-display-location');
+        if (loc && data.sys3.location) loc.textContent = data.sys3.location;
+
+        const hours = document.getElementById('sys3-display-hours');
+        if (hours && data.sys3.hours) hours.textContent = data.sys3.hours;
+
+        const modalHours = document.getElementById('sys3-modal-hours');
+        if (modalHours && data.sys3.hours) modalHours.textContent = data.sys3.hours;
+
+        const url = document.getElementById('sys3-display-url');
+        if (url && data.sys3.url) url.href = data.sys3.url;
+
+        const sys3Rules = document.getElementById('sys3-display-rules');
+        if (sys3Rules && data.sys3?.guidelinesContent) {
+            sys3Rules.innerHTML = data.sys3.guidelinesContent;
+        }
+    }
+
             // 15. EE Capstone Projects Real-Time Sync
             if (data.capstoneItems && Array.isArray(data.capstoneItems)) {
                 window.allCapstoneData = data.capstoneItems;

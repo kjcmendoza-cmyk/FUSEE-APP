@@ -1490,7 +1490,7 @@ if (whitelistEl) {
             setVal('sys1-admin-label', data.sys1?.adminLabel || defaultData.sys1.adminLabel);
             setVal('sys1-admin-url', data.sys1?.adminUrl || defaultData.sys1.adminUrl);
             setVal('sys1-guidelines-title', data.sys1?.guidelinesTitle || defaultData.sys1.guidelinesTitle);
-            setVal('sys1-guidelines-content', data.sys1?.guidelinesContent || defaultData.sys1.guidelinesContent, true);
+            setVal('sys1-guidelines-content', data.sys1?.guidelinesContent || defaultData.sys1.guidelinesContent, false); 
             setVal('sys1-guidelines-url', data.sys1?.guidelinesUrl || defaultData.sys1.guidelinesUrl);
 
             // System 2
@@ -1503,8 +1503,15 @@ if (whitelistEl) {
             setVal('sys2-btn-label', data.sys2?.btnLabel || defaultData.sys2.btnLabel);
             setVal('sys2-url', data.sys2?.url || defaultData.sys2.url);
             setVal('sys2-policies-title', data.sys2?.policiesTitle || defaultData.sys2.policiesTitle);
-            setVal('sys2-policies-content', data.sys2?.policiesContent || defaultData.sys2.policiesContent);
-            setVal('sys2-policies-url', data.sys2?.policiesUrl || defaultData.sys2.policiesUrl);
+setVal('sys2-policies-content', data.sys2?.policiesContent || defaultData.sys2.policiesContent);
+
+// Populate rich-text editor if present
+const sys2RichEd = document.getElementById('sys2-guidelines-content');
+if (sys2RichEd) {
+    sys2RichEd.innerHTML = data.sys2?.policiesContent || defaultData.sys2?.policiesContent || '';
+}
+
+setVal('sys2-policies-url', data.sys2?.policiesUrl || defaultData.sys2.policiesUrl);
 
             // System 3
             setVal('sys3-tag', data.sys3?.tag || defaultData.sys3.tag);
@@ -1781,18 +1788,20 @@ const rawEmails = document.getElementById('admin-whitelist-emails')?.value || ''
             guidelinesUrl: document.getElementById('sys1-guidelines-url')?.value?.trim() || ''
         },
         sys2: {
-            tag: document.getElementById('sys2-tag')?.value?.trim() || '',
-            title: document.getElementById('sys2-title')?.value?.trim() || '',
-            description: document.getElementById('sys2-desc')?.value?.trim() || '',
-            location: document.getElementById('sys2-location')?.value?.trim() || '',
-            hours: document.getElementById('sys2-hours')?.value?.trim() || '',
-            badge: document.getElementById('sys2-badge')?.value?.trim() || '',
-            btnLabel: document.getElementById('sys2-btn-label')?.value?.trim() || '',
-            url: document.getElementById('sys2-url')?.value?.trim() || '',
-            policiesTitle: document.getElementById('sys2-policies-title')?.value?.trim() || '',
-            policiesContent: document.getElementById('sys2-policies-content')?.value?.trim() || '',
-            policiesUrl: document.getElementById('sys2-policies-url')?.value?.trim() || ''
-        },
+    tag: document.getElementById('sys2-tag')?.value?.trim() || '',
+    title: document.getElementById('sys2-title')?.value?.trim() || '',
+    description: document.getElementById('sys2-desc')?.value?.trim() || '',
+    location: document.getElementById('sys2-location')?.value?.trim() || '',
+    hours: document.getElementById('sys2-hours')?.value?.trim() || '',
+    badge: document.getElementById('sys2-badge')?.value?.trim() || '',
+    btnLabel: document.getElementById('sys2-btn-label')?.value?.trim() || '',
+    url: document.getElementById('sys2-url')?.value?.trim() || '',
+    policiesTitle: document.getElementById('sys2-policies-title')?.value?.trim() || '',
+    // FIXED: Read from rich text contenteditable element first
+    policiesContent: document.getElementById('sys2-guidelines-content')?.innerHTML?.trim() || 
+                     document.getElementById('sys2-policies-content')?.value?.trim() || '',
+    policiesUrl: document.getElementById('sys2-policies-url')?.value?.trim() || ''
+},
         sys3: {
             tag: document.getElementById('sys3-tag')?.value?.trim() || '',
             title: document.getElementById('sys3-title')?.value?.trim() || '',
