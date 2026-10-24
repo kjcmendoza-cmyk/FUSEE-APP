@@ -64,7 +64,91 @@ window.currentUser = null;
 window.loginWithAdDU = async () => {
   return await signInWithPopup(auth, provider);
 };
+window.userRole = localStorage.getItem('fusee_user_role') || null;
+window.whitelistedEmails = [];
 
+// Real-time listener for whitelisted emails from Firestore
+onSnapshot(doc(db, "fusee_hub", "landing_content"), (docSnap) => {
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        window.whitelistedEmails = (data.eeWhitelistedEmails || []).map(e => e.toLowerCase());
+    }
+    checkGatewayStatus();
+});
+
+function checkGatewayStatus() {
+    const modal = document.getElementById('entry-gateway-modal');
+    if (!modal) return;
+
+    if (window.userRole === 'EE' || window.userRole === 'SPECTATOR') {
+        modal.classList.add('hidden');
+        updateHeaderUserBadge();
+    } else {
+        modal.classList.remove('hidden');
+    }
+}
+
+window.handleEESignIn = async () => {
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const email = result.user.email.toLowerCase();
+
+        // Check against Whitelist
+        const isWhitelisted = window.whitelistedEmails.length === 0 || window.whitelistedEmails.includes(email);
+
+        if (isWhitelisted) {
+            window.currentUser = result.user;
+            window.userRole = 'EE';
+            localStorage.setItem('fusee_user_role', 'EE');
+            if (typeof showToast === 'function') showToast(`Welcome back, EE Engineer (${email})!`, 'success');
+            checkGatewayStatus();
+        } else {
+            alert(`Access Restricted: ${email} is not on the approved EE Student Whitelist. You may explore in Spectator mode.`);
+            await signOut(auth);
+            window.currentUser = null;
+        }
+    } catch (err) {
+        console.error("Sign-in error:", err);
+    }
+};
+
+window.enterAsSpectator = () => {
+    window.currentUser = null;
+    window.userRole = 'SPECTATOR';
+    localStorage.setItem('fusee_user_role', 'SPECTATOR');
+    if (typeof showToast === 'function') showToast("Entered in Spectator Mode (Read-Only)", "info");
+    checkGatewayStatus();
+};
+
+function updateHeaderUserBadge() {
+    const greetingEl = document.getElementById('greeting-display');
+    if (greetingEl) {
+        if (window.userRole === 'EE') {
+            greetingEl.innerHTML = `<span class="text-fusee-cyan font-bold">⚡ EE Student</span> (<button onclick="resetAccessRole()" class="underline text-[9px] hover:text-white">Switch</button>)`;
+        } else {
+            greetingEl.innerHTML = `<span class="text-fusee-yellow font-bold">👁️ Spectator</span> (<button onclick="resetAccessRole()" class="underline text-[9px] hover:text-white">Sign In</button>)`;
+        }
+    }
+}
+
+window.resetAccessRole = () => {
+    localStorage.removeItem('fusee_user_role');
+    window.userRole = null;
+    if (auth.currentUser) signOut(auth);
+    location.reload();
+};
+
+// Global Guard Helper Function
+window.checkEEAccess = function(featureName = "this feature") {
+    if (window.userRole === 'EE') return true;
+    
+    if (typeof showToast === 'function') {
+        showToast(`Access Restricted: ${featureName} is reserved for EE Students.`, "warning");
+    } else {
+        alert(`Access Restricted: ${featureName} is reserved for EE Students.`);
+    }
+    return false;
+};
         // 3. Track active login state
         onAuthStateChanged(auth, (user) => {
             if (user && user.email.endsWith("@addu.edu.ph")) {
@@ -1296,7 +1380,40 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
 </script>
 </head>
 <body class="relative min-h-screen text-slate-100 antialiased selection:bg-fusee-cyan selection:text-black">
+<!-- Entry Selection Gateway Modal -->
+<div id="entry-gateway-modal" class="fixed inset-0 z-[300] bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-md glass-card rounded-3xl p-6 border border-fusee-cyan/40 shadow-2xl text-center space-y-5">
+        
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-fusee-cyan via-fusee-magenta to-fusee-yellow p-[2px] mx-auto shadow-neon-cyan">
+            <div class="w-full h-full bg-[#0B081E] rounded-[14px] flex items-center justify-center p-1">
+                <img src="fusee-logo.png" alt="FUSEE Logo" class="w-full h-full object-contain">
+            </div>
+        </div>
 
+        <div>
+            <h3 class="text-lg font-black text-white font-techno">Welcome to FUSEE HUB</h3>
+            <p class="text-xs text-slate-300 mt-1">Select your access mode to enter the portal</p>
+        </div>
+
+        <div class="space-y-3 pt-2">
+            <!-- Choice A: EE Student Sign In -->
+            <button onclick="handleEESignIn()" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-fusee-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-2 shadow-neon-cyan transition active:scale-95">
+                <i class="fa-solid fa-graduation-cap text-base"></i>
+                <span>Sign In as EE Student (@addu.edu.ph)</span>
+            </button>
+
+            <!-- Choice B: Spectator Mode -->
+            <button onclick="enterAsSpectator()" class="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-xs border border-slate-700 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-eye text-fusee-yellow"></i>
+                <span>Explore in Spectator Mode (Non-EE)</span>
+            </button>
+        </div>
+
+        <p class="text-[10px] text-slate-500">
+            Spectator mode grants full browsing access to room vacancy, officers, schedules, and lab rules, while restricting EE-specific drives and orders.
+        </p>
+    </div>
+</div>
     <!-- Cosmic Background Layers -->
     <div class="fixed inset-0 bg-cosmic-grid pointer-events-none z-0 opacity-40"></div>
     <div class="fixed -top-24 -left-20 w-80 h-80 glow-blob-1 rounded-full pointer-events-none z-0 blur-3xl animate-subtle-pulse"></div>

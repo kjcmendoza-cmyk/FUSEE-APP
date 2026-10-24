@@ -176,6 +176,20 @@ window.formatEditorText = function(command, value = null) {
             </div>
         </details>
 
+<details class="glass-panel rounded-2xl border border-fusee-cyan/30 group transition-all duration-200">
+            <summary class="p-5 md:p-6 cursor-pointer list-none select-none flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                    <i class="fa-solid fa-user-shield text-fusee-cyan"></i>
+                    <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">EE Whitelisted Student Emails</h2>
+                </div>
+                <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 text-fusee-cyan"></i>
+            </summary>
+            <div class="px-5 pb-5 pt-2 space-y-3 border-t border-white/10">
+                <label class="text-xs text-slate-400">Enter whitelisted `@addu.edu.ph` emails (one per line or comma-separated):</label>
+                <textarea id="admin-whitelist-emails" rows="5" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-fusee-cyan" placeholder="juan.delacruz@addu.edu.ph&#10;maria.clara@addu.edu.ph"></textarea>
+            </div>
+        </details>
+
         <!-- SECTION 2: System Cards (Equipment, ComLab, Hardware) -->
         <details class="glass-panel rounded-2xl border border-fusee-magenta/30 group transition-all duration-200">
             <summary class="p-5 md:p-6 cursor-pointer list-none select-none flex items-center justify-between hover:bg-white/5 rounded-2xl transition-colors">
@@ -1453,7 +1467,13 @@ window.addImportantEventRow = function(title = '', date = '', endDate = '', cate
         function populateUI(data) {
             setVal('ticker-text', data.tickerText || defaultData.tickerText);
             setVal('global-status-select', data.globalStatus || "ALL OPEN");
-            
+            // Load Whitelisted Emails
+const whitelistEl = document.getElementById('admin-whitelist-emails');
+if (whitelistEl) {
+    whitelistEl.value = (data && Array.isArray(data.eeWhitelistedEmails)) 
+        ? data.eeWhitelistedEmails.join('\n') 
+        : '';
+}
             // Load Payment Receiver Settings
             setVal('admin-payment-name', data.paymentInfo?.name || '');
             setVal('admin-payment-number', data.paymentInfo?.number || '');
@@ -1729,8 +1749,13 @@ document.querySelectorAll('.policy-item-row').forEach(row => {
             qpiSubjects.push({ code, title, units, curriculum });
         }
     });
-
+const rawEmails = document.getElementById('admin-whitelist-emails')?.value || '';
+    const eeWhitelistedEmails = rawEmails
+        .split(/[\n,]/)
+        .map(e => e.trim().toLowerCase())
+        .filter(e => e.length > 0);
     return {
+        eeWhitelistedEmails,
         qpiSubjects,
         tickerText: document.getElementById('ticker-text')?.value?.trim() || '',
         globalStatus: document.getElementById('global-status-select')?.value || 'ALL OPEN',
@@ -2153,6 +2178,7 @@ onSnapshot(docRef, (docSnap) => {
     const localDraft = localStorage.getItem('fusee_admin_draft');
     if (localDraft) {
         populateUI(JSON.parse(localDraft));
+        
     } else {
         populateUI(defaultData);
     }
