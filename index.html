@@ -233,6 +233,15 @@ window.checkEEAccess = function(featureName = "this feature", event = null) {
 
 // 1. System 01 Data Sync
     if (data.sys1) {
+        const tag = document.getElementById('sys1-display-tag');
+        if (tag && data.sys1.tag) tag.textContent = data.sys1.tag;
+
+        const title = document.getElementById('sys1-display-title');
+        if (title && data.sys1.title) title.textContent = data.sys1.title;
+
+        const desc = document.getElementById('sys1-display-desc');
+        if (desc && data.sys1.description) desc.textContent = data.sys1.description;
+
         const loc = document.getElementById('sys1-display-location');
         if (loc && data.sys1.location) loc.textContent = data.sys1.location;
         
@@ -253,6 +262,15 @@ window.checkEEAccess = function(featureName = "this feature", event = null) {
 
     // 2. System 02 Data Sync
     if (data.sys2) {
+        const tag = document.getElementById('sys2-display-tag');
+        if (tag && data.sys2.tag) tag.textContent = data.sys2.tag;
+
+        const title = document.getElementById('sys2-display-title');
+        if (title && data.sys2.title) title.textContent = data.sys2.title;
+
+        const desc = document.getElementById('sys2-display-desc');
+        if (desc && data.sys2.description) desc.textContent = data.sys2.description;
+
         const loc = document.getElementById('sys2-display-location');
         if (loc && data.sys2.location) loc.textContent = data.sys2.location;
 
@@ -273,6 +291,15 @@ window.checkEEAccess = function(featureName = "this feature", event = null) {
 
     // 3. System 03 Data Sync
     if (data.sys3) {
+        const tag = document.getElementById('sys3-display-tag');
+        if (tag && data.sys3.tag) tag.textContent = data.sys3.tag;
+
+        const title = document.getElementById('sys3-display-title');
+        if (title && data.sys3.title) title.textContent = data.sys3.title;
+
+        const desc = document.getElementById('sys3-display-desc');
+        if (desc && data.sys3.description) desc.textContent = data.sys3.description;
+
         const loc = document.getElementById('sys3-display-location');
         if (loc && data.sys3.location) loc.textContent = data.sys3.location;
 
