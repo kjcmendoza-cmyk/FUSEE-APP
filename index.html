@@ -259,17 +259,24 @@ if (data.events && Array.isArray(data.events)) {
 
         if (upcomingEvents.length === 0) {
             container.innerHTML = `<p class="text-[10px] text-slate-400 italic p-2">No upcoming events scheduled.</p>`;
-        } else {
-            container.innerHTML = upcomingEvents.map(event => `
-                <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1 text-xs">
-                    <div class="flex justify-between font-semibold text-white">
-                        <span>⚡ ${event.title || 'Upcoming Event'}</span>
-                        <span class="text-fusee-cyan text-[10px]">${event.location || ''}</span>
-                    </div>
-                    <p class="text-[10px] text-slate-400">${event.date || 'Upcoming FUSEE event'}</p>
+       } else {
+    container.innerHTML = upcomingEvents.map(event => {
+        const hasLink = event.link && event.link.trim() !== '';
+        return `
+            <${hasLink ? `a href="${event.link}" target="_blank" rel="noopener noreferrer"` : 'div'} 
+                class="block p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1 text-xs ${hasLink ? 'hover:border-fusee-cyan/50 hover:bg-slate-800/80 transition-all cursor-pointer' : ''}">
+                <div class="flex justify-between font-semibold text-white">
+                    <span>⚡ ${event.title || 'Upcoming Event'}</span>
+                    <span class="text-fusee-cyan text-[10px]">${event.location || ''}</span>
                 </div>
-            `).join('');
-        }
+                <div class="flex items-center justify-between mt-1">
+                    <p class="text-[10px] text-slate-400">${event.date || 'Upcoming FUSEE event'}</p>
+                    ${hasLink ? `<span class="text-[10px] font-bold text-fusee-cyan underline flex items-center gap-1">Register <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i></span>` : ''}
+                </div>
+            </${hasLink ? 'a' : 'div'}>
+        `;
+    }).join('');
+}
     }
 }
 
