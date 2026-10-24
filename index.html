@@ -88,12 +88,19 @@ function checkGatewayStatus() {
     }
 }
 
+// 1. Updated handleEESignIn
 window.handleEESignIn = async () => {
     try {
         const result = await signInWithPopup(auth, provider);
-        const email = result.user.email.toLowerCase();
+        const email = result.user.email ? result.user.email.toLowerCase() : '';
 
-        // Check against Whitelist
+        // Domain Validation
+        if (!email.endsWith("@addu.edu.ph")) {
+            // onAuthStateChanged will handle sign-out, storage cleanup, and the alert popup.
+            return;
+        }
+
+        // Whitelist Validation
         const isWhitelisted = window.whitelistedEmails.length === 0 || window.whitelistedEmails.includes(email);
 
         if (isWhitelisted) {
@@ -103,14 +110,49 @@ window.handleEESignIn = async () => {
             if (typeof showToast === 'function') showToast(`Welcome back, EE Engineer (${email})!`, 'success');
             checkGatewayStatus();
         } else {
-            alert(`Access Restricted: ${email} is not on the approved EE Student Whitelist. You may explore in Spectator mode.`);
+            alert(`Access Restricted: ${email} is not on the approved EE Student Whitelist.`);
             await signOut(auth);
             window.currentUser = null;
+            window.userRole = null;
+            localStorage.removeItem('fusee_user_role');
+            checkGatewayStatus();
         }
     } catch (err) {
         console.error("Sign-in error:", err);
     }
 };
+
+// 2. Updated onAuthStateChanged
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const email = user.email ? user.email.toLowerCase() : '';
+        if (email.endsWith("@addu.edu.ph")) {
+            window.currentUser = user;
+            console.log("Logged in as:", user.email);
+        } else {
+            // Non-AdDU email signed in: clean state & trigger single alert
+            alert("Please sign in using your official @addu.edu.ph student email.");
+            await signOut(auth);
+            window.currentUser = null;
+            window.userRole = null;
+            localStorage.removeItem('fusee_user_role');
+            checkGatewayStatus();
+            return;
+        }
+    } else {
+        // No active Firebase user: wipe EE authorization completely
+        window.currentUser = null;
+        if (localStorage.getItem('fusee_user_role') === 'EE') {
+            window.userRole = null;
+            localStorage.removeItem('fusee_user_role');
+            checkGatewayStatus();
+        }
+    }
+
+    if (typeof window.renderLostFoundUI === 'function') window.renderLostFoundUI();
+    if (typeof window.renderPeerTutoringUI === 'function') window.renderPeerTutoringUI();
+    if (typeof window.renderTutorManagementUI === 'function') window.renderTutorManagementUI();
+});
 
 window.enterAsSpectator = () => {
     window.currentUser = null;
@@ -159,26 +201,30 @@ window.checkEEAccess = function(featureName = "this feature", event = null) {
 };
         // 3. Track active login state
         onAuthStateChanged(auth, (user) => {
-            if (user && user.email.endsWith("@addu.edu.ph")) {
-                window.currentUser = user;
-                console.log("Logged in as:", user.email);
-            } else if (user) {
-                alert("Please sign in using your official @addu.edu.ph student email.");
-                signOut(auth);
-                window.currentUser = null;
-            } else {
-                window.currentUser = null;
-            }
-            if (typeof window.renderLostFoundUI === 'function') {
-    window.renderLostFoundUI();
-}
-if (typeof window.renderPeerTutoringUI === 'function') {
-    window.renderPeerTutoringUI();
-}
-if (typeof window.renderTutorManagementUI === 'function') {
-    window.renderTutorManagementUI();
-}
-        });
+    if (user && user.email.toLowerCase().endsWith("@addu.edu.ph")) {
+        window.currentUser = user;
+        console.log("Logged in as:", user.email);
+    } else if (user) {
+        alert("Please sign in using your official @addu.edu.ph student email.");
+        signOut(auth);
+        window.currentUser = null;
+        window.userRole = null;
+        localStorage.removeItem('fusee_user_role');
+        checkGatewayStatus();
+    } else {
+        window.currentUser = null;
+    }
+
+    if (typeof window.renderLostFoundUI === 'function') {
+        window.renderLostFoundUI();
+    }
+    if (typeof window.renderPeerTutoringUI === 'function') {
+        window.renderPeerTutoringUI();
+    }
+    if (typeof window.renderTutorManagementUI === 'function') {
+        window.renderTutorManagementUI();
+    }
+});
         // Real-Time Listener for Cloud Firestore Content Updates
         onSnapshot(doc(db, "fusee_hub", "landing_content"), (docSnap) => {
             if (!docSnap.exists()) return;
