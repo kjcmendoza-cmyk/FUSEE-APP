@@ -139,14 +139,22 @@ window.resetAccessRole = () => {
 };
 
 // Global Guard Helper Function
-window.checkEEAccess = function(featureName = "this feature") {
-    if (window.userRole === 'EE') return true;
+window.checkEEAccess = function(featureName = "this feature", event = null) {
+    if (window.userRole === 'EE') {
+        return true;
+    }
+    
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
     
     if (typeof showToast === 'function') {
         showToast(`Access Restricted: ${featureName} is reserved for EE Students.`, "warning");
     } else {
         alert(`Access Restricted: ${featureName} is reserved for EE Students.`);
     }
+    
     return false;
 };
         // 3. Track active login state
@@ -1716,7 +1724,7 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
                     </h2>
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
                         <!-- 1. EE Academic Drive Button Tile -->
-                        <button onclick="openModal('academic-drive-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-yellow/50 transition group">
+                        <button onclick="if (checkEEAccess('Academic Drive')) openModal('academic-drive-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-yellow/50 transition group">
                             <div class="w-8 h-8 rounded-lg bg-fusee-yellow/10 text-fusee-yellow flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
                                 <i class="fa-solid fa-folder-open text-fusee-yellow"></i>
                             </div>
@@ -1743,7 +1751,7 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
                         </button>
 
                         <!-- 4. Peer Tutoring -->
-<button onclick="openModal('tutor-role-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
+<button onclick="if (checkEEAccess('Peer Tutoring')) openModal('tutor-role-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-cyan/50 transition group">
     <div class="w-8 h-8 rounded-lg bg-fusee-cyan/10 text-fusee-cyan flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
         <i class="fa-solid fa-user-graduate text-fusee-cyan"></i>
     </div>
@@ -1761,7 +1769,7 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
                         </button>
 
                         <!-- 6. EE Merch -->
-                        <button onclick="openModal('merch-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-magenta/50 transition group">
+                        <button onclick="if (checkEEAccess('EE Merch')) openModal('merch-modal')" class="glass-card p-3 rounded-xl text-left hover:border-fusee-magenta/50 transition group">
                             <div class="w-8 h-8 rounded-lg bg-fusee-magenta/10 text-fusee-magenta flex items-center justify-center mb-2 text-sm group-hover:scale-110 transition">
                                 <i class="fa-solid fa-shirt text-fusee-magenta"></i>
                             </div>
