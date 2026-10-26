@@ -71,7 +71,15 @@ window.whitelistedEmails = [];
 onSnapshot(doc(db, "fusee_hub", "landing_content"), (docSnap) => {
     if (docSnap.exists()) {
         const data = docSnap.data();
-        window.whitelistedEmails = (data.eeWhitelistedEmails || []).map(e => e.toLowerCase());
+        window.whitelistedEmails = (data.eewhitelistedEmails || []).map(e => e.toLowerCase());
+        
+        // Save and trigger Notices UI update
+        if (data.notices && Array.isArray(data.notices)) {
+            window.allNoticesData = data.notices;
+            if (typeof window.renderNoticesUI === 'function') {
+                window.renderNoticesUI();
+            }
+        }
     }
     checkGatewayStatus();
 });
@@ -87,6 +95,58 @@ function checkGatewayStatus() {
         modal.classList.remove('hidden');
     }
 }
+
+// UI Rendering Engine for Notices
+window.renderNoticesUI = function() {
+    const container = document.getElementById('notices-display-container');
+    const modalContainer = document.getElementById('notices-modal-display-container');
+    const items = window.allNoticesData || [];
+
+    // Filter active notices
+    const activeNotices = items.filter(notice => notice.active !== false);
+
+    if (activeNotices.length === 0) {
+        const emptyHtml = `<p class="text-xs text-slate-400 italic text-center py-6">No active notices at this time.</p>`;
+        if (container) container.innerHTML = emptyHtml;
+        if (modalContainer) modalContainer.innerHTML = emptyHtml;
+        return;
+    }
+
+    const html = activeNotices.map(notice => {
+        let borderCls = 'border-fusee-yellow/40';
+        let textCls = 'text-fusee-yellow';
+        let bgBadgeCls = 'bg-fusee-yellow/10 border-fusee-yellow/30';
+
+        if (notice.color === 'cyan') {
+            borderCls = 'border-fusee-cyan/40';
+            textCls = 'text-fusee-cyan';
+            bgBadgeCls = 'bg-fusee-cyan/10 border-fusee-cyan/30';
+        } else if (notice.color === 'magenta') {
+            borderCls = 'border-fusee-magenta/40';
+            textCls = 'text-fusee-magenta';
+            bgBadgeCls = 'bg-fusee-magenta/10 border-fusee-magenta/30';
+        } else if (notice.color === 'slate') {
+            borderCls = 'border-slate-700';
+            textCls = 'text-slate-300';
+            bgBadgeCls = 'bg-slate-800 text-slate-400';
+        }
+
+        const icon = notice.icon || 'fa-triangle-exclamation';
+
+        return `
+            <div class="p-4 rounded-2xl glass-card border ${borderCls} space-y-2">
+                <div class="flex items-center justify-between text-xs font-bold ${textCls} font-techno">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid ${icon}"></i> ${notice.title || 'NOTICE'}</span>
+                    <span class="px-2 py-0.5 rounded border ${bgBadgeCls} text-[10px]">${notice.badge || 'Active'}</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">${notice.body || ''}</p>
+            </div>
+        `;
+    }).join('');
+
+    if (container) container.innerHTML = html;
+    if (modalContainer) modalContainer.innerHTML = html;
+}; 
 
 // 1. Updated handleEESignIn
 window.handleEESignIn = async () => {
@@ -2204,31 +2264,9 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
                     </div>
                 </div>
 
-                <div class="space-y-3">
-                    <div class="p-4 rounded-2xl glass-card border border-fusee-yellow/40 space-y-2">
-                        <div class="flex items-center justify-between text-xs font-bold text-fusee-yellow font-techno">
-                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation"></i> EE LAB EARLY CLOSING</span>
-                            <span class="px-2 py-0.5 rounded bg-fusee-yellow/10 border border-fusee-yellow/30 text-[10px]">Active Today</span>
-                        </div>
-                        <p class="text-xs text-slate-300 leading-relaxed">The EE Storage Room (R202B) will close early at 4:30 PM today for faculty inventory and equipment calibration. Please return all borrowed multimeters, probes, and kits before 4:15 PM.</p>
-                    </div>
-
-                    <div class="p-4 rounded-2xl glass-card border border-fusee-cyan/40 space-y-2">
-                        <div class="flex items-center justify-between text-xs font-bold text-fusee-cyan font-techno">
-                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-desktop"></i> COMPUTER LAB WORKSTATION MAINTENANCE</span>
-                            <span class="px-2 py-0.5 rounded bg-fusee-cyan/10 border border-fusee-cyan/30 text-[10px]">Scheduled Saturday</span>
-                        </div>
-                        <p class="text-xs text-slate-300 leading-relaxed">Routine system maintenance and updates for ETAP 20, MATLAB R2024, AutoCAD, and Proteus on Workstations 01 to 20. Workstations 21-40 will remain accessible.</p>
-                    </div>
-
-                    <div class="p-4 rounded-2xl glass-card border border-slate-700 space-y-2">
-                        <div class="flex items-center justify-between text-xs font-bold text-slate-300 font-techno">
-                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-info"></i> TOOL BORROWING POLICY REMINDER</span>
-                            <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px]">Standing Rule</span>
-                        </div>
-                        <p class="text-xs text-slate-300 leading-relaxed">Overdue tools incur automated demerits in the Digital Borrowing System. Always request an extension 24 hours in advance through your department lab custodian if required for thesis experiments.</p>
-                    </div>
-                </div>
+                <div id="notices-display-container" class="space-y-3">
+        <!-- Notices render dynamically from Firebase -->
+    </div>
             </div>
 
             <!-- TAB 4: INFO & RULES VIEW -->

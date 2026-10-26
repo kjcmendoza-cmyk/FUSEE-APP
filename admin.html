@@ -175,7 +175,27 @@ window.formatEditorText = function(command, value = null) {
                 </div>
             </div>
         </details>
+<!-- SECTION: Announcements & Notices Cards Management -->
+<details class="glass-panel rounded-2xl border border-fusee-yellow/30 group transition-all duration-200">
+    <summary class="p-5 md:p-6 cursor-pointer list-none select-none flex items-center justify-between hover:bg-white/5 rounded-2xl transition-colors">
+        <div class="flex items-center space-x-2.5">
+            <i class="fa-solid fa-bell text-fusee-yellow"></i>
+            <h2 class="font-techno font-bold text-xs md:text-sm text-white uppercase tracking-wider">Announcements &amp; Notices Cards</h2>
+        </div>
+        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 text-fusee-yellow"></i>
+    </summary>
+    <div class="px-5 md:px-6 pb-5 md:pb-6 pt-2 space-y-4 border-t border-white/10">
+        <p class="text-xs text-slate-400">Manage notices on FUSEE Hub. Use the <strong>Activated / Visible</strong> checkbox to enable or disable notices without deleting them.</p>
+        
+        <div id="notices-admin-container" class="space-y-3">
+            <!-- Dynamic notice rows render here -->
+        </div>
 
+        <button type="button" onclick="addNoticeAdminRow()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-plus text-fusee-yellow"></i> Add New Notice Card
+        </button>
+    </div>
+</details>
 <details class="glass-panel rounded-2xl border border-fusee-cyan/30 group transition-all duration-200">
             <summary class="p-5 md:p-6 cursor-pointer list-none select-none flex items-center justify-between">
                 <div class="flex items-center space-x-2.5">
@@ -1017,7 +1037,111 @@ window.addQpiSubjectRow = function(code = '', title = '', units = 3, curriculum 
     `;
     container.appendChild(div);
 };
+// SECTION 19: Notices & Announcements Admin Builder & Renderer
+window.renderAdminNoticesRows = function(notices = []) {
+    const container = document.getElementById('notices-admin-container');
+    if (!container) return;
 
+    if (notices.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 italic">No notices configured. Click "+ Add New Notice Card" to create one.</p>`;
+        return;
+    }
+
+    container.innerHTML = notices.map((item) => `
+        <div class="notice-admin-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 text-xs">
+            <div class="flex items-center justify-between">
+                <label class="flex items-center gap-2 font-bold cursor-pointer text-white">
+                    <input type="checkbox" class="notice-active-chk accent-fusee-yellow w-4 h-4 rounded" ${item.active !== false ? 'checked' : ''}>
+                    <span>Activated / Visible</span>
+                </label>
+                <button type="button" onclick="this.closest('.notice-admin-row').remove()" class="text-rose-400 hover:text-rose-300 font-bold">
+                    <i class="fa-solid fa-trash mr-1"></i> Delete
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-slate-400 mb-1">Notice Title</label>
+                    <input type="text" class="notice-title-input w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" value="${item.title || ''}" placeholder="EE LAB EARLY CLOSING">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Badge Tag</label>
+                    <input type="text" class="notice-badge-input w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" value="${item.badge || ''}" placeholder="Active Today">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Theme Color</label>
+                    <select class="notice-color-select w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white">
+                        <option value="yellow" ${item.color === 'yellow' ? 'selected' : ''}>🟡 Yellow (Warning)</option>
+                        <option value="cyan" ${item.color === 'cyan' ? 'selected' : ''}>🔵 Cyan (Info / Update)</option>
+                        <option value="magenta" ${item.color === 'magenta' ? 'selected' : ''}>🔴 Magenta (Urgent)</option>
+                        <option value="slate" ${item.color === 'slate' ? 'selected' : ''}>⚪ Slate (Standing Rule)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-slate-400 mb-1">Icon Class (FontAwesome)</label>
+                    <input type="text" class="notice-icon-input w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" value="${item.icon || 'fa-triangle-exclamation'}">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-slate-400 mb-1">Notice Description / Body</label>
+                    <textarea class="notice-body-input w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" rows="2">${item.body || ''}</textarea>
+                </div>
+            </div>
+        </div>
+    `).join('');
+};
+
+window.addNoticeAdminRow = function() {
+    const container = document.getElementById('notices-admin-container');
+    if (!container) return;
+    if (container.querySelector('p')) container.innerHTML = '';
+
+    const div = document.createElement('div');
+    div.className = 'notice-admin-row p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 text-xs';
+    div.innerHTML = `
+        <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 font-bold cursor-pointer text-white">
+                <input type="checkbox" class="notice-active-chk accent-fusee-yellow w-4 h-4 rounded" checked>
+                <span>Activated / Visible</span>
+            </label>
+            <button type="button" onclick="this.closest('.notice-admin-row').remove()" class="text-rose-400 hover:text-rose-300 font-bold">
+                <i class="fa-solid fa-trash mr-1"></i> Delete
+            </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+                <label class="block text-slate-400 mb-1">Notice Title</label>
+                <input type="text" class="notice-title-input w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" placeholder="EE LAB EARLY CLOSING">
+            </div>
+            <div>
+                <label class="block text-slate-400 mb-1">Badge Tag</label>
+                <input type="text" class="notice-badge-input w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" placeholder="Active Today">
+            </div>
+            <div>
+                <label class="block text-slate-400 mb-1">Theme Color</label>
+                <select class="notice-color-select w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white">
+                    <option value="yellow">🟡 Yellow (Warning)</option>
+                    <option value="cyan">🔵 Cyan (Info / Update)</option>
+                    <option value="magenta">🔴 Magenta (Urgent)</option>
+                    <option value="slate">⚪ Slate (Standing Rule)</option>
+                </select>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+                <label class="block text-slate-400 mb-1">Icon Class</label>
+                <input type="text" class="notice-icon-input w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" value="fa-triangle-exclamation">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-slate-400 mb-1">Notice Description / Body</label>
+                <textarea class="notice-body-input w-full p-2 rounded-lg bg-slate-950 border border-slate-700 text-white" rows="2"></textarea>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+};
 
         const defaultData = {
     qpiSubjects: [
@@ -1467,6 +1591,12 @@ window.addImportantEventRow = function(title = '', date = '', endDate = '', cate
         function populateUI(data) {
             setVal('ticker-text', data.tickerText || defaultData.tickerText);
             setVal('global-status-select', data.globalStatus || "ALL OPEN");
+            // Load Notices into Admin UI
+    if (data && data.notices && Array.isArray(data.notices)) {
+        renderAdminNoticesRows(data.notices);
+    } else {
+        renderAdminNoticesRows([]);
+    }
             // Load Whitelisted Emails
 const whitelistEl = document.getElementById('admin-whitelist-emails');
 if (whitelistEl) {
@@ -1868,11 +1998,21 @@ window.saveDataToFirebase = async function() {
     saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
 
     try {
+        const noticeRows = document.querySelectorAll('.notice-admin-row');
+        const noticesData = Array.from(noticeRows).map(row => ({
+            active: row.querySelector('.notice-active-chk')?.checked ?? true,
+            title: row.querySelector('.notice-title-input')?.value.trim() || '',
+            badge: row.querySelector('.notice-badge-input')?.value.trim() || '',
+            color: row.querySelector('.notice-color-select')?.value || 'yellow',
+            icon: row.querySelector('.notice-icon-input')?.value.trim() || 'fa-triangle-exclamation',
+            body: row.querySelector('.notice-body-input')?.value.trim() || ''
+        }));
+
         const updatedData = {
             ...gatherFormData(),
+            notices: noticesData,
             updatedAt: new Date().toISOString()
         };
-
         await withTimeout(setDoc(docRef, updatedData, { merge: true }), 8000);
         localStorage.removeItem('fusee_admin_draft');
         showToast("All changes published to FUSEE Hub live!");
