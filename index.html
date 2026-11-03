@@ -68,23 +68,27 @@ window.userRole = localStorage.getItem('fusee_user_role') || null;
 window.whitelistedEmails = [];
 
 // Real-time listener for whitelisted emails from Firestore
-// Real-time listener for whitelisted emails from Firestore
 onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
     if (docSnap.exists()) {
         const data = docSnap.data();
-        window.whitelistedEmails = (data.eewhitelistedEmails || []).map(e => e.toLowerCase());
+        window.whitelistedEmails = (data.eewhitelistedEmails || []).map(e => e.toLowerCase().trim());
 
-        // Real-time eviction check for active EE user
-        if (window.currentUser && window.userRole === 'EE') {
-            const userEmail = (window.currentUser.email || '').toLowerCase();
-            const isStillWhitelisted = window.whitelistedEmails.includes(userEmail);
+        // Validate active EE session once whitelist data is available
+        if (window.currentUser) {
+            const email = (window.currentUser.email || '').toLowerCase().trim();
+            const storedRole = localStorage.getItem('fusee_user_role');
 
-            if (!isStillWhitelisted) {
-                console.warn(`Access revoked: ${userEmail} is no longer whitelisted.`);
-                localStorage.removeItem('fusee_user_role');
-                window.userRole = null;
-                await signOut(auth);
-                alert("Your EE authorization has been revoked.");
+            if (storedRole === 'EE') {
+                const isWhitelisted = window.whitelistedEmails.includes(email);
+                if (isWhitelisted) {
+                    window.userRole = 'EE';
+                } else {
+                    console.warn(`Revoking unauthorized EE role for ${email}`);
+                    localStorage.removeItem('fusee_user_role');
+                    window.userRole = null;
+                    await signOut(auth);
+                    alert("Access Restricted: Your email is not on the approved EE Student Whitelist.");
+                }
             }
         }
 
@@ -167,7 +171,7 @@ window.renderNoticesUI = function() {
 window.handleEESignIn = async () => {
     try {
         const result = await signInWithPopup(auth, provider);
-        const email = result.user.email ? result.user.email.toLowerCase() : '';
+        const email = result.user.email ? result.user.email.toLowerCase().trim() : '';
 
         // Domain Validation
         if (!email.endsWith("@addu.edu.ph")) {
@@ -176,7 +180,8 @@ window.handleEESignIn = async () => {
         }
 
         // Whitelist Validation
-        const isWhitelisted = Array.isArray(window.whitelistedEmails) && window.whitelistedEmails.includes(email);
+        const isWhitelisted = Array.isArray(window.whitelistedEmails) && 
+            window.whitelistedEmails.some(whitelistedEmail => whitelistedEmail.trim().toLowerCase() === email);
 
         if (isWhitelisted) {
             window.currentUser = result.user;
@@ -200,44 +205,45 @@ window.handleEESignIn = async () => {
 // 2. Updated onAuthStateChanged
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        const email = user.email ? user.email.toLowerCase() : '';
+        const email = user.email ? user.email.toLowerCase().trim() : '';
         if (email.endsWith("@addu.edu.ph")) {
             window.currentUser = user;
             console.log("Logged in as:", user.email);
 
-            // Re-verify whitelist status if EE role is saved in storage
             const storedRole = localStorage.getItem('fusee_user_role');
             if (storedRole === 'EE') {
-                const isWhitelisted = Array.isArray(window.whitelistedEmails) && window.whitelistedEmails.includes(email);
-                if (isWhitelisted) {
-                    window.userRole = 'EE';
+                // If whitelist is already loaded, verify immediately; 
+                // otherwise set role provisionally and let onSnapshot confirm when Firestore loads.
+                if (Array.isArray(window.whitelistedEmails) && window.whitelistedEmails.length > 0) {
+                    const isWhitelisted = window.whitelistedEmails.includes(email);
+                    if (isWhitelisted) {
+                        window.userRole = 'EE';
+                    } else {
+                        console.warn(`Revoking unauthorized EE role for ${email}`);
+                        localStorage.removeItem('fusee_user_role');
+                        window.userRole = null;
+                        await signOut(auth);
+                    }
                 } else {
-                    console.warn(`Revoking unauthorized EE role for ${email}`);
-                    localStorage.removeItem('fusee_user_role');
-                    window.userRole = null;
-                    await signOut(auth);
+                    window.userRole = 'EE';
                 }
             }
-            checkGatewayStatus();
         } else {
-            // Non-AdDU email signed in: clean state & trigger single alert
             alert("Please sign in using your official @addu.edu.ph student email.");
             await signOut(auth);
             window.currentUser = null;
             window.userRole = null;
             localStorage.removeItem('fusee_user_role');
-            checkGatewayStatus();
-            return;
         }
     } else {
-        // No active Firebase user: wipe EE authorization completely
         window.currentUser = null;
         window.userRole = null;
         if (localStorage.getItem('fusee_user_role') === 'EE') {
             localStorage.removeItem('fusee_user_role');
         }
-        checkGatewayStatus();
     }
+
+    checkGatewayStatus();
 
     if (typeof window.renderLostFoundUI === 'function') window.renderLostFoundUI();
     if (typeof window.renderPeerTutoringUI === 'function') window.renderPeerTutoringUI();
