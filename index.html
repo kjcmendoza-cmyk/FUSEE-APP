@@ -24,265 +24,261 @@
 
     <!-- Firebase Web SDK Integration & Realtime Sync -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
-        import { getFirestore, doc, onSnapshot, updateDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
+    import { getFirestore, doc, getDoc, onSnapshot, updateDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCoydIWpV6ujbc9q-COWxFr9SyAyU7I7D0",
-            authDomain: "fusee-app.firebaseapp.com",
-            projectId: "fusee-app",
-            storageBucket: "fusee-app.firebasestorage.app",
-            messagingSenderId: "1027948046459",
-            appId: "1:1027948046459:web:549cc5e4d6e47dd7e89ade",
-            measurementId: "G-MN7CMTLDZ2"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyCoydIWpV6ujbc9q-COWxFr9SyAyU7I7D0",
+        authDomain: "fusee-app.firebaseapp.com",
+        projectId: "fusee-app",
+        storageBucket: "fusee-app.firebasestorage.app",
+        messagingSenderId: "1027948046459",
+        appId: "1:1027948046459:web:549cc5e4d6e47dd7e89ade",
+        measurementId: "G-MN7CMTLDZ2"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const db = getFirestore(app);
-        window.db = db;
-window.doc = doc;
-window.updateDoc = updateDoc;
-window.collection = collection;
-window.addDoc = addDoc;
-window.serverTimestamp = serverTimestamp;
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
 
-// 2. Initialize Auth & enforce @addu.edu.ph domain restriction
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-provider.setCustomParameters({
-  hd: "addu.edu.ph",
-  prompt: "select_account"
-});
+    window.db = db;
+    window.doc = doc;
+    window.getDoc = getDoc;
+    window.updateDoc = updateDoc;
+    window.collection = collection;
+    window.addDoc = addDoc;
+    window.serverTimestamp = serverTimestamp;
 
-window.firebaseApp = app;
-window.firebaseAnalytics = analytics;
-window.currentUser = null;
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({
+        hd: "addu.edu.ph",
+        prompt: "select_account"
+    });
 
-window.loginWithAdDU = async () => {
-  return await signInWithPopup(auth, provider);
-};
-window.userRole = localStorage.getItem('fusee_user_role') || null;
-window.whitelistedEmails = [];
+    window.firebaseApp = app;
+    window.firebaseAnalytics = analytics;
+    window.currentUser = null;
+    window.userRole = localStorage.getItem('fusee_user_role') || null;
+    window.whitelistedEmails = [];
 
-// Real-time listener for whitelisted emails from Firestore
-onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
-    if (docSnap.exists()) {
-        const data = docSnap.data();
+    // Helper 1: Parse whitelist across all field variations & data structures
+function parseWhitelistData(data) {
+    if (!data) return [];
+    
+    let rawList = data.eeWhitelistedEmails ||   // Capital 'W' (Standard Firestore camelCase)
+                  data.whitelistedEmails || 
+                  data.eewhitelistedEmails || 
+                  data.ee_whitelisted_emails || 
+                  data.whitelisted_emails || 
+                  data.whitelist || [];
 
-        // 1. Convert multi-line textarea string OR array into a clean email list
-        let rawList = data.eewhitelistedEmails || [];
-        if (typeof rawList === 'string') {
-            rawList = rawList.split(/[\r\n,]+/);
-        }
-        window.whitelistedEmails = Array.isArray(rawList)
-            ? rawList.map(e => e.toString().toLowerCase().trim()).filter(Boolean)
-            : [];
-
-        // 2. Sync user role once whitelist data is loaded
-        if (window.currentUser) {
-            const userEmail = (window.currentUser.email || '').toLowerCase().trim();
-            const storedRole = localStorage.getItem('fusee_user_role');
-
-            if (storedRole === 'EE') {
-                const isWhitelisted = window.whitelistedEmails.includes(userEmail);
-                if (isWhitelisted) {
-                    window.userRole = 'EE';
-                } else {
-                    console.warn(`Revoking unauthorized EE role for ${userEmail}`);
-                    localStorage.removeItem('fusee_user_role');
-                    window.userRole = null;
-                    await signOut(auth);
-                    alert("Access Restricted: Your email is not on the approved EE Student Whitelist.");
-                }
-            }
-        }
-
-        // Save and trigger Notices UI update
-        if (data.notices && Array.isArray(data.notices)) {
-            window.allNoticesData = data.notices;
-            if (typeof window.renderNoticesUI === 'function') {
-                window.renderNoticesUI();
-            }
-        }
+    if (typeof rawList === 'string') {
+        rawList = rawList.split(/[\r\n,]+/);
     }
-    checkGatewayStatus();
-});
 
-function checkGatewayStatus() {
-    const modal = document.getElementById('entry-gateway-modal');
-    if (!modal) return;
-
-    if (window.userRole === 'EE' || window.userRole === 'SPECTATOR') {
-        modal.classList.add('hidden');
-        updateHeaderUserBadge();
-    } else {
-        modal.classList.remove('hidden');
+    if (!Array.isArray(rawList) && typeof rawList === 'object') {
+        rawList = Object.values(rawList);
     }
+
+    if (!Array.isArray(rawList)) return [];
+
+    return rawList.map(item => {
+        if (!item) return '';
+        const str = typeof item === 'object' ? (item.email || item.value || '') : item.toString();
+        return str.toLowerCase().trim();
+    }).filter(Boolean);
 }
 
-// UI Rendering Engine for Notices
-window.renderNoticesUI = function() {
-    const container = document.getElementById('notices-display-container');
-    const modalContainer = document.getElementById('notices-modal-display-container');
-    const items = window.allNoticesData || [];
-
-    // Filter active notices
-    const activeNotices = items.filter(notice => notice.active !== false);
-
-    if (activeNotices.length === 0) {
-        const emptyHtml = `<p class="text-xs text-slate-400 italic text-center py-6">No active notices at this time.</p>`;
-        if (container) container.innerHTML = emptyHtml;
-        if (modalContainer) modalContainer.innerHTML = emptyHtml;
-        return;
+    // Helper 2: Universal whitelist email check
+    function checkIsWhitelisted(email) {
+        if (!email || !Array.isArray(window.whitelistedEmails)) return false;
+        const cleanEmail = email.toLowerCase().trim();
+        return window.whitelistedEmails.some(w => w.toLowerCase().trim() === cleanEmail);
     }
 
-    const html = activeNotices.map(notice => {
-        let borderCls = 'border-fusee-yellow/40';
-        let textCls = 'text-fusee-yellow';
-        let bgBadgeCls = 'bg-fusee-yellow/10 border-fusee-yellow/30';
+    // Helper 3: Gateway Modal & UI Visibility Control
+    window.checkGatewayStatus = function() {
+        const modal = document.getElementById('entry-gateway-modal');
+        if (!modal) return;
 
-        if (notice.color === 'cyan') {
-            borderCls = 'border-fusee-cyan/40';
-            textCls = 'text-fusee-cyan';
-            bgBadgeCls = 'bg-fusee-cyan/10 border-fusee-cyan/30';
-        } else if (notice.color === 'magenta') {
-            borderCls = 'border-fusee-magenta/40';
-            textCls = 'text-fusee-magenta';
-            bgBadgeCls = 'bg-fusee-magenta/10 border-fusee-magenta/30';
-        } else if (notice.color === 'slate') {
-            borderCls = 'border-slate-700';
-            textCls = 'text-slate-300';
-            bgBadgeCls = 'bg-slate-800 text-slate-400';
-        }
+        const storedRole = localStorage.getItem('fusee_user_role');
+        const activeRole = window.userRole || storedRole;
 
-        const icon = notice.icon || 'fa-triangle-exclamation';
-
-        return `
-            <div class="p-4 rounded-2xl glass-card border ${borderCls} space-y-2">
-                <div class="flex items-center justify-between text-xs font-bold ${textCls} font-techno">
-                    <span class="flex items-center gap-1.5"><i class="fa-solid ${icon}"></i> ${notice.title || 'NOTICE'}</span>
-                    <span class="px-2 py-0.5 rounded border ${bgBadgeCls} text-[10px]">${notice.badge || 'Active'}</span>
-                </div>
-                <p class="text-xs text-slate-300 leading-relaxed">${notice.body || ''}</p>
-            </div>
-        `;
-    }).join('');
-
-    if (container) container.innerHTML = html;
-    if (modalContainer) modalContainer.innerHTML = html;
-}; 
-
-// 1. Updated handleEESignIn
-window.handleEESignIn = async () => {
-    try {
-        const result = await signInWithPopup(auth, provider);
-        const email = result.user.email ? result.user.email.toLowerCase().trim() : '';
-
-        // Domain Validation
-        if (!email.endsWith("@addu.edu.ph")) {
-            // onAuthStateChanged will handle sign-out, storage cleanup, and the alert popup.
-            return;
-        }
-
-        // Whitelist Validation
-        const isWhitelisted = Array.isArray(window.whitelistedEmails) && 
-            window.whitelistedEmails.some(whitelistedEmail => whitelistedEmail.trim().toLowerCase() === email);
-
-        if (isWhitelisted) {
-            window.currentUser = result.user;
-            window.userRole = 'EE';
-            localStorage.setItem('fusee_user_role', 'EE');
-            if (typeof showToast === 'function') showToast(`Welcome back, EE Engineer (${email})!`, 'success');
-            checkGatewayStatus();
+        if (activeRole === 'EE' || activeRole === 'SPECTATOR') {
+            modal.classList.add('hidden');
+            updateHeaderUserBadge();
         } else {
-            alert(`Access Restricted: ${email} is not on the approved EE Student Whitelist.`);
-            await signOut(auth);
-            window.currentUser = null;
-            window.userRole = null;
-            localStorage.removeItem('fusee_user_role');
-            checkGatewayStatus();
+            modal.classList.remove('hidden');
         }
-    } catch (err) {
-        console.error("Sign-in error:", err);
+    };
+
+    function updateHeaderUserBadge() {
+        const greetingEl = document.getElementById('greeting-display');
+        if (greetingEl) {
+            const activeRole = window.userRole || localStorage.getItem('fusee_user_role');
+            if (activeRole === 'EE') {
+                greetingEl.innerHTML = `<span class="text-fusee-cyan font-bold">⚡ EE Student</span> (<button onclick="resetAccessRole()" class="underline text-[9px] hover:text-white">Switch</button>)`;
+            } else {
+                greetingEl.innerHTML = `<span class="text-fusee-yellow font-bold">👁️ Spectator</span> (<button onclick="resetAccessRole()" class="underline text-[9px] hover:text-white">Sign In</button>)`;
+            }
+        }
     }
-};
 
-// 2. Updated onAuthStateChanged
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        const email = user.email ? user.email.toLowerCase().trim() : '';
-        if (email.endsWith("@addu.edu.ph")) {
-            window.currentUser = user;
-            console.log("Logged in as:", user.email);
+    // Real-time Firestore Listener
+    onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            window.whitelistedEmails = parseWhitelistData(data);
 
-            const storedRole = localStorage.getItem('fusee_user_role');
-            if (storedRole === 'EE') {
-                // If whitelist is already loaded, verify immediately; 
-                // otherwise set role provisionally and let onSnapshot confirm when Firestore loads.
-                if (Array.isArray(window.whitelistedEmails) && window.whitelistedEmails.length > 0) {
-                    const isWhitelisted = window.whitelistedEmails.includes(email);
-                    if (isWhitelisted) {
+            if (window.currentUser) {
+                const userEmail = window.currentUser.email || '';
+                const storedRole = localStorage.getItem('fusee_user_role');
+
+                if (storedRole === 'EE') {
+                    if (checkIsWhitelisted(userEmail)) {
                         window.userRole = 'EE';
                     } else {
-                        console.warn(`Revoking unauthorized EE role for ${email}`);
+                        console.warn(`Revoking unauthorized EE role for ${userEmail}`);
+                        localStorage.removeItem('fusee_user_role');
+                        window.userRole = null;
+                        await signOut(auth);
+                        alert("Access Restricted: Your email is not on the approved EE Student Whitelist.");
+                    }
+                }
+            }
+
+            if (data.notices && Array.isArray(data.notices)) {
+                window.allNoticesData = data.notices;
+                if (typeof window.renderNoticesUI === 'function') window.renderNoticesUI();
+            }
+            if (data.capstoneItems && Array.isArray(data.capstoneItems)) {
+                window.allCapstoneData = data.capstoneItems;
+                if (typeof window.renderCapstonesUI === 'function') window.renderCapstonesUI();
+            }
+            if (data.lostAndFound && Array.isArray(data.lostAndFound)) {
+                window.allLostFoundData = data.lostAndFound;
+                if (typeof window.renderLostFoundUI === 'function') window.renderLostFoundUI();
+            }
+            if (data.peerTutoring && Array.isArray(data.peerTutoring)) {
+                window.allPeerTutoringData = data.peerTutoring;
+                if (typeof window.renderPeerTutoringUI === 'function') window.renderPeerTutoringUI();
+                if (typeof window.renderTutorManagementUI === 'function') window.renderTutorManagementUI();
+            }
+            if (data.importantEvents && Array.isArray(data.importantEvents)) {
+                window.allImportantEventsData = data.importantEvents;
+                if (typeof window.renderImportantEventsUI === 'function') window.renderImportantEventsUI();
+            }
+            if (data.qpiSubjects && Array.isArray(data.qpiSubjects)) {
+                window.allQpiSubjectsData = data.qpiSubjects;
+            }
+        }
+        checkGatewayStatus();
+    });
+
+    // Single EE Sign-In Handler
+    window.handleEESignIn = async () => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const email = result.user ? result.user.email : '';
+
+            if (!email || !email.toLowerCase().trim().endsWith("@addu.edu.ph")) {
+                alert("Please sign in using your official @addu.edu.ph student email.");
+                await signOut(auth);
+                return;
+            }
+
+            if (!window.whitelistedEmails || window.whitelistedEmails.length === 0) {
+                const docSnap = await getDoc(doc(db, "fusee_hub", "landing_content"));
+                if (docSnap.exists()) {
+                    window.whitelistedEmails = parseWhitelistData(docSnap.data());
+                }
+            }
+
+            if (checkIsWhitelisted(email)) {
+                window.currentUser = result.user;
+                window.userRole = 'EE';
+                localStorage.setItem('fusee_user_role', 'EE');
+                if (typeof showToast === 'function') showToast(`Welcome back, EE Engineer (${email})!`, 'success');
+                checkGatewayStatus();
+            } else {
+                alert(`Access Restricted: ${email} is not on the approved EE Student Whitelist.`);
+                await signOut(auth);
+                window.currentUser = null;
+                window.userRole = null;
+                localStorage.removeItem('fusee_user_role');
+                checkGatewayStatus();
+            }
+        } catch (err) {
+            console.error("Sign-in error:", err);
+        }
+    };
+
+    // Single Auth State Change Handler
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const email = user.email || '';
+            if (email.toLowerCase().trim().endsWith("@addu.edu.ph")) {
+                window.currentUser = user;
+                const storedRole = localStorage.getItem('fusee_user_role');
+
+                if (storedRole === 'EE' || window.userRole === 'EE') {
+                    if (!window.whitelistedEmails || window.whitelistedEmails.length === 0) {
+                        const docSnap = await getDoc(doc(db, "fusee_hub", "landing_content"));
+                        if (docSnap.exists()) {
+                            window.whitelistedEmails = parseWhitelistData(docSnap.data());
+                        }
+                    }
+
+                    if (checkIsWhitelisted(email)) {
+                        window.userRole = 'EE';
+                        localStorage.setItem('fusee_user_role', 'EE');
+                    } else {
                         localStorage.removeItem('fusee_user_role');
                         window.userRole = null;
                         await signOut(auth);
                     }
-                } else {
-                    window.userRole = 'EE';
                 }
+            } else {
+                alert("Please sign in using your official @addu.edu.ph student email.");
+                await signOut(auth);
+                window.currentUser = null;
+                window.userRole = null;
+                localStorage.removeItem('fusee_user_role');
             }
         } else {
-            alert("Please sign in using your official @addu.edu.ph student email.");
-            await signOut(auth);
             window.currentUser = null;
-            window.userRole = null;
-            localStorage.removeItem('fusee_user_role');
+            const storedRole = localStorage.getItem('fusee_user_role');
+            if (storedRole === 'SPECTATOR') {
+                window.userRole = 'SPECTATOR';
+            } else {
+                window.userRole = null;
+            }
         }
-    } else {
+
+        checkGatewayStatus();
+
+        if (typeof window.renderLostFoundUI === 'function') window.renderLostFoundUI();
+        if (typeof window.renderPeerTutoringUI === 'function') window.renderPeerTutoringUI();
+        if (typeof window.renderTutorManagementUI === 'function') window.renderTutorManagementUI();
+    });
+
+    window.enterAsSpectator = () => {
         window.currentUser = null;
+        window.userRole = 'SPECTATOR';
+        localStorage.setItem('fusee_user_role', 'SPECTATOR');
+        if (typeof showToast === 'function') showToast("Entered in Spectator Mode (Read-Only)", "info");
+        checkGatewayStatus();
+    };
+
+    window.resetAccessRole = () => {
+        localStorage.removeItem('fusee_user_role');
         window.userRole = null;
-        if (localStorage.getItem('fusee_user_role') === 'EE') {
-            localStorage.removeItem('fusee_user_role');
-        }
-    }
-
-    checkGatewayStatus();
-
-    if (typeof window.renderLostFoundUI === 'function') window.renderLostFoundUI();
-    if (typeof window.renderPeerTutoringUI === 'function') window.renderPeerTutoringUI();
-    if (typeof window.renderTutorManagementUI === 'function') window.renderTutorManagementUI();
-});
-
-window.enterAsSpectator = () => {
-    window.currentUser = null;
-    window.userRole = 'SPECTATOR';
-    localStorage.setItem('fusee_user_role', 'SPECTATOR');
-    if (typeof showToast === 'function') showToast("Entered in Spectator Mode (Read-Only)", "info");
-    checkGatewayStatus();
-};
-
-function updateHeaderUserBadge() {
-    const greetingEl = document.getElementById('greeting-display');
-    if (greetingEl) {
-        if (window.userRole === 'EE') {
-            greetingEl.innerHTML = `<span class="text-fusee-cyan font-bold">⚡ EE Student</span> (<button onclick="resetAccessRole()" class="underline text-[9px] hover:text-white">Switch</button>)`;
-        } else {
-            greetingEl.innerHTML = `<span class="text-fusee-yellow font-bold">👁️ Spectator</span> (<button onclick="resetAccessRole()" class="underline text-[9px] hover:text-white">Sign In</button>)`;
-        }
-    }
-}
-
-window.resetAccessRole = () => {
-    localStorage.removeItem('fusee_user_role');
-    window.userRole = null;
-    if (auth.currentUser) signOut(auth);
-    location.reload();
-};
+        if (auth.currentUser) signOut(auth);
+        location.reload();
+    };    
 
 // Global Guard Helper Function
 window.checkEEAccess = function(featureName = "this feature", event = null) {
