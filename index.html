@@ -71,19 +71,27 @@ window.whitelistedEmails = [];
 onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
     if (docSnap.exists()) {
         const data = docSnap.data();
-        window.whitelistedEmails = (data.eewhitelistedEmails || []).map(e => e.toLowerCase().trim());
 
-        // Validate active EE session once whitelist data is available
+        // 1. Convert multi-line textarea string OR array into a clean email list
+        let rawList = data.eewhitelistedEmails || [];
+        if (typeof rawList === 'string') {
+            rawList = rawList.split(/[\r\n,]+/);
+        }
+        window.whitelistedEmails = Array.isArray(rawList)
+            ? rawList.map(e => e.toString().toLowerCase().trim()).filter(Boolean)
+            : [];
+
+        // 2. Sync user role once whitelist data is loaded
         if (window.currentUser) {
-            const email = (window.currentUser.email || '').toLowerCase().trim();
+            const userEmail = (window.currentUser.email || '').toLowerCase().trim();
             const storedRole = localStorage.getItem('fusee_user_role');
 
             if (storedRole === 'EE') {
-                const isWhitelisted = window.whitelistedEmails.includes(email);
+                const isWhitelisted = window.whitelistedEmails.includes(userEmail);
                 if (isWhitelisted) {
                     window.userRole = 'EE';
                 } else {
-                    console.warn(`Revoking unauthorized EE role for ${email}`);
+                    console.warn(`Revoking unauthorized EE role for ${userEmail}`);
                     localStorage.removeItem('fusee_user_role');
                     window.userRole = null;
                     await signOut(auth);
