@@ -647,13 +647,10 @@ window.renderMatrixGrid = function() {
 };
 
         // Bottom Sheet & Modal Controls
-        function openModal(modalId) {
-    // Hide all currently open bottom-sheets to prevent overlap
-    const openSheets = document.querySelectorAll('.bottom-sheet:not(.hidden-sheet)');
-    openSheets.forEach(sheet => {
-        if (sheet.id !== modalId) {
-            sheet.classList.add('hidden-sheet');
-        }
+function openModal(modalId) {
+    // Hide all bottom-sheets systematically
+    document.querySelectorAll('.bottom-sheet').forEach(sheet => {
+        sheet.classList.add('hidden-sheet');
     });
 
     // Default the Day Select dropdown to Today when opening the Room Schedule Modal
@@ -663,7 +660,6 @@ window.renderMatrixGrid = function() {
         const daySelect = document.getElementById('matrix-day-select');
         
         if (daySelect) {
-            // Set to today if available in options (defaults to Monday on Sundays)
             if (daySelect.querySelector(`option[value="${todayName}"]`)) {
                 daySelect.value = todayName;
             } else {
