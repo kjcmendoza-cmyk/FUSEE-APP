@@ -555,51 +555,57 @@ function debounce(func, delay = 250) {
     };
 }
 // Custom Confirmation Modal Helper
-    window.showConfirm = function(message, title = "Confirmation Required", iconClass = "fa-circle-question") {
-        return new Promise((resolve) => {
-            const modal = document.getElementById('confirm-modal');
-            const modalBox = document.getElementById('confirm-modal-box');
-            const titleEl = document.getElementById('confirm-modal-title');
-            const msgEl = document.getElementById('confirm-modal-msg');
-            const iconEl = document.getElementById('confirm-modal-icon');
-            const btnCancel = document.getElementById('confirm-btn-cancel');
-            const btnOk = document.getElementById('confirm-btn-ok');
+window.showConfirm = function(message, title = "Confirmation Required", iconClass = "fa-circle-question") {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirm-modal');
+        const modalBox = document.getElementById('confirm-modal-box');
+        const titleEl = document.getElementById('confirm-modal-title');
+        const msgEl = document.getElementById('confirm-modal-msg');
+        const iconEl = document.getElementById('confirm-modal-icon');
+        const btnCancel = document.getElementById('confirm-btn-cancel');
+        const btnOk = document.getElementById('confirm-btn-ok');
 
-            if (!modal) {
-                resolve(window.confirm(message));
-                return;
-            }
+        if (!modal || !btnOk || !btnCancel) {
+            resolve(window.confirm(message));
+            return;
+        }
 
-            titleEl.textContent = title;
-            msgEl.textContent = message;
-            if (iconEl) iconEl.className = `fa-solid ${iconClass}`;
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        if (iconEl) iconEl.className = `fa-solid ${iconClass}`;
 
-            modal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                modal.classList.remove('opacity-0');
-                modalBox.classList.remove('scale-95');
-                modalBox.classList.add('scale-100');
-            });
+        // Clone nodes to instantly strip any stale listeners from previous calls
+        const newOk = btnOk.cloneNode(true);
+        const newCancel = btnCancel.cloneNode(true);
+        btnOk.parentNode.replaceChild(newOk, btnOk);
+        btnCancel.parentNode.replaceChild(newCancel, btnCancel);
 
-            function cleanup(result) {
-                modal.classList.add('opacity-0');
-                modalBox.classList.remove('scale-100');
-                modalBox.classList.add('scale-95');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    btnOk.removeEventListener('click', onOk);
-                    btnCancel.removeEventListener('click', onCancel);
-                    resolve(result);
-                }, 200);
-            }
-
-            function onOk() { cleanup(true); }
-            function onCancel() { cleanup(false); }
-
-            btnOk.addEventListener('click', onOk);
-            btnCancel.addEventListener('click', onCancel);
+        modal.classList.remove('hidden');
+        requestAnimationFrame(() => {
+            modal.classList.remove('opacity-0');
+            modalBox.classList.remove('scale-95');
+            modalBox.classList.add('scale-100');
         });
-    };
+
+        let isResolved = false;
+
+        const closeWithResult = (result) => {
+            if (isResolved) return;
+            isResolved = true;
+
+            modal.classList.add('opacity-0');
+            modalBox.classList.remove('scale-100');
+            modalBox.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                resolve(result);
+            }, 200);
+        };
+
+        newOk.addEventListener('click', () => closeWithResult(true), { once: true });
+        newCancel.addEventListener('click', () => closeWithResult(false), { once: true });
+    });
+};
 
 // Floating Quick-Access Speed Dial Toggle Engine
 window.toggleQuickLinksMenu = function(forceState) {
