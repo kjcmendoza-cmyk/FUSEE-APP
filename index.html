@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FUSEE Hub | Electrical Engineering Portal - Ateneo de Davao</title>
     <script src="js/theme.js"></script>
-    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="js/firebase-config.js"></script>
     <script src="js/ui.js" defer></script>
-    <script src="js/calculators.js" defer></script>
-    <script src="app.js" defer></script>
+    <script src="js/calculator.js" defer></script>
+    <script src="js/app.js" defer></script>
    <!-- Favicon & App Shortcut Icons -->
     <link rel="icon" type="image/png" sizes="192x192" href="FUSEE-icon.png">
     <link rel="icon" type="image/png" sizes="512x512" href="FUSEE-icon.png">
@@ -68,7 +68,7 @@
         <script>
         if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js')
+      navigator.serviceWorker.register('js/sw.js')
         .then(reg => console.log('PWA Service Worker registered:', reg.scope))
         .catch(err => console.error('Service Worker registration failed:', err));
     });
@@ -898,8 +898,7 @@
 </div>
 
 <!-- MODAL: Student Submit Lost/Found Report Form -->
-<div id="report-item-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#130e2e] border-t border-rose-500/40 rounded-t-3xl z-[60] p-5 space-y-3 max-h-[85vh] overflow-y-auto">
-    <div class="flex items-center justify-between border-b border-white/10 pb-2">
+<div id="report-item-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#130e2e] border-t border-rose-500/40 rounded-t-3xl z-[120] p-5 space-y-3 max-h-[85vh] overflow-y-auto">    <div class="flex items-center justify-between border-b border-white/10 pb-2">
         <h4 class="text-xs font-bold text-white font-techno flex items-center gap-2">
             <i class="fa-solid fa-pen-to-square text-rose-400"></i> Submit Lost or Found Report
         </h4>
@@ -1062,7 +1061,7 @@
 </div>
 
 <!-- MODAL: Student Submit Tutoring Offer Form -->
-<div id="post-tutor-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#130e2e] border-t border-fusee-cyan/40 rounded-t-3xl z-[60] p-5 space-y-3 max-h-[85vh] overflow-y-auto">
+<div id="post-tutor-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#130e2e] border-t border-fusee-cyan/40 rounded-t-3xl z-[120] p-5 space-y-3 max-h-[85vh] overflow-y-auto">
     <div class="flex items-center justify-between border-b border-white/10 pb-2">
         <h4 class="text-xs font-bold text-white font-techno flex items-center gap-2">
             <i class="fa-solid fa-pen-to-square text-fusee-cyan"></i> Post Tutoring Offer / Study Group
@@ -1663,8 +1662,7 @@
         </div>
 
 <!-- MODAL: In-App Merch Checkout Drawer -->
-<div id="merch-order-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-magenta/50 rounded-t-3xl z-[70] p-5 md:p-6 space-y-4 max-h-[92vh] shadow-2xl overflow-y-auto">
-    
+<div id="merch-order-modal" class="bottom-sheet hidden-sheet fixed bottom-0 left-0 right-0 max-w-md md:max-w-xl mx-auto bg-[#130e2e]/95 backdrop-blur-xl border-t border-x md:border border-fusee-magenta/50 rounded-t-3xl z-[120] p-5 md:p-6 pb-12 space-y-4 max-h-[88vh] shadow-2xl overflow-y-auto">
     <!-- Modal Header -->
     <div class="flex items-center justify-between border-b border-white/10 pb-3 flex-shrink-0">
         <div class="flex items-center space-x-2.5">
@@ -1934,7 +1932,7 @@
 <!-- Fully Functional Lightbox Container -->
 <div id="imageZoomModal" 
      onclick="if(event.target === this || event.target.id === 'zoomModalViewport') closeImageZoomModal()"
-     class="fixed inset-0 z-50 hidden bg-slate-950/95 backdrop-blur-lg flex flex-col items-center justify-center p-4 transition-opacity duration-300 opacity-0 touch-none">
+     class="fixed inset-0 z-[220] hidden bg-slate-950/95 backdrop-blur-lg flex flex-col items-center justify-center p-4 transition-opacity duration-300 opacity-0 touch-none">
     
     <!-- Close Button -->
     <button onclick="closeImageZoomModal()" 
