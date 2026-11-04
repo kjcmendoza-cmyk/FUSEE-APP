@@ -648,29 +648,31 @@ window.renderMatrixGrid = function() {
 
         // Bottom Sheet & Modal Controls
 function openModal(modalId) {
-    // Hide all bottom-sheets systematically
     document.querySelectorAll('.bottom-sheet').forEach(sheet => {
         sheet.classList.add('hidden-sheet');
     });
+
+    // Render merch items whenever the merch modal is opened
+    if (modalId === 'merch-modal' && typeof window.renderMerchUI === 'function') {
+        window.renderMerchUI();
+    }
 
     // Default the Day Select dropdown to Today when opening the Room Schedule Modal
     if (modalId === 'room-schedule-modal') {
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const todayName = days[new Date().getDay()];
-        const daySelect = document.getElementById('matrix-day-select');
-        
+        const daySelect = document.getElementById('room-day-select');
+
         if (daySelect) {
-            if (daySelect.querySelector(`option[value="${todayName}"]`)) {
-                daySelect.value = todayName;
-            } else {
-                daySelect.value = 'Monday';
-            }
+            daySelect.value = days.includes(todayName) ? todayName : 'Monday';
         }
+
         if (typeof window.renderMatrixGrid === 'function') {
             window.renderMatrixGrid();
         }
     }
 
+    // Open Backdrop and Modal
     const backdrop = document.getElementById('modal-backdrop');
     const modal = document.getElementById(modalId);
 
@@ -1453,4 +1455,71 @@ window.toggleMerchCardImage = function(container) {
         if (badgeText) badgeText.textContent = 'Front — Tap for Back';
         container.setAttribute('data-showing', 'front');
     }
+};
+// Merchandise Catalog UI Renderer
+window.renderMerchUI = function() {
+    const container = document.getElementById('merch-display-container');
+    if (!container) return;
+
+    const items = window.currentMerchItems || [];
+
+    if (items.length === 0) {
+        container.innerHTML = '<p class="text-[10px] text-slate-400 italic text-center py-6 col-span-2">No merchandise items available at this time.</p>';
+        return;
+    }
+
+    container.innerHTML = items.map((item, index) => {
+        const hasFrontAndBack = item.frontImageUrl && item.backImageUrl;
+        const mainImage = item.imageUrl || item.frontImageUrl || item.image || '';
+        const backImage = item.backImageUrl || '';
+
+        const imageMarkup = mainImage ? `
+            <div class="relative w-full aspect-square rounded-xl overflow-hidden border border-slate-800 bg-slate-950 group cursor-pointer"
+                 data-showing="front"
+                 onclick="${hasFrontAndBack ? 'toggleMerchCardImage(this)' : `openImageZoomModal('${mainImage}', '${backImage}', this)`}">
+                <img src="${mainImage}" alt="${item.title || 'Merch Item'}" class="merch-front-img w-full h-full object-cover transition-opacity duration-300 opacity-100">
+                ${backImage ? `<img src="${backImage}" alt="${item.title || 'Merch Item Back'}" class="merch-back-img absolute inset-0 w-full h-full object-cover transition-opacity duration-300 opacity-0">` : ''}
+                
+                ${hasFrontAndBack ? `
+                    <span class="merch-badge-text absolute top-2 right-2 px-2 py-0.5 rounded-full bg-slate-950/80 text-[8px] font-bold text-fusee-cyan border border-fusee-cyan/30 backdrop-blur-md">
+                        Front — Tap for Back
+                    </span>
+                ` : ''}
+                
+                <button type="button" onclick="event.stopPropagation(); openImageZoomModal('${mainImage}', '${backImage}', this)" class="absolute bottom-2 right-2 w-7 h-7 rounded-lg bg-slate-900/80 text-white flex items-center justify-center border border-white/20 hover:bg-fusee-cyan hover:text-slate-950 transition">
+                    <i class="fa-solid fa-magnifying-glass-plus text-[10px]"></i>
+                </button>
+            </div>
+        ` : `
+            <div class="w-full aspect-square rounded-xl border border-slate-800 bg-slate-950 flex flex-col items-center justify-center text-slate-500 text-[10px]">
+                <i class="fa-solid fa-shirt text-3xl text-fusee-magenta/30 mb-1"></i>
+                <span>No Image Available</span>
+            </div>
+        `;
+
+        return `
+            <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5 hover:border-fusee-magenta/40 transition flex flex-col justify-between">
+                <div class="space-y-2">
+                    ${imageMarkup}
+                    
+                    <div class="flex items-center justify-between gap-1">
+                        <span class="px-2 py-0.5 rounded-full bg-fusee-magenta/20 text-fusee-magenta text-[8px] font-bold font-techno border border-fusee-magenta/30">
+                            ${item.badge || 'PRE-ORDER'}
+                        </span>
+                        <span class="text-xs font-bold text-fusee-magenta font-techno">
+                            ${item.price || '₱0.00'}
+                        </span>
+                    </div>
+
+                    <h4 class="font-bold text-white text-xs leading-snug">${item.title || 'EE Merchandise'}</h4>
+                    ${item.description ? `<p class="text-[10px] text-slate-300 leading-relaxed bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">${item.description}</p>` : ''}
+                </div>
+
+                <button onclick="openMerchOrderModal(${index})" class="w-full py-2 bg-gradient-to-r from-fusee-magenta to-pink-600 text-white font-bold rounded-xl text-xs hover:from-pink-500 hover:to-purple-500 transition shadow-neon-pink flex items-center justify-center gap-1.5 mt-2">
+                    <i class="fa-solid fa-bag-shopping text-xs"></i>
+                    <span>Order Now</span>
+                </button>
+            </div>
+        `;
+    }).join('');
 };

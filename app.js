@@ -199,8 +199,10 @@ window.openMerchOrderModal = function(index) {
 
     const imgEl = document.getElementById('checkout-item-img');
     const iconEl = document.getElementById('checkout-item-icon');
-    if (activeCheckoutItem.imageUrl) {
-        imgEl.src = activeCheckoutItem.imageUrl;
+    const itemImg = activeCheckoutItem.imageUrl || activeCheckoutItem.frontImageUrl || activeCheckoutItem.image || '';
+
+    if (itemImg) {
+        imgEl.src = itemImg;
         imgEl.classList.remove('hidden');
         iconEl.classList.add('hidden');
     } else {
