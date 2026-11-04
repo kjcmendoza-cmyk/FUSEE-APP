@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FUSEE Hub | Electrical Engineering Portal - Ateneo de Davao</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="theme.js"></script>
-    <script type="module" src="firebase-config.js"></script>
-    <script src="ui.js" defer></script>
-    <script src="calculator.js" defer></script>
-    <script src="app.js" defer></script>
+    <link rel="stylesheet" href="css/styles.css">
+<script src="js/theme.js"></script>
+<script type="module" src="js/firebase-config.js"></script>
+<script src="js/ui.js" defer></script>
+<script src="js/calculator.js" defer></script>
+<script src="js/app.js" defer></script>
    <!-- Favicon & App Shortcut Icons -->
     <link rel="icon" type="image/png" sizes="192x192" href="FUSEE-icon.png">
     <link rel="icon" type="image/png" sizes="512x512" href="FUSEE-icon.png">
@@ -66,13 +66,13 @@
 
         <!-- Register Service Worker for PWA Android WebAPK Install -->
         <script>
-        if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('js/sw.js')
-        .then(reg => console.log('PWA Service Worker registered:', reg.scope))
-        .catch(err => console.error('Service Worker registration failed:', err));
-    });
-  }
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('js/sw.js')
+      .then(reg => console.log('PWA Service Worker registered:', reg.scope))
+      .catch(err => console.error('Service Worker registration failed:', err));
+  });
+}
 </script>
 </head>
 <body class="relative min-h-screen text-slate-100 antialiased selection:bg-fusee-cyan selection:text-black">
