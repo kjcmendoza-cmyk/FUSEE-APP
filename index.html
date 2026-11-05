@@ -13,30 +13,7 @@
     <link rel="stylesheet" href="styles.css">
 
     <!-- 2. Tailwind CDN & Configuration -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        fusee: {
-                            dark: '#0B081E',
-                            card: '#130e2e',
-                            border: '#281c50',
-                            cyan: '#00F0FF',
-                            magenta: '#FF007A',
-                            purple: '#8B5CF6',
-                            yellow: '#FFD600',
-                            lime: '#10B981',
-                            pinkGlow: '#EC4899',
-                            orange: '#FF5700'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="output.css">
 
     <!-- 3. Early Theme Handler (Runs before DOM renders to prevent theme flickering) -->
     <script src="theme.js"></script>
@@ -2150,10 +2127,10 @@
             <input type="number" id="tg-subMT-topic-raw" placeholder="Raw % Score (0-100)" min="0" max="100" step="0.1" class="w-full bg-slate-950 text-xs text-white p-1.5 rounded-lg border border-slate-800 focus:border-fusee-cyan">
             <span class="text-[8px] text-slate-500 block mt-0.5">Enter raw topic exam average %</span>
         </div>
-    </div> <!-- Closes #tg-subMT -->
-</div> <!-- Closes Midterm Card -->
-</div> <!-- ADD THIS 1: Closes .grid grid-cols-1 sm:grid-cols-2 (line 5914) -->
-</div> <!-- ADD THIS 2: Closes .space-y-2.5 Section 2 (line 5880) -->
+    </div> 
+</div> 
+</div> 
+</div> 
 
         <!-- 3. Output Card: Needed Prefinal Grade & 80/20 Exam Breakdown -->
         <div id="tg-resultCard" class="p-4 rounded-2xl bg-gradient-to-br from-slate-900 via-[#130e2e] to-slate-950 border border-fusee-yellow/40 shadow-neon-yellow space-y-3 relative overflow-hidden">

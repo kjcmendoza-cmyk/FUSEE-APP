@@ -16,7 +16,7 @@
     const container = document.getElementById('lost-found-display-container');
     if (!container) return;
 
-    const items = window.allLostFoundData || [];
+    const items = window.FUSEE.data.lostFound || [];
     const searchVal = (document.getElementById('lf-search-input')?.value || '').toLowerCase();
 
     const filtered = items.filter(item => {
@@ -66,7 +66,7 @@
         `;
 
         // Check ownership and status
-        const isOwner = window.currentUser && item.ownerEmail && window.currentUser.email === item.ownerEmail;
+        const isOwner = window.FUSEE.currentUser && item.ownerEmail && window.FUSEE.currentUser.email === item.ownerEmail;
         const isReturned = item.status === 'RETURNED';
 
         return `
@@ -1223,17 +1223,17 @@ async function handleStudentTutorSubmit(e) {
         location,
         schedule,
         contact,
-        ownerEmail: window.currentUser ? window.currentUser.email : contact
+        ownerEmail: window.FUSEE.currentUser ? window.FUSEE.currentUser.email : contact
     };
 
-    if (!window.allPeerTutoringData) window.allPeerTutoringData = [];
-    window.allPeerTutoringData.unshift(newListing);
+    if (!window.FUSEE.data.peerTutoring) window.FUSEE.data.peerTutoring = [];
+    window.FUSEE.data.peerTutoring.unshift(newListing);
 
     try {
         const db = window.db;
         const docRef = window.doc(db, "fusee_hub", "landing_content");
         await window.updateDoc(docRef, {
-            peerTutoring: window.allPeerTutoringData
+            peerTutoring: window.FUSEE.data.peerTutoring
         });
 
         if (typeof window.renderPeerTutoringUI === 'function') {

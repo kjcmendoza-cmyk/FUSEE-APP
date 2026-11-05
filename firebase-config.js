@@ -41,9 +41,17 @@ window.collection = collection;
 window.addDoc = addDoc;
 window.serverTimestamp = serverTimestamp;
 
-window.currentUser = null;
-window.userRole = localStorage.getItem('fusee_user_role') || null;
-window.whitelistedEmails = [];
+window.FUSEE = {
+    currentUser: null,
+    userRole: localStorage.getItem('fusee_user_role') || null,
+    whitelistedEmails: [],
+    data: {
+        peerTutoring: [],
+        lostFound: [],
+        notices: [],
+        events: []
+    }
+};
 
 // --- Whitelist Utilities ---
 function parseWhitelistData(data) {
@@ -67,9 +75,9 @@ function parseWhitelistData(data) {
 }
 
 function checkIsWhitelisted(email) {
-    if (!email || !Array.isArray(window.whitelistedEmails)) return false;
+    if (!email || !Array.isArray(window.FUSEE.whitelistedEmails)) return false;
     const cleanEmail = email.toLowerCase().trim();
-    return window.whitelistedEmails.some(w => w.toLowerCase().trim() === cleanEmail);
+    return window.FUSEE.whitelistedEmails.some(e => e.toLowerCase().trim() === cleanEmail);
 }
 
 // --- Access & UI Visibility Guards ---
@@ -78,7 +86,7 @@ window.checkGatewayStatus = function() {
     if (!modal) return;
 
     const storedRole = localStorage.getItem('fusee_user_role');
-    const activeRole = window.userRole || storedRole;
+    const activeRole = window.FUSEE.userRole || storedRole;
 
     if (activeRole === 'EE' || activeRole === 'SPECTATOR') {
         modal.classList.add('hidden');
@@ -530,7 +538,7 @@ if (data.merchItems && Array.isArray(data.merchItems)) {
 
     // Lost & Found
     if (data.lostAndFound && Array.isArray(data.lostAndFound)) {
-        window.allLostFoundData = data.lostAndFound;
+        window.FUSEE.data.lostFound = data.lostAndFound;
         if (typeof window.renderLostFoundUI === 'function') window.renderLostFoundUI();
     }
 
@@ -543,7 +551,7 @@ if (data.merchItems && Array.isArray(data.merchItems)) {
 
     // Peer Tutoring
     if (data.peerTutoring && Array.isArray(data.peerTutoring)) {
-        window.allPeerTutoringData = data.peerTutoring;
+        window.FUSEE.data.peerTutoring = data.peerTutoring;
         if (typeof window.renderPeerTutoringUI === 'function') window.renderPeerTutoringUI();
         if (typeof window.renderTutorManagementUI === 'function') window.renderTutorManagementUI();
     }
@@ -555,4 +563,5 @@ if (data.merchItems && Array.isArray(data.merchItems)) {
     }
 
     window.checkGatewayStatus();
+    window.dispatchEvent(new CustomEvent('fusee-firebase-ready'));
 });

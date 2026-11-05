@@ -1,3 +1,12 @@
+        @import "tailwindcss";
+
+@theme {
+  --color-fusee-dark: #0B081E;
+  --color-fusee-card: #130e2e;
+  --color-fusee-border: #281c50;
+  --color-fusee-cyan: #00F0FF;
+  --color-fusee-magenta: #FF007A;
+}
         /* All 5 Theme Palette Definitions */
         :root, [data-theme="fusee"] {
             --bg-dark: #0B081E;
@@ -149,7 +158,7 @@
 
         /* Magenta -> Deep Fuchsia / Rose (#C026D3) */
         [data-theme="light"] .text-fusee-magenta,
-        [data-theme="light"] .group-hover\:text-fusee-magenta:group-hover {
+        [data-theme="light"] .group:hover .group-hover\:text-fusee-magenta {
             color: #C026D3 !important;
         }
         [data-theme="light"] .bg-fusee-magenta {
@@ -412,7 +421,7 @@
 
         /* 5. Magenta Elements -> Vivid Neon Fuchsia Conversion */
         [data-theme="cyber-pink"] .text-fusee-magenta,
-        [data-theme="cyber-pink"] .group-hover\:text-fusee-magenta:group-hover {
+        [data-theme="cyber-pink"] .group:hover .group-hover\:text-fusee-magenta {
             color: #FF007F !important;
         }
         [data-theme="cyber-pink"] .bg-fusee-magenta {

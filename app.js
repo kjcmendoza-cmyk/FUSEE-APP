@@ -647,3 +647,11 @@ document.addEventListener('click', (e) => {
         window.toggleQuickLinksMenu(false);
     }
 });
+window.addEventListener('fusee-firebase-ready', () => {
+    if (typeof window.refreshAllSystemStatuses === 'function') {
+        window.refreshAllSystemStatuses();
+    }
+    if (typeof window.evaluateLiveRoomStatuses === 'function') {
+        window.evaluateLiveRoomStatuses();
+    }
+});
