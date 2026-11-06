@@ -36,14 +36,21 @@
 
     <!-- Service Worker Registration -->
     <script>
-    if ('serviceWorker' in navigator) {
+    if ('serviceworker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
                 .then(reg => console.log('PWA Service Worker registered:', reg.scope))
                 .catch(err => console.error('Service Worker registration failed:', err));
         });
     }
-    </script>
+
+    // Listen for Firebase ready signal
+    window.addEventListener('fusee-firebase-ready', () => {
+        if (typeof window.updateHeaderUserBadge === 'function') {
+            window.updateHeaderUserBadge();
+        }
+    });
+</script>
 </head>
 <body class="relative min-h-screen text-slate-100 antialiased selection:bg-fusee-cyan selection:text-black">
 <!-- Entry Selection Gateway Modal -->
@@ -2289,5 +2296,10 @@
             </div> <!-- Closes p-3.5 flex container -->
         </div> <!-- Closes #qpi-workspace-screen -->
     </div> <!-- Closes #qpi-calc-modal -->
+    <script>
+        if (typeof window.updateHeaderUserBadge === 'function') {
+            window.updateHeaderUserBadge();
+        }
+    </script>
 </body>
 </html>

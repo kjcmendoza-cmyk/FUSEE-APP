@@ -698,7 +698,12 @@ onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
         window.allImportantEventsData = data.importantEvents;
         if (typeof window.renderImportantEventsUI === 'function') window.renderImportantEventsUI();
     }
-
-    window.checkGatewayStatus();
+// Safely update badge and status when Firebase is ready
+    if (typeof window.updateHeaderUserBadge === 'function') {
+        window.updateHeaderUserBadge();
+    }
+    if (typeof window.checkGatewayStatus === 'function') {
+        window.checkGatewayStatus();
+    }
     window.dispatchEvent(new CustomEvent('fusee-firebase-ready'));
 });
