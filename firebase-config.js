@@ -275,23 +275,29 @@ onAuthStateChanged(auth, async (user) => {
     if (user) {
         const email = user.email || '';
         
+        // 1. Fetch & Store Whitelist Array globally
         let list = window.whitelistedEmails || window.FUSEE?.whitelistedEmails || [];
         if (!Array.isArray(list) || list.length === 0) {
             try {
                 const docSnap = await getDoc(doc(db, "fusee_hub", "landing_content"));
                 if (docSnap.exists()) {
                     list = parseWhitelistData(docSnap.data());
+                    window.whitelistedEmails = list;
+                    if (window.FUSEE) window.FUSEE.whitelistedEmails = list;
                 }
             } catch (err) {
                 console.error("Error fetching whitelist data during auth check:", err);
             }
         }
-
+        
         const cleanEmail = email.toLowerCase().trim();
         const isAdDUEmail = cleanEmail.endsWith("@addu.edu.ph");
-        const isWhitelisted = checkIsWhitelisted(cleanEmail);
-
-        if (isAdDUEmail && isWhitelisted) {
+        
+        // 2. Validate against domain OR database whitelist array
+        const isListedInDb = Array.isArray(list) && list.some(e => String(e).toLowerCase().trim() === cleanEmail);
+        const isWhitelisted = isAdDUEmail || isListedInDb;
+        
+        if (isWhitelisted) {
             window.currentUser = user;
             window.userRole = 'EE';
             if (window.FUSEE) {
@@ -299,13 +305,23 @@ onAuthStateChanged(auth, async (user) => {
                 window.FUSEE.userRole = 'EE';
             }
             localStorage.setItem('fusee_user_role', 'EE');
+
+            // --- ADD THIS: Close sign-in modal & expose app interface ---
+            const loginModal = document.getElementById('ee-signin-modal') || document.getElementById('signin-modal');
+            if (loginModal) loginModal.classList.add('hidden');
+
+            const mainContent = document.getElementById('main-app-content');
+            if (mainContent) mainContent.classList.remove('hidden');
+
+            console.log("Logged in successfully as:", cleanEmail);
+
         } else {
-            const reason = !isAdDUEmail 
+            const reason = !isAdDUEmail
                 ? "Sign-in requires an official @addu.edu.ph email address."
                 : `Your account (${email}) is not listed in the active EE student directory.`;
-
+            
             alert(`Access Restricted: ${reason}\n\nYou will enter the app in Spectator (Guest) mode.`);
-
+            
             window.currentUser = null;
             window.userRole = 'SPECTATOR';
             if (window.FUSEE) {
@@ -313,17 +329,24 @@ onAuthStateChanged(auth, async (user) => {
                 window.FUSEE.userRole = 'SPECTATOR';
             }
             localStorage.setItem('fusee_user_role', 'SPECTATOR');
-            await signOut(auth);
+
+            // Hide login modal & show main dashboard for Spectator mode
+            const loginModal = document.getElementById('ee-signin-modal') || document.getElementById('signin-modal');
+            if (loginModal) loginModal.classList.add('hidden');
+
+            const mainContent = document.getElementById('main-app-content');
+            if (mainContent) mainContent.classList.remove('hidden');
         }
     } else {
         window.currentUser = null;
         if (window.FUSEE) window.FUSEE.currentUser = null;
-
+        
         const storedRole = localStorage.getItem('fusee_user_role');
         window.userRole = storedRole === 'SPECTATOR' ? 'SPECTATOR' : null;
         if (window.FUSEE) window.FUSEE.userRole = window.userRole;
     }
 
+    // Refresh UI components
     window.checkGatewayStatus();
     if (typeof window.initTargetGradeEvents === 'function') window.initTargetGradeEvents();
     if (typeof window.renderLostFoundUI === 'function') window.renderLostFoundUI();

@@ -1273,43 +1273,35 @@ async function handleStudentTutorSubmit(e) {
         alert("Failed to publish listing to the database: " + err.message);
     }
 }
-// Helper to verify current user against Firestore whitelist
-// Helper to verify current user against Firestore whitelist
 async function checkUserWhitelisted() {
-    const role = window.userRole || window.FUSEE?.userRole || localStorage.getItem('fusee_user_role');
-    const user = window.currentUser || window.FUSEE?.currentUser || window.auth?.currentUser;
-
-    if (role !== 'EE' || !user || !user.email) {
-        alert("Access Restricted: This action is reserved for whitelisted EE Students.");
-        return null;
+    const user = window.currentUser || window.FUSEE?.currentUser;
+    if (!user || !user.email) {
+        console.warn("Whitelist check failed: No user object found.");
+        return false;
     }
 
-    const userEmail = user.email.toLowerCase().trim();
+    const userEmail = user.email.trim().toLowerCase();
 
-    // Fetch fresh whitelist directly if list is empty
-    let list = window.whitelistedEmails || window.FUSEE?.whitelistedEmails || [];
-    if ((!Array.isArray(list) || list.length === 0) && window.db && window.doc && window.getDoc) {
-        try {
-            const docSnap = await window.getDoc(window.doc(window.db, "fusee_hub", "landing_content"));
-            if (docSnap.exists() && typeof window.parseWhitelistData === 'function') {
-                list = window.parseWhitelistData(docSnap.data());
-            }
-        } catch (err) {
-            console.error("Error fetching whitelist during verification:", err);
+    // 1. Domain Check (Case-Insensitive)
+    if (userEmail.endsWith("@addu.edu.ph")) {
+        return true; 
+    }
+
+    // 2. Database Whitelist Array Check (Case-Insensitive)
+    try {
+        if (window.whitelistedEmails && Array.isArray(window.whitelistedEmails)) {
+            const isListed = window.whitelistedEmails.some(
+                e => String(e).trim().toLowerCase() === userEmail
+            );
+            if (isListed) return true;
         }
+    } catch (err) {
+        console.error("Error reading whitelist array:", err);
     }
 
-    if (typeof window.checkIsWhitelisted === 'function') {
-        if (!window.checkIsWhitelisted(userEmail)) {
-            alert(`Access Denied: Account (${userEmail}) is not on the admin whitelist.`);
-            return null;
-        }
-    }
-
-    return user;
+    console.warn(`User ${userEmail} is NOT whitelisted.`);
+    return false;
 }
-
-// Bind function globally for inline form event handlers
 window.checkUserWhitelisted = checkUserWhitelisted;
 
     // ========================================================
