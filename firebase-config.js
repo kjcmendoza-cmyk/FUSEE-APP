@@ -163,21 +163,21 @@ function updateHeaderUserBadge() {
 
     if (activeRole === 'EE') {
         badgeEl.innerHTML = `
-            <span class="inline-flex items-center gap-1 bg-slate-900/90 border border-slate-800 px-1.5 py-0.5 rounded text-[9px] md:text-xs">
-                <span class="text-fusee-cyan font-bold">⚡ EE</span>
-                <span class="text-slate-700">|</span>
-                <button onclick="handleSignOut()" class="font-semibold text-rose-400 hover:text-rose-300 transition flex items-center gap-0.5">
-                    <i class="fa-solid fa-right-from-bracket text-[8px]"></i>
+            <span class="inline-flex items-center gap-1.5 bg-slate-900/90 border border-slate-700/80 px-2 py-1 rounded-xl text-[9px] md:text-xs shadow-sm whitespace-nowrap">
+                <span class="text-fusee-cyan font-bold flex items-center gap-0.5">⚡ EE</span>
+                <span class="text-slate-600">|</span>
+                <button onclick="handleSignOut()" class="font-semibold text-rose-400 hover:text-rose-300 transition flex items-center gap-1 text-[9px] md:text-xs">
+                    <i class="fa-solid fa-right-from-bracket text-[8px] md:text-[9px]"></i>
                     <span>Log Out</span>
                 </button>
             </span>
         `;
     } else {
         badgeEl.innerHTML = `
-            <span class="inline-flex items-center gap-1 bg-slate-900/90 border border-slate-800 px-1.5 py-0.5 rounded text-[9px] md:text-xs">
-                <span class="text-fusee-yellow font-bold">👁️ Spectator</span>
-                <span class="text-slate-700">|</span>
-                <button onclick="resetAccessRole()" class="font-semibold text-fusee-cyan hover:text-white transition">
+            <span class="inline-flex items-center gap-1.5 bg-slate-900/90 border border-slate-700/80 px-2 py-1 rounded-xl text-[9px] md:text-xs shadow-sm whitespace-nowrap">
+                <span class="text-fusee-yellow font-bold flex items-center gap-0.5">👁️ Spectator</span>
+                <span class="text-slate-600">|</span>
+                <button onclick="resetAccessRole()" class="font-semibold text-fusee-cyan hover:text-white transition text-[9px] md:text-xs">
                     Sign In
                 </button>
             </span>
