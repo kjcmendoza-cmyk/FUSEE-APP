@@ -212,45 +212,57 @@ window.resetAccessRole = () => {
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         const email = user.email || '';
-        if (email.toLowerCase().trim().endsWith("@addu.edu.ph")) {
-            window.currentUser = user;
-            window.FUSEE.currentUser = user;
-
-            if (!window.whitelistedEmails || window.whitelistedEmails.length === 0) {
+        
+        // Ensure whitelist data is populated from Firestore
+        if (!window.whitelistedEmails || window.whitelistedEmails.length === 0) {
+            try {
                 const docSnap = await getDoc(doc(db, "fusee_hub", "landing_content"));
                 if (docSnap.exists()) parseWhitelistData(docSnap.data());
+            } catch (err) {
+                console.error("Error fetching whitelist data:", err);
             }
+        }
 
-            if (checkIsWhitelisted(email)) {
-                window.userRole = 'EE';
-                window.FUSEE.userRole = 'EE';
-                localStorage.setItem('fusee_user_role', 'EE');
-            } else {
-                alert(`Access Restricted: Your account (${email}) is not listed on the active EE student directory.`);
-                localStorage.removeItem('fusee_user_role');
-                window.userRole = null;
-                window.FUSEE.userRole = null;
-                await signOut(auth);
-            }
+        const isAdDUEmail = email.toLowerCase().trim().endsWith("@addu.edu.ph");
+        const isWhitelisted = checkIsWhitelisted(email);
+
+        if (isAdDUEmail && isWhitelisted) {
+            // Authorized EE Student Access
+            window.currentUser = user;
+            window.FUSEE.currentUser = user;
+            window.userRole = 'EE';
+            window.FUSEE.userRole = 'EE';
+            localStorage.setItem('fusee_user_role', 'EE');
         } else {
-            alert("Please sign in using your official @addu.edu.ph student email.");
-            await signOut(auth);
+            // Non-whitelisted account attempting EE sign-in:
+            // Block EE access, alert user, and automatically downgrade to SPECTATOR (Guest) mode
+            const reason = !isAdDUEmail 
+                ? "Sign-in requires an official @addu.edu.ph email address."
+                : `Your account (${email}) is not listed in the active EE student directory.`;
+
+            alert(`Access Restricted: ${reason}\n\nYou will enter the app in Spectator (Guest) mode.`);
+
+            // Downgrade to SPECTATOR role
             window.currentUser = null;
-            window.userRole = null;
-            window.FUSEE.userRole = null;
-            localStorage.removeItem('fusee_user_role');
+            window.FUSEE.currentUser = null;
+            window.userRole = 'SPECTATOR';
+            window.FUSEE.userRole = 'SPECTATOR';
+            localStorage.setItem('fusee_user_role', 'SPECTATOR');
+            
+            await signOut(auth);
         }
     } else {
+        // Unauthenticated session fallback: maintain SPECTATOR if set
         window.currentUser = null;
         window.FUSEE.currentUser = null;
         const storedRole = localStorage.getItem('fusee_user_role');
-        window.userRole = storedRole === 'SPECTATOR' ? 'SPECTATOR' : null;
+        window.userRole = storedRole === 'SPECTATOR' ? 'SPECTATOR' : (storedRole === 'EE' ? 'EE' : null);
         window.FUSEE.userRole = window.userRole;
     }
 
+    // Refresh gateway modal & UI components
     window.checkGatewayStatus();
     if (typeof window.initTargetGradeEvents === 'function') window.initTargetGradeEvents();
-
     if (typeof window.renderLostFoundUI === 'function') window.renderLostFoundUI();
     if (typeof window.renderPeerTutoringUI === 'function') window.renderPeerTutoringUI();
     if (typeof window.renderTutorManagementUI === 'function') window.renderTutorManagementUI();
@@ -262,19 +274,23 @@ onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
     const data = docSnap.data();
 
     parseWhitelistData(data);
+
+    // Live revoking: if an active EE user is removed from the whitelist in real time
     if (window.currentUser && localStorage.getItem('fusee_user_role') === 'EE') {
         const userEmail = window.currentUser.email || '';
         if (!checkIsWhitelisted(userEmail)) {
-            console.warn(`Revoking unauthorized EE role for ${userEmail}`);
-            localStorage.removeItem('fusee_user_role');
-            window.userRole = null;
-            window.FUSEE.userRole = null;
+            console.warn(`Revoking EE role for non-whitelisted email: ${userEmail}`);
+            window.currentUser = null;
+            window.FUSEE.currentUser = null;
+            window.userRole = 'SPECTATOR';
+            window.FUSEE.userRole = 'SPECTATOR';
+            localStorage.setItem('fusee_user_role', 'SPECTATOR');
             await signOut(auth);
-            alert(`Access Restricted: Your account (${userEmail}) is not currently listed on the active Electrical Engineering student directory.`);
+            alert(`Access Restricted: Your email (${userEmail}) is no longer listed in the EE directory. Switched to Spectator Mode.`);
         }
     }
 
-    // Ticker & Status
+    // Ticker & Status Sync
     if (data.tickerText) {
         const tickerEl = document.getElementById('announcement-text');
         if (tickerEl) tickerEl.textContent = data.tickerText;
@@ -282,6 +298,22 @@ onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
     if (data.globalStatus && typeof window.setGlobalStatusUI === 'function') {
         window.setGlobalStatusUI(data.globalStatus);
     }
+
+    // Schedules, Events & System Status Sync
+    if (data.weeklySchedule) window.allWeeklySchedule = data.weeklySchedule;
+    if (data.activityEvents) window.allActivityEvents = data.activityEvents;
+    if (typeof window.evaluateLiveRoomStatuses === 'function') window.evaluateLiveRoomStatuses();
+    if (typeof window.refreshAllSystemStatuses === 'function') window.refreshAllSystemStatuses();
+
+    // Render components
+    if (data.notices && typeof window.renderNoticesUI === 'function') window.renderNoticesUI();
+    if (data.officers && typeof window.renderOfficersUI === 'function') window.renderOfficersUI();
+    if (data.capstoneItems && typeof window.renderCapstonesUI === 'function') window.renderCapstonesUI();
+    if (data.lostAndFound) window.FUSEE.data.lostFound = data.lostAndFound;
+    if (data.peerTutoring) window.FUSEE.data.peerTutoring = data.peerTutoring;
+
+    window.checkGatewayStatus();
+    window.dispatchEvent(new CustomEvent('fusee-firebase-ready'));
 
     // Systems 01, 02, 03 Sync
     ['sys1', 'sys2', 'sys3'].forEach((sysKey, idx) => {
@@ -528,6 +560,7 @@ onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
 
     // Lost & Found
     if (data.lostAndFound && Array.isArray(data.lostAndFound)) {
+        window.allLostFoundData = data.lostAndFound;
         window.FUSEE.data.lostFound = data.lostAndFound;
         if (typeof window.renderLostFoundUI === 'function') window.renderLostFoundUI();
     }
@@ -541,6 +574,7 @@ onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
 
     // Peer Tutoring
     if (data.peerTutoring && Array.isArray(data.peerTutoring)) {
+        window.allPeerTutoringData = data.peerTutoring;
         window.FUSEE.data.peerTutoring = data.peerTutoring;
         if (typeof window.renderPeerTutoringUI === 'function') window.renderPeerTutoringUI();
         if (typeof window.renderTutorManagementUI === 'function') window.renderTutorManagementUI();

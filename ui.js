@@ -123,7 +123,7 @@ window.loginWithAdDU = function() {
     }).join('');
 };
 window.markLostFoundClaimed = async function(itemId) {
-    const list = window.allLostFoundData || [];
+    const list = window.allLostFoundData || window.FUSEE?.data?.lostFound || [];
     const item = list.find(i => i.id == itemId);
     if (!item) return;
 
@@ -1027,7 +1027,7 @@ window.renderPeerTutoringUI = function() {
     const container = document.getElementById('tutoring-display-container');
     if (!container) return;
 
-    const items = window.allPeerTutoringData || [];
+    const items = window.allPeerTutoringData || window.FUSEE?.data?.peerTutoring || [];
     const searchVal = (document.getElementById('tutoring-search-input')?.value || '').toLowerCase();
 
     const filtered = items.filter(item => {
@@ -1119,7 +1119,7 @@ window.renderTutorManagementUI = function() {
     const container = document.getElementById('tutor-manage-container');
     if (!container) return;
 
-    const items = window.allPeerTutoringData || [];
+    const items = window.allPeerTutoringData || window.FUSEE?.data?.peerTutoring || [];
 
     if (items.length === 0) {
         container.innerHTML = '<p class="text-[10px] text-slate-400 italic text-center py-6">No active listings found. Click "+ Post New Listing" to publish one.</p>';
@@ -1267,30 +1267,21 @@ async function handleStudentTutorSubmit(e) {
 }
 // Helper to verify current user against Firestore whitelist
 async function checkUserWhitelisted() {
+    const role = window.userRole || window.FUSEE?.userRole || localStorage.getItem('fusee_user_role');
     const user = window.currentUser || window.FUSEE?.currentUser;
-    if (!user || !user.email) {
-        alert("Please sign in with your official @addu.edu.ph Google Account.");
-        if (typeof window.loginWithAdDU === 'function') window.loginWithAdDU();
+
+    if (role !== 'EE' || !user || !user.email) {
+        alert("Access Restricted: This action is reserved for whitelisted EE Students.");
         return null;
     }
 
-    try {
-        const userEmail = user.email.toLowerCase().trim();
-        const docRef = window.doc(window.db, "fusee_hub", "landing_content");
-        const docSnap = await window.getDoc(docRef);
-        const whitelistRaw = docSnap.data()?.eeWhitelistedEmails || [];
-        const whitelist = whitelistRaw.map(e => String(e).toLowerCase().trim());
-
-        if (!whitelist.includes(userEmail)) {
-            alert(`Access Denied: Your email (${userEmail}) is not whitelisted.`);
-            return null;
-        }
-        return user;
-    } catch (err) {
-        console.error("Whitelist verification failed:", err);
-        alert("Unable to verify user permissions with server: " + err.message);
+    const userEmail = user.email.toLowerCase().trim();
+    if (typeof window.checkIsWhitelisted === 'function' && !window.checkIsWhitelisted(userEmail)) {
+        alert(`Access Denied: Account (${userEmail}) is not on the admin whitelist.`);
         return null;
     }
+
+    return user;
 }
 
     // ========================================================
