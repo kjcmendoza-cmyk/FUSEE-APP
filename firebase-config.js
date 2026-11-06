@@ -163,24 +163,19 @@ function updateHeaderUserBadge() {
 
     if (activeRole === 'EE') {
         badgeEl.innerHTML = `
-            <div style="display: flex !important; flex-direction: row !important; align-items: center !important; gap: 8px !important; white-space: nowrap !important; background-color: rgba(15, 23, 42, 0.9); border: 1px solid rgba(51, 65, 85, 0.8); padding: 4px 10px; border-radius: 12px; font-size: 11px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
-                <span style="color: #00F0FF; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">⚡ EE</span>
-                <span style="color: #475569; font-weight: 400;">|</span>
-                <button onclick="handleSignOut()" style="color: #fb7185; font-weight: 600; background: transparent; border: none; padding: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; white-space: nowrap;" onhover="this.style.color='#fca5a5'">
-                    <i class="fa-solid fa-right-from-bracket" style="font-size: 9px;"></i>
-                    <span>Log Out</span>
-                </button>
-            </div>
+            <button onclick="handleSignOut()" 
+                    style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 2px 8px; border-radius: 8px; background-color: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); color: #f43f5e; font-size: 9px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;">
+                <i class="fa-solid fa-right-from-bracket" style="font-size: 8px;"></i>
+                <span>Log Out</span>
+            </button>
         `;
     } else {
         badgeEl.innerHTML = `
-            <div style="display: flex !important; flex-direction: row !important; align-items: center !important; gap: 8px !important; white-space: nowrap !important; background-color: rgba(15, 23, 42, 0.9); border: 1px solid rgba(51, 65, 85, 0.8); padding: 4px 10px; border-radius: 12px; font-size: 11px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
-                <span style="color: #facc15; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">👁️ Spectator</span>
-                <span style="color: #475569; font-weight: 400;">|</span>
-                <button onclick="resetAccessRole()" style="color: #00F0FF; font-weight: 600; background: transparent; border: none; padding: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; white-space: nowrap;">
-                    <span>Sign In</span>
-                </button>
-            </div>
+            <button onclick="resetAccessRole()" 
+                    style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 2px 8px; border-radius: 8px; background-color: rgba(0, 240, 255, 0.15); border: 1px solid rgba(0, 240, 255, 0.3); color: #00F0FF; font-size: 9px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;">
+                <i class="fa-solid fa-right-to-bracket" style="font-size: 8px;"></i>
+                <span>Sign In</span>
+            </button>
         `;
     }
 }
