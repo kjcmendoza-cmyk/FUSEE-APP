@@ -1,3 +1,16 @@
+function getCurrentUser() {
+    return window.currentUser || window.FUSEE?.currentUser || null;
+}
+// Global sign-in bridge for whitelist checks
+window.loginWithAdDU = function() {
+    if (typeof window.handleEESignIn === 'function') {
+        window.handleEESignIn();
+    } else if (typeof handleEESignIn === 'function') {
+        handleEESignIn();
+    } else {
+        console.error("Sign-in function 'handleEESignIn' is not available in global scope.");
+    }
+};
 // Lost & Found Bulletin Board JavaScript Engine
     let currentLFFilter = 'all';
 

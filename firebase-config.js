@@ -4,7 +4,7 @@ import {
     getFirestore, doc, getDoc, onSnapshot, updateDoc, collection, addDoc, serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 import { 
-    getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged 
+    getAuth, signInWithRedirect, GoogleAuthProvider, signOut, onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
 // --- Firebase Initialization ---
@@ -177,34 +177,8 @@ window.initTargetGradeEvents = function() {
 // --- Auth Action Handlers ---
 window.handleEESignIn = async () => {
     try {
-        const result = await signInWithPopup(auth, provider);
-        const email = result.user ? result.user.email : '';
-
-        if (!email || !email.toLowerCase().trim().endsWith("@addu.edu.ph")) {
-            alert("Please sign in using your official @addu.edu.ph student email.");
-            await signOut(auth);
-            return;
-        }
-
-        if (!window.whitelistedEmails || window.whitelistedEmails.length === 0) {
-            const docSnap = await getDoc(doc(db, "fusee_hub", "landing_content"));
-            if (docSnap.exists()) window.whitelistedEmails = parseWhitelistData(docSnap.data());
-        }
-
-        if (checkIsWhitelisted(email)) {
-            window.currentUser = result.user;
-            window.userRole = 'EE';
-            localStorage.setItem('fusee_user_role', 'EE');
-            if (typeof showToast === 'function') showToast(`Welcome back, EE Engineer (${email})!`, 'success');
-            window.checkGatewayStatus();
-        } else {
-            alert(`Access Restricted: Your account (${email}) is not currently listed on the active Electrical Engineering student directory. If you are currently enrolled in the EE program, please contact the department administrator to verify and update your access.`);
-            await signOut(auth);
-            window.currentUser = null;
-            window.userRole = null;
-            localStorage.removeItem('fusee_user_role');
-            window.checkGatewayStatus();
-        }
+        localStorage.setItem('fusee_user_role', 'EE');
+        await signInWithRedirect(auth, provider);
     } catch (err) {
         console.error("Sign-in error:", err);
     }
@@ -231,22 +205,20 @@ onAuthStateChanged(auth, async (user) => {
         const email = user.email || '';
         if (email.toLowerCase().trim().endsWith("@addu.edu.ph")) {
             window.currentUser = user;
-            const storedRole = localStorage.getItem('fusee_user_role');
 
-            if (storedRole === 'EE' || window.userRole === 'EE') {
-                if (!window.whitelistedEmails || window.whitelistedEmails.length === 0) {
-                    const docSnap = await getDoc(doc(db, "fusee_hub", "landing_content"));
-                    if (docSnap.exists()) window.whitelistedEmails = parseWhitelistData(docSnap.data());
-                }
+            if (!window.whitelistedEmails || window.whitelistedEmails.length === 0) {
+                const docSnap = await getDoc(doc(db, "fusee_hub", "landing_content"));
+                if (docSnap.exists()) window.whitelistedEmails = parseWhitelistData(docSnap.data());
+            }
 
-                if (checkIsWhitelisted(email)) {
-                    window.userRole = 'EE';
-                    localStorage.setItem('fusee_user_role', 'EE');
-                } else {
-                    localStorage.removeItem('fusee_user_role');
-                    window.userRole = null;
-                    await signOut(auth);
-                }
+            if (checkIsWhitelisted(email)) {
+                window.userRole = 'EE';
+                localStorage.setItem('fusee_user_role', 'EE');
+            } else {
+                alert(`Access Restricted: Your account (${email}) is not listed on the active EE student directory.`);
+                localStorage.removeItem('fusee_user_role');
+                window.userRole = null;
+                await signOut(auth);
             }
         } else {
             alert("Please sign in using your official @addu.edu.ph student email.");
@@ -262,7 +234,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     window.checkGatewayStatus();
-    window.initTargetGradeEvents();
+    if (typeof window.initTargetGradeEvents === 'function') window.initTargetGradeEvents();
 
     if (typeof window.renderLostFoundUI === 'function') window.renderLostFoundUI();
     if (typeof window.renderPeerTutoringUI === 'function') window.renderPeerTutoringUI();
