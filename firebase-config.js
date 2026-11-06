@@ -29,7 +29,7 @@ provider.setCustomParameters({
     prompt: "select_account"
 });
 
-// --- Window Exports ---
+// --- Window Global Exports ---
 window.firebaseApp = app;
 window.firebaseAnalytics = analytics;
 window.db = db;
@@ -40,6 +40,10 @@ window.updateDoc = updateDoc;
 window.collection = collection;
 window.addDoc = addDoc;
 window.serverTimestamp = serverTimestamp;
+
+window.userRole = localStorage.getItem('fusee_user_role') || null;
+window.currentUser = null;
+window.whitelistedEmails = [];
 
 window.FUSEE = {
     currentUser: null,
@@ -61,21 +65,29 @@ function parseWhitelistData(data) {
                   data.eewhitelistedEmails || 
                   data.ee_whitelisted_emails || 
                   data.whitelisted_emails || 
-                  data.whitelist || [];
+                  data.whitelist ||
+                  data.eeWhitelistedUsers ||
+                  data.whitelistedUsers ||
+                  data.ee_whitelisted_users ||
+                  data.whitelisted_users ||
+                  data.users ||
+                  data.eeEmails ||
+                  data.ee_emails ||
+                  data.emails || [];
 
-    if (typeof rawList === 'string') rawList = rawList.split(/[\r\n,]+/);
+    if (typeof rawList === 'string') rawList = rawList.split(/[\r\n,;]+/);
     if (!Array.isArray(rawList) && typeof rawList === 'object') rawList = Object.values(rawList);
     if (!Array.isArray(rawList)) return [];
 
     const parsed = rawList.map(item => {
         if (!item) return '';
-        const str = typeof item === 'object' ? (item.email || item.value || '') : item.toString();
+        const str = typeof item === 'object' ? (item.email || item.value || item.userEmail || item.mail || '') : item.toString();
         return str.toLowerCase().trim();
     }).filter(Boolean);
 
-    // Keep both namespaces in sync
+    // Keep all namespaces in sync
     window.whitelistedEmails = parsed;
-    window.FUSEE.whitelistedEmails = parsed;
+    if (window.FUSEE) window.FUSEE.whitelistedEmails = parsed;
     return parsed;
 }
 
@@ -83,10 +95,33 @@ function checkIsWhitelisted(email) {
     if (!email) return false;
     const cleanEmail = email.toLowerCase().trim();
     const list = window.whitelistedEmails || window.FUSEE?.whitelistedEmails || [];
-    return list.some(e => typeof e === 'string' && e.toLowerCase().trim() === cleanEmail);
+    if (!Array.isArray(list) || list.length === 0) return false;
+    
+    return list.some(e => {
+        if (!e) return false;
+        const str = typeof e === 'object' ? (e.email || e.value || e.userEmail || '') : e.toString();
+        return str.toLowerCase().trim() === cleanEmail;
+    });
 }
 
+// Bind utilities to window for external scripts (ui.js / app.js)
+window.parseWhitelistData = parseWhitelistData;
+window.checkIsWhitelisted = checkIsWhitelisted;
+
 // --- Access & UI Visibility Guards ---
+function updateHeaderUserBadge() {
+    const greetingEl = document.getElementById('greeting-display');
+    if (greetingEl) {
+        const activeRole = window.userRole || window.FUSEE?.userRole || localStorage.getItem('fusee_user_role');
+        if (activeRole === 'EE') {
+            greetingEl.innerHTML = `<span class="text-fusee-cyan font-bold">⚡ EE Student</span> (<button onclick="resetAccessRole()" class="underline text-[9px] hover:text-white">Switch</button>)`;
+        } else {
+            greetingEl.innerHTML = `<span class="text-fusee-yellow font-bold">👁️ Spectator</span> (<button onclick="resetAccessRole()" class="underline text-[9px] hover:text-white">Sign In</button>)`;
+        }
+    }
+}
+window.updateHeaderUserBadge = updateHeaderUserBadge;
+
 window.checkGatewayStatus = function() {
     const modal = document.getElementById('entry-gateway-modal');
     if (!modal) return;
@@ -102,21 +137,9 @@ window.checkGatewayStatus = function() {
     }
 };
 
-function updateHeaderUserBadge() {
-    const greetingEl = document.getElementById('greeting-display');
-    if (greetingEl) {
-        const activeRole = window.userRole || window.FUSEE?.userRole || localStorage.getItem('fusee_user_role');
-        if (activeRole === 'EE') {
-            greetingEl.innerHTML = `<span class="text-fusee-cyan font-bold">⚡ EE Student</span> (<button onclick="resetAccessRole()" class="underline text-[9px] hover:text-white">Switch</button>)`;
-        } else {
-            greetingEl.innerHTML = `<span class="text-fusee-yellow font-bold">👁️ Spectator</span> (<button onclick="resetAccessRole()" class="underline text-[9px] hover:text-white">Sign In</button>)`;
-        }
-    }
-}
-
 window.checkEEAccess = function(featureName = "this feature", event = null) {
     const role = window.userRole || window.FUSEE?.userRole || localStorage.getItem('fusee_user_role');
-    const user = window.currentUser || window.FUSEE?.currentUser || auth.currentUser;
+    const user = window.currentUser || window.FUSEE?.currentUser || auth?.currentUser;
 
     // MUST have role 'EE' AND an active authenticated user session
     if (role === 'EE' && user && user.email) {
@@ -135,6 +158,7 @@ window.checkEEAccess = function(featureName = "this feature", event = null) {
     }
     return false;
 };
+
 // --- Target Grade Calculation Helpers ---
 window.updateMidtermSubBreakdown = function() {
     const rawScore = parseFloat(document.getElementById('tg-subMT-dept-raw')?.value);
@@ -199,7 +223,10 @@ window.handleEESignIn = async () => {
 window.enterAsSpectator = () => {
     window.currentUser = null;
     window.userRole = 'SPECTATOR';
-    window.FUSEE.userRole = 'SPECTATOR';
+    if (window.FUSEE) {
+        window.FUSEE.currentUser = null;
+        window.FUSEE.userRole = 'SPECTATOR';
+    }
     localStorage.setItem('fusee_user_role', 'SPECTATOR');
     if (typeof showToast === 'function') showToast("Entered in Spectator Mode (Read-Only)", "info");
     window.checkGatewayStatus();
@@ -208,8 +235,12 @@ window.enterAsSpectator = () => {
 window.resetAccessRole = () => {
     localStorage.removeItem('fusee_user_role');
     window.userRole = null;
-    window.FUSEE.userRole = null;
-    if (auth.currentUser) signOut(auth);
+    window.currentUser = null;
+    if (window.FUSEE) {
+        window.FUSEE.userRole = null;
+        window.FUSEE.currentUser = null;
+    }
+    if (auth && auth.currentUser) signOut(auth);
     location.reload();
 };
 
@@ -218,11 +249,14 @@ onAuthStateChanged(auth, async (user) => {
     if (user) {
         const email = user.email || '';
         
-        // Ensure whitelist data is populated from Firestore
-        if (!window.whitelistedEmails || window.whitelistedEmails.length === 0) {
+        // Ensure whitelist data is populated from Firestore before checking
+        let list = window.whitelistedEmails || window.FUSEE?.whitelistedEmails || [];
+        if (!Array.isArray(list) || list.length === 0) {
             try {
                 const docSnap = await getDoc(doc(db, "fusee_hub", "landing_content"));
-                if (docSnap.exists()) parseWhitelistData(docSnap.data());
+                if (docSnap.exists()) {
+                    list = parseWhitelistData(docSnap.data());
+                }
             } catch (err) {
                 console.error("Error fetching whitelist data:", err);
             }
@@ -234,9 +268,11 @@ onAuthStateChanged(auth, async (user) => {
         if (isAdDUEmail && isWhitelisted) {
             // Authorized EE Student Access
             window.currentUser = user;
-            window.FUSEE.currentUser = user;
             window.userRole = 'EE';
-            window.FUSEE.userRole = 'EE';
+            if (window.FUSEE) {
+                window.FUSEE.currentUser = user;
+                window.FUSEE.userRole = 'EE';
+            }
             localStorage.setItem('fusee_user_role', 'EE');
         } else {
             // Non-whitelisted account attempting EE sign-in:
@@ -248,27 +284,29 @@ onAuthStateChanged(auth, async (user) => {
 
             // Downgrade to SPECTATOR role & force Firebase sign-out
             window.currentUser = null;
-            window.FUSEE.currentUser = null;
             window.userRole = 'SPECTATOR';
-            window.FUSEE.userRole = 'SPECTATOR';
+            if (window.FUSEE) {
+                window.FUSEE.currentUser = null;
+                window.FUSEE.userRole = 'SPECTATOR';
+            }
             localStorage.setItem('fusee_user_role', 'SPECTATOR');
             
             await signOut(auth);
         }
     } else {
-        // Unauthenticated session fallback:
-        // A signed-out session CANNOT maintain an 'EE' role. Force to SPECTATOR or null.
+        // Unauthenticated session fallback
         window.currentUser = null;
-        window.FUSEE.currentUser = null;
+        if (window.FUSEE) window.FUSEE.currentUser = null;
+        
         const storedRole = localStorage.getItem('fusee_user_role');
         
         if (storedRole === 'EE') {
             window.userRole = 'SPECTATOR';
-            window.FUSEE.userRole = 'SPECTATOR';
+            if (window.FUSEE) window.FUSEE.userRole = 'SPECTATOR';
             localStorage.setItem('fusee_user_role', 'SPECTATOR');
         } else {
             window.userRole = storedRole === 'SPECTATOR' ? 'SPECTATOR' : null;
-            window.FUSEE.userRole = window.userRole;
+            if (window.FUSEE) window.FUSEE.userRole = window.userRole;
         }
     }
 
@@ -285,17 +323,19 @@ onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
     if (!docSnap.exists()) return;
     const data = docSnap.data();
 
-    parseWhitelistData(data);
+    const currentWhitelist = parseWhitelistData(data);
 
     // Live revoking: if an active EE user is removed from the whitelist in real time
-    if (window.currentUser && localStorage.getItem('fusee_user_role') === 'EE') {
+    if (currentWhitelist.length > 0 && window.currentUser && localStorage.getItem('fusee_user_role') === 'EE') {
         const userEmail = window.currentUser.email || '';
         if (!checkIsWhitelisted(userEmail)) {
             console.warn(`Revoking EE role for non-whitelisted email: ${userEmail}`);
             window.currentUser = null;
-            window.FUSEE.currentUser = null;
             window.userRole = 'SPECTATOR';
-            window.FUSEE.userRole = 'SPECTATOR';
+            if (window.FUSEE) {
+                window.FUSEE.currentUser = null;
+                window.FUSEE.userRole = 'SPECTATOR';
+            }
             localStorage.setItem('fusee_user_role', 'SPECTATOR');
             await signOut(auth);
             alert(`Access Restricted: Your email (${userEmail}) is no longer listed in the EE directory. Switched to Spectator Mode.`);
@@ -573,7 +613,7 @@ onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
     // Lost & Found
     if (data.lostAndFound && Array.isArray(data.lostAndFound)) {
         window.allLostFoundData = data.lostAndFound;
-        window.FUSEE.data.lostFound = data.lostAndFound;
+        if (window.FUSEE?.data) window.FUSEE.data.lostFound = data.lostAndFound;
         if (typeof window.renderLostFoundUI === 'function') window.renderLostFoundUI();
     }
 
@@ -587,7 +627,7 @@ onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
     // Peer Tutoring
     if (data.peerTutoring && Array.isArray(data.peerTutoring)) {
         window.allPeerTutoringData = data.peerTutoring;
-        window.FUSEE.data.peerTutoring = data.peerTutoring;
+        if (window.FUSEE?.data) window.FUSEE.data.peerTutoring = data.peerTutoring;
         if (typeof window.renderPeerTutoringUI === 'function') window.renderPeerTutoringUI();
         if (typeof window.renderTutorManagementUI === 'function') window.renderTutorManagementUI();
     }

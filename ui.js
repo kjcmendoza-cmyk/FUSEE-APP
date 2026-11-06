@@ -1276,7 +1276,7 @@ async function handleStudentTutorSubmit(e) {
 // Helper to verify current user against Firestore whitelist
 async function checkUserWhitelisted() {
     const role = window.userRole || window.FUSEE?.userRole || localStorage.getItem('fusee_user_role');
-    const user = window.currentUser || window.FUSEE?.currentUser;
+    const user = window.currentUser || window.FUSEE?.currentUser || window.auth?.currentUser;
 
     if (role !== 'EE' || !user || !user.email) {
         alert("Access Restricted: This action is reserved for whitelisted EE Students.");
@@ -1284,9 +1284,11 @@ async function checkUserWhitelisted() {
     }
 
     const userEmail = user.email.toLowerCase().trim();
-    if (typeof window.checkIsWhitelisted === 'function' && !window.checkIsWhitelisted(userEmail)) {
-        alert(`Access Denied: Account (${userEmail}) is not on the admin whitelist.`);
-        return null;
+    if (typeof window.checkIsWhitelisted === 'function') {
+        if (!window.checkIsWhitelisted(userEmail)) {
+            alert(`Access Denied: Account (${userEmail}) is not on the admin whitelist.`);
+            return null;
+        }
     }
 
     return user;
