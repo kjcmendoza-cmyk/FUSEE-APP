@@ -67,17 +67,23 @@ function parseWhitelistData(data) {
     if (!Array.isArray(rawList) && typeof rawList === 'object') rawList = Object.values(rawList);
     if (!Array.isArray(rawList)) return [];
 
-    return rawList.map(item => {
+    const parsed = rawList.map(item => {
         if (!item) return '';
         const str = typeof item === 'object' ? (item.email || item.value || '') : item.toString();
         return str.toLowerCase().trim();
     }).filter(Boolean);
+
+    // Keep both namespaces in sync
+    window.whitelistedEmails = parsed;
+    window.FUSEE.whitelistedEmails = parsed;
+    return parsed;
 }
 
 function checkIsWhitelisted(email) {
-    if (!email || !Array.isArray(window.FUSEE.whitelistedEmails)) return false;
+    if (!email) return false;
     const cleanEmail = email.toLowerCase().trim();
-    return window.FUSEE.whitelistedEmails.some(e => e.toLowerCase().trim() === cleanEmail);
+    const list = window.whitelistedEmails || window.FUSEE?.whitelistedEmails || [];
+    return list.some(e => typeof e === 'string' && e.toLowerCase().trim() === cleanEmail);
 }
 
 // --- Access & UI Visibility Guards ---
@@ -86,7 +92,7 @@ window.checkGatewayStatus = function() {
     if (!modal) return;
 
     const storedRole = localStorage.getItem('fusee_user_role');
-    const activeRole = window.FUSEE.userRole || storedRole;
+    const activeRole = window.userRole || window.FUSEE?.userRole || storedRole;
 
     if (activeRole === 'EE' || activeRole === 'SPECTATOR') {
         modal.classList.add('hidden');
@@ -99,7 +105,7 @@ window.checkGatewayStatus = function() {
 function updateHeaderUserBadge() {
     const greetingEl = document.getElementById('greeting-display');
     if (greetingEl) {
-        const activeRole = window.userRole || localStorage.getItem('fusee_user_role');
+        const activeRole = window.userRole || window.FUSEE?.userRole || localStorage.getItem('fusee_user_role');
         if (activeRole === 'EE') {
             greetingEl.innerHTML = `<span class="text-fusee-cyan font-bold">⚡ EE Student</span> (<button onclick="resetAccessRole()" class="underline text-[9px] hover:text-white">Switch</button>)`;
         } else {
@@ -109,7 +115,9 @@ function updateHeaderUserBadge() {
 }
 
 window.checkEEAccess = function(featureName = "this feature", event = null) {
-    if (window.userRole === 'EE') return true;
+    const role = window.userRole || window.FUSEE?.userRole || localStorage.getItem('fusee_user_role');
+    if (role === 'EE') return true;
+
     if (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -177,7 +185,6 @@ window.initTargetGradeEvents = function() {
 // --- Auth Action Handlers ---
 window.handleEESignIn = async () => {
     try {
-        localStorage.setItem('fusee_user_role', 'EE');
         await signInWithRedirect(auth, provider);
     } catch (err) {
         console.error("Sign-in error:", err);
@@ -187,6 +194,7 @@ window.handleEESignIn = async () => {
 window.enterAsSpectator = () => {
     window.currentUser = null;
     window.userRole = 'SPECTATOR';
+    window.FUSEE.userRole = 'SPECTATOR';
     localStorage.setItem('fusee_user_role', 'SPECTATOR');
     if (typeof showToast === 'function') showToast("Entered in Spectator Mode (Read-Only)", "info");
     window.checkGatewayStatus();
@@ -195,6 +203,7 @@ window.enterAsSpectator = () => {
 window.resetAccessRole = () => {
     localStorage.removeItem('fusee_user_role');
     window.userRole = null;
+    window.FUSEE.userRole = null;
     if (auth.currentUser) signOut(auth);
     location.reload();
 };
@@ -205,19 +214,22 @@ onAuthStateChanged(auth, async (user) => {
         const email = user.email || '';
         if (email.toLowerCase().trim().endsWith("@addu.edu.ph")) {
             window.currentUser = user;
+            window.FUSEE.currentUser = user;
 
             if (!window.whitelistedEmails || window.whitelistedEmails.length === 0) {
                 const docSnap = await getDoc(doc(db, "fusee_hub", "landing_content"));
-                if (docSnap.exists()) window.whitelistedEmails = parseWhitelistData(docSnap.data());
+                if (docSnap.exists()) parseWhitelistData(docSnap.data());
             }
 
             if (checkIsWhitelisted(email)) {
                 window.userRole = 'EE';
+                window.FUSEE.userRole = 'EE';
                 localStorage.setItem('fusee_user_role', 'EE');
             } else {
                 alert(`Access Restricted: Your account (${email}) is not listed on the active EE student directory.`);
                 localStorage.removeItem('fusee_user_role');
                 window.userRole = null;
+                window.FUSEE.userRole = null;
                 await signOut(auth);
             }
         } else {
@@ -225,12 +237,15 @@ onAuthStateChanged(auth, async (user) => {
             await signOut(auth);
             window.currentUser = null;
             window.userRole = null;
+            window.FUSEE.userRole = null;
             localStorage.removeItem('fusee_user_role');
         }
     } else {
         window.currentUser = null;
+        window.FUSEE.currentUser = null;
         const storedRole = localStorage.getItem('fusee_user_role');
         window.userRole = storedRole === 'SPECTATOR' ? 'SPECTATOR' : null;
+        window.FUSEE.userRole = window.userRole;
     }
 
     window.checkGatewayStatus();
@@ -246,13 +261,14 @@ onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
     if (!docSnap.exists()) return;
     const data = docSnap.data();
 
-    window.whitelistedEmails = parseWhitelistData(data);
+    parseWhitelistData(data);
     if (window.currentUser && localStorage.getItem('fusee_user_role') === 'EE') {
         const userEmail = window.currentUser.email || '';
         if (!checkIsWhitelisted(userEmail)) {
             console.warn(`Revoking unauthorized EE role for ${userEmail}`);
             localStorage.removeItem('fusee_user_role');
             window.userRole = null;
+            window.FUSEE.userRole = null;
             await signOut(auth);
             alert(`Access Restricted: Your account (${userEmail}) is not currently listed on the active Electrical Engineering student directory.`);
         }
@@ -453,10 +469,12 @@ onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
     }
 
     // Merch & Payment Info
-if (data.merchItems && Array.isArray(data.merchItems)) {
-    window.currentMerchItems = data.merchItems;
-    if (typeof window.renderMerchUI === 'function') window.renderMerchUI();
-}    if (data.paymentInfo) {
+    if (data.merchItems && Array.isArray(data.merchItems)) {
+        window.currentMerchItems = data.merchItems;
+        if (typeof window.renderMerchUI === 'function') window.renderMerchUI();
+    }
+    
+    if (data.paymentInfo) {
         window.paymentInfo = {
             name: data.paymentInfo.name || "FUSEE Treasurer",
             number: data.paymentInfo.number || "N/A",
