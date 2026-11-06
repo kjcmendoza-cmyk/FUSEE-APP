@@ -86,27 +86,25 @@ function parseWhitelistData(data) {
         }
     }
 
+    // Target explicit whitelist fields first to avoid matching officers/eeDept
+    const whitelistFields = ['whitelist', 'whitelistedemails', 'approvedemails', 'allowedusers', 'eedirectory'];
+    let foundExplicit = false;
+
     for (const [key, val] of Object.entries(data)) {
-        const lowerKey = key.toLowerCase();
-        if (
-            lowerKey.includes('white') || 
-            lowerKey.includes('email') || 
-            lowerKey.includes('user') || 
-            lowerKey.includes('allow') || 
-            lowerKey.includes('approve') ||
-            lowerKey.includes('student') ||
-            lowerKey.includes('directory') ||
-            lowerKey.includes('enrolled') ||
-            lowerKey.includes('member') ||
-            lowerKey.includes('list') ||
-            lowerKey.includes('ee')
-        ) {
+        const lowerKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (whitelistFields.some(field => lowerKey.includes(field))) {
             collectEmails(val);
+            foundExplicit = true;
         }
     }
 
-    if (extractedSet.size === 0) {
-        collectEmails(data);
+    if (!foundExplicit) {
+        for (const [key, val] of Object.entries(data)) {
+            const lowerKey = key.toLowerCase();
+            if (lowerKey.includes('white') || lowerKey.includes('allow')) {
+                collectEmails(val);
+            }
+        }
     }
 
     const parsed = Array.from(extractedSet);
@@ -119,18 +117,26 @@ function parseWhitelistData(data) {
 function checkIsWhitelisted(email) {
     if (!email) return false;
     const cleanEmail = email.toLowerCase().trim().replace(/^["']|["']$/g, '');
+    
+    // 1. Official Domain Check
+    if (cleanEmail.endsWith("@addu.edu.ph")) {
+        return true;
+    }
+
+    // 2. Explicit Database Whitelist Array Check
     const list = window.whitelistedEmails || window.FUSEE?.whitelistedEmails || [];
     if (!Array.isArray(list) || list.length === 0) return false;
 
     return list.some(item => {
         if (!item) return false;
-        let str = typeof item === 'object' ? (item.email || item.value || item.userEmail || item.mail || item.address || '') : item.toString();
+        let str = typeof item === 'object' 
+            ? (item.email || item.value || item.userEmail || item.mail || item.address || '') 
+            : item.toString();
         str = str.trim().toLowerCase().replace(/^["']|["']$/g, '');
         return str === cleanEmail;
     });
 }
 
-// Bind utilities to window
 window.parseWhitelistData = parseWhitelistData;
 window.checkIsWhitelisted = checkIsWhitelisted;
 
@@ -282,20 +288,14 @@ onAuthStateChanged(auth, async (user) => {
                 const docSnap = await getDoc(doc(db, "fusee_hub", "landing_content"));
                 if (docSnap.exists()) {
                     list = parseWhitelistData(docSnap.data());
-                    window.whitelistedEmails = list;
-                    if (window.FUSEE) window.FUSEE.whitelistedEmails = list;
                 }
             } catch (err) {
                 console.error("Error fetching whitelist data during auth check:", err);
             }
         }
         
-        const cleanEmail = email.toLowerCase().trim();
-        const isAdDUEmail = cleanEmail.endsWith("@addu.edu.ph");
-        
-        // 2. Validate against domain OR database whitelist array
-        const isListedInDb = Array.isArray(list) && list.some(e => String(e).toLowerCase().trim() === cleanEmail);
-        const isWhitelisted = isAdDUEmail || isListedInDb;
+        // 2. Uniform Whitelist Check
+        const isWhitelisted = checkIsWhitelisted(email);
         
         if (isWhitelisted) {
             window.currentUser = user;
@@ -306,16 +306,19 @@ onAuthStateChanged(auth, async (user) => {
             }
             localStorage.setItem('fusee_user_role', 'EE');
 
-            // --- ADD THIS: Close sign-in modal & expose app interface ---
-            const loginModal = document.getElementById('ee-signin-modal') || document.getElementById('signin-modal');
+            const loginModal = document.getElementById('ee-signin-modal') || 
+                               document.getElementById('signin-modal') || 
+                               document.getElementById('entry-gateway-modal');
             if (loginModal) loginModal.classList.add('hidden');
 
             const mainContent = document.getElementById('main-app-content');
             if (mainContent) mainContent.classList.remove('hidden');
 
-            console.log("Logged in successfully as:", cleanEmail);
+            console.log("Logged in successfully as:", email);
 
         } else {
+            const cleanEmail = email.toLowerCase().trim();
+            const isAdDUEmail = cleanEmail.endsWith("@addu.edu.ph");
             const reason = !isAdDUEmail
                 ? "Sign-in requires an official @addu.edu.ph email address."
                 : `Your account (${email}) is not listed in the active EE student directory.`;
@@ -329,13 +332,18 @@ onAuthStateChanged(auth, async (user) => {
                 window.FUSEE.userRole = 'SPECTATOR';
             }
             localStorage.setItem('fusee_user_role', 'SPECTATOR');
-
-            // Hide login modal & show main dashboard for Spectator mode
-            const loginModal = document.getElementById('ee-signin-modal') || document.getElementById('signin-modal');
+            
+            // Hide sign-in modal & expose dashboard for Spectator mode
+            const loginModal = document.getElementById('ee-signin-modal') || 
+                               document.getElementById('signin-modal') || 
+                               document.getElementById('entry-gateway-modal');
             if (loginModal) loginModal.classList.add('hidden');
 
             const mainContent = document.getElementById('main-app-content');
             if (mainContent) mainContent.classList.remove('hidden');
+            
+            // Sign out from Firebase Auth so non-whitelisted users are cleanly logged out
+            await signOut(auth);
         }
     } else {
         window.currentUser = null;
@@ -359,10 +367,10 @@ onSnapshot(doc(db, "fusee_hub", "landing_content"), async (docSnap) => {
     if (!docSnap.exists()) return;
     const data = docSnap.data();
 
-    const currentWhitelist = parseWhitelistData(data);
+    parseWhitelistData(data);
 
-    // Live revoking: if an active EE user is removed from the whitelist in real time
-    if (currentWhitelist.length > 0 && window.currentUser && localStorage.getItem('fusee_user_role') === 'EE') {
+    // Live revoking: check if an active EE user is no longer whitelisted
+    if (window.currentUser && localStorage.getItem('fusee_user_role') === 'EE') {
         const userEmail = window.currentUser.email || '';
         if (!checkIsWhitelisted(userEmail)) {
             console.warn(`Revoking EE role for non-whitelisted email: ${userEmail}`);
