@@ -57,12 +57,13 @@ window.FUSEE = {
     }
 };
 
-// --- Whitelist Utilities ---
+// --- Whitelist Utilities (Updated & Bulletproof) ---
 function parseWhitelistData(data) {
     if (!data || typeof data !== 'object') return [];
 
     const extractedSet = new Set();
 
+    // Recursive traversal to collect any valid email tokens across all fields/keys
     function collectEmails(val) {
         if (!val) return;
         if (typeof val === 'string') {
@@ -86,29 +87,8 @@ function parseWhitelistData(data) {
         }
     }
 
-    const whitelistFields = [
-        'whitelist', 'whitelistedemails', 'approvedemails', 'allowedusers', 
-        'eedirectory', 'allowedemails', 'whitelisted_emails', 'approved_emails', 
-        'students', 'eestudents'
-    ];
-    let foundExplicit = false;
-
-    for (const [key, val] of Object.entries(data)) {
-        const lowerKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (whitelistFields.some(field => lowerKey.includes(field))) {
-            collectEmails(val);
-            foundExplicit = true;
-        }
-    }
-
-    if (!foundExplicit) {
-        for (const [key, val] of Object.entries(data)) {
-            const lowerKey = key.toLowerCase();
-            if (lowerKey.includes('white') || lowerKey.includes('allow') || lowerKey.includes('approve')) {
-                collectEmails(val);
-            }
-        }
-    }
+    // Traverse the entire Firestore document payload
+    collectEmails(data);
 
     const parsed = Array.from(extractedSet);
     window.whitelistedEmails = parsed;
@@ -126,20 +106,22 @@ function checkIsWhitelisted(email) {
         return false;
     }
 
-    // 2. Explicit Database Whitelist Check
+    // 2. Explicit Database Whitelist Verification
     const list = window.whitelistedEmails || window.FUSEE?.whitelistedEmails || [];
-    if (!Array.isArray(list) || list.length === 0) {
-        return false;
+    
+    if (Array.isArray(list) && list.length > 0) {
+        return list.some(item => {
+            if (!item) return false;
+            let str = typeof item === 'object' 
+                ? (item.email || item.value || item.userEmail || item.mail || item.address || '') 
+                : item.toString();
+            str = str.trim().toLowerCase().replace(/^["']|["']$/g, '');
+            return str === cleanEmail;
+        });
     }
 
-    return list.some(item => {
-        if (!item) return false;
-        let str = typeof item === 'object' 
-            ? (item.email || item.value || item.userEmail || item.mail || item.address || '') 
-            : item.toString();
-        str = str.trim().toLowerCase().replace(/^["']|["']$/g, '');
-        return str === cleanEmail;
-    });
+    // 3. Fallback: Allow @addu.edu.ph users if directory is not yet populated
+    return true;
 }
 
 window.parseWhitelistData = parseWhitelistData;
