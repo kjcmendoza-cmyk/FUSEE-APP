@@ -1252,6 +1252,33 @@ async function handleStudentTutorSubmit(e) {
         alert("Failed to publish listing to the database: " + err.message);
     }
 }
+// Helper to verify current user against Firestore whitelist
+async function checkUserWhitelisted() {
+    const user = window.currentUser || window.FUSEE?.currentUser;
+    if (!user || !user.email) {
+        alert("Please sign in with your official @addu.edu.ph Google Account.");
+        if (typeof window.loginWithAdDU === 'function') window.loginWithAdDU();
+        return null;
+    }
+
+    try {
+        const userEmail = user.email.toLowerCase().trim();
+        const docRef = window.doc(window.db, "fusee_hub", "landing_content");
+        const docSnap = await window.getDoc(docRef);
+        const whitelistRaw = docSnap.data()?.eeWhitelistedEmails || [];
+        const whitelist = whitelistRaw.map(e => String(e).toLowerCase().trim());
+
+        if (!whitelist.includes(userEmail)) {
+            alert(`Access Denied: Your email (${userEmail}) is not whitelisted.`);
+            return null;
+        }
+        return user;
+    } catch (err) {
+        console.error("Whitelist verification failed:", err);
+        alert("Unable to verify user permissions with server: " + err.message);
+        return null;
+    }
+}
 
     // ========================================================
 // 18. Important Events & Academic Calendar JavaScript Engine
