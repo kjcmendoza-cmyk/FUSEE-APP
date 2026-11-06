@@ -1284,6 +1284,20 @@ async function checkUserWhitelisted() {
     }
 
     const userEmail = user.email.toLowerCase().trim();
+
+    // Fallback: If whitelist has not finished loading from Firestore, fetch it on-demand
+    let list = window.whitelistedEmails || window.FUSEE?.whitelistedEmails || [];
+    if ((!Array.isArray(list) || list.length === 0) && window.db && window.doc && window.getDoc) {
+        try {
+            const docSnap = await window.getDoc(window.doc(window.db, "fusee_hub", "landing_content"));
+            if (docSnap.exists() && typeof window.parseWhitelistData === 'function') {
+                list = window.parseWhitelistData(docSnap.data());
+            }
+        } catch (err) {
+            console.error("Error fetching whitelist during verification:", err);
+        }
+    }
+
     if (typeof window.checkIsWhitelisted === 'function') {
         if (!window.checkIsWhitelisted(userEmail)) {
             alert(`Access Denied: Account (${userEmail}) is not on the admin whitelist.`);
@@ -1293,6 +1307,9 @@ async function checkUserWhitelisted() {
 
     return user;
 }
+
+// Bind function globally for inline form event handlers
+window.checkUserWhitelisted = checkUserWhitelisted;
 
     // ========================================================
 // 18. Important Events & Academic Calendar JavaScript Engine
