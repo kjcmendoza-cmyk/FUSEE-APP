@@ -148,13 +148,31 @@ window.checkIsWhitelisted = checkIsWhitelisted;
 // --- Access & UI Visibility Guards ---
 function updateHeaderUserBadge() {
     const greetingEl = document.getElementById('greeting-display');
-    if (greetingEl) {
-        const activeRole = window.userRole || window.FUSEE?.userRole || localStorage.getItem('fusee_user_role');
-        if (activeRole === 'EE') {
-            greetingEl.innerHTML = `<span class="text-fusee-cyan font-bold">⚡ EE Student</span> (<button onclick="resetAccessRole()" class="underline text-[9px] hover:text-white">Switch</button>)`;
-        } else {
-            greetingEl.innerHTML = `<span class="text-fusee-yellow font-bold">👁️ Spectator</span> (<button onclick="resetAccessRole()" class="underline text-[9px] hover:text-white">Sign In</button>)`;
-        }
+    if (!greetingEl) return;
+
+    const activeRole = window.userRole || window.FUSEE?.userRole || localStorage.getItem('fusee_user_role');
+
+    if (activeRole === 'EE') {
+        greetingEl.innerHTML = `
+            <span class="inline-flex items-center gap-1 bg-slate-900/90 border border-slate-800 px-1.5 py-0.5 rounded text-[9px] md:text-xs">
+                <span class="text-fusee-cyan font-bold">⚡ EE</span>
+                <span class="text-slate-700">|</span>
+                <button onclick="handleSignOut()" class="font-semibold text-rose-400 hover:text-rose-300 transition flex items-center gap-0.5">
+                    <i class="fa-solid fa-right-from-bracket text-[8px]"></i>
+                    <span>Log Out</span>
+                </button>
+            </span>
+        `;
+    } else {
+        greetingEl.innerHTML = `
+            <span class="inline-flex items-center gap-1 bg-slate-900/90 border border-slate-800 px-1.5 py-0.5 rounded text-[9px] md:text-xs">
+                <span class="text-fusee-yellow font-bold">👁️ Spectator</span>
+                <span class="text-slate-700">|</span>
+                <button onclick="resetAccessRole()" class="font-semibold text-fusee-cyan hover:text-white transition">
+                    Sign In
+                </button>
+            </span>
+        `;
     }
 }
 window.updateHeaderUserBadge = updateHeaderUserBadge;
@@ -280,7 +298,30 @@ window.resetAccessRole = () => {
     if (auth && auth.currentUser) signOut(auth);
     location.reload();
 };
-
+window.handleSignOut = async () => {
+    try {
+        if (auth && auth.currentUser) {
+            await signOut(auth);
+        }
+    } catch (err) {
+        console.error("Error signing out:", err);
+    } finally {
+        // Clear stored role and global state
+        localStorage.removeItem('fusee_user_role');
+        window.currentUser = null;
+        window.userRole = null;
+        if (window.FUSEE) {
+            window.FUSEE.currentUser = null;
+            window.FUSEE.userRole = null;
+        }
+        
+        // Show login modal & update badge UI
+        const loginModal = document.getElementById('entry-gateway-modal');
+        if (loginModal) loginModal.classList.remove('hidden');
+        
+        window.updateHeaderUserBadge();
+    }
+};
 // --- Consolidated Auth State Listener ---
 onAuthStateChanged(auth, async (user) => {
     if (user) {
