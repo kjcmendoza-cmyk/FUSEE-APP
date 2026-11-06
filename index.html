@@ -281,7 +281,20 @@ function parseWhitelistData(data) {
         if (auth.currentUser) signOut(auth);
         location.reload();
     };    
-
+// Global Logout Handler
+window.handleLogout = async () => {
+    localStorage.removeItem('fusee_user_role');
+    window.userRole = null;
+    window.currentUser = null;
+    if (auth.currentUser) {
+        await signOut(auth);
+    }
+    if (typeof showToast === 'function') {
+        showToast("Logged out successfully.", "info");
+    }
+    checkGatewayStatus(); // Re-opens the entry gateway modal
+    updateHeaderUserBadge();
+};
 // Global Guard Helper Function
 window.checkEEAccess = function(featureName = "this feature", event = null) {
     if (window.userRole === 'EE') {
@@ -1721,20 +1734,30 @@ html[data-theme="cyber-pink"] .hero-banner-badge,
                 </div>
             </div>
 
-            <!-- Cyber Switcher Button -->
-<div class="relative">
-    <button id="theme-dropdown-btn" onclick="toggleThemeDropdown(event)" 
-            class="px-2 py-0.5 md:px-2.5 md:py-1.5 rounded-lg md:rounded-xl bg-slate-900/80 border border-white/10 text-[9px] md:text-[10px] font-bold text-fusee-cyan flex items-center gap-1 hover:border-white/20 transition shadow-sm">
-        <span id="theme-active-label" class="flex items-center gap-1">⚡ FUSEE</span>
-        <i id="theme-dropdown-chevron" class="fa-solid fa-chevron-down text-[7px] text-slate-400 transition-transform duration-200"></i>
-    </button>
+            <!-- Action Bar: Cyber Theme Switcher & Logout Button -->
+            <div class="flex items-center gap-1.5">
+                <!-- Cyber Switcher Button -->
+                <div class="relative">
+                    <button id="theme-dropdown-btn" onclick="toggleThemeDropdown(event)" 
+                            class="px-2 py-0.5 md:px-2.5 md:py-1.5 rounded-lg md:rounded-xl bg-slate-900/80 border border-white/10 text-[9px] md:text-[10px] font-bold text-fusee-cyan flex items-center gap-1 hover:border-white/20 transition shadow-sm">
+                        <span id="theme-active-label" class="flex items-center gap-1">⚡ FUSEE</span>
+                        <i id="theme-dropdown-chevron" class="fa-solid fa-chevron-down text-[7px] text-slate-400 transition-transform duration-200"></i>
+                    </button>
 
-    <div id="theme-dropdown-menu" class="hidden absolute right-0 top-full mt-1 z-50 p-1.5 rounded-xl bg-slate-900/95 backdrop-blur-xl border border-white/15 shadow-2xl flex flex-col space-y-1 min-w-[110px] text-[10px]">
-        <button onclick="selectTheme('fusee')" id="theme-btn-fusee" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-fusee-cyan bg-fusee-cyan/15 border border-fusee-cyan/30">⚡ FUSEE</button>
-        <button onclick="selectTheme('light')" id="theme-btn-light" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/80">☀️ LIGHT</button>
-        <button onclick="selectTheme('cyber-pink')" id="theme-btn-pink" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/80">🌸 PINK</button>
-    </div>
-</div>
+                    <div id="theme-dropdown-menu" class="hidden absolute right-0 top-full mt-1 z-50 p-1.5 rounded-xl bg-slate-900/95 backdrop-blur-xl border border-white/15 shadow-2xl flex flex-col space-y-1 min-w-[110px] text-[10px]">
+                        <button onclick="selectTheme('fusee')" id="theme-btn-fusee" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-fusee-cyan bg-fusee-cyan/15 border border-fusee-cyan/30">⚡ FUSEE</button>
+                        <button onclick="selectTheme('light')" id="theme-btn-light" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/80">☀️ LIGHT</button>
+                        <button onclick="selectTheme('cyber-pink')" id="theme-btn-pink" class="w-full px-2.5 py-1.5 rounded-lg font-bold transition text-left flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/80">🌸 PINK</button>
+                    </div>
+                </div>
+
+                <!-- Header Logout Button -->
+                <button id="logout-header-btn" onclick="handleLogout()" title="Sign Out / Change Access Mode"
+                        class="px-2 py-0.5 md:px-2.5 md:py-1.5 rounded-lg md:rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-[9px] md:text-[10px] font-bold text-rose-400 flex items-center gap-1 hover:border-rose-500/50 transition shadow-sm active:scale-95">
+                    <i class="fa-solid fa-right-from-bracket text-[9px]"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
         </div>
     </div>
 </header>
