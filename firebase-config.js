@@ -57,13 +57,21 @@ window.FUSEE = {
     }
 };
 
-// --- Whitelist Utilities (Updated & Bulletproof) ---
+// --- Whitelist Utilities (Updated with Section Exclusions) ---
 function parseWhitelistData(data) {
     if (!data || typeof data !== 'object') return [];
 
     const extractedSet = new Set();
 
-    // Recursive traversal to collect any valid email tokens across all fields/keys
+    // Ignore public site content sections so public contact/org emails are not scraped
+    const ignoredKeys = new Set([
+        'sys1', 'sys2', 'sys3', 'weeklyschedule', 'activityevents', 'banner', 
+        'notices', 'faqs', 'officers', 'events', 'academiclinks', 'eedept', 
+        'merchitems', 'paymentinfo', 'labpolicies', 'capstoneitems', 
+        'lostandfound', 'qpisubjects', 'peertutoring', 'importantevents', 
+        'fuseeinfo', 'tickertext', 'globalstatus'
+    ]);
+
     function collectEmails(val) {
         if (!val) return;
         if (typeof val === 'string') {
@@ -87,8 +95,27 @@ function parseWhitelistData(data) {
         }
     }
 
-    // Traverse the entire Firestore document payload
-    collectEmails(data);
+    // 1. Look for explicit whitelist field keys first (e.g., eeWhitelistedStudentEmails)
+    const whitelistFields = ['whitelist', 'whitelistedemails', 'approvedemails', 'allowedusers', 'eestudents', 'eewhitelistedstudentemails'];
+    let foundExplicit = false;
+
+    for (let [k, v] of Object.entries(data)) {
+        const cleanK = k.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (whitelistFields.some(f => cleanK.includes(f))) {
+            collectEmails(v);
+            foundExplicit = true;
+        }
+    }
+
+    // 2. Fallback: Sweep non-content root keys (e.g. numeric keys 101, 102...)
+    if (!foundExplicit) {
+        for (let [k, v] of Object.entries(data)) {
+            const cleanK = k.trim().toLowerCase();
+            if (!ignoredKeys.has(cleanK)) {
+                collectEmails(v);
+            }
+        }
+    }
 
     const parsed = Array.from(extractedSet);
     window.whitelistedEmails = parsed;
