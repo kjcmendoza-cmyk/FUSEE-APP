@@ -59,35 +59,52 @@ window.FUSEE = {
 
 // --- Whitelist Utilities ---
 function parseWhitelistData(data) {
-    if (!data) return [];
-    let rawList = data.eeWhitelistedEmails || 
-                  data.whitelistedEmails || 
-                  data.eewhitelistedEmails || 
-                  data.ee_whitelisted_emails || 
-                  data.whitelisted_emails || 
-                  data.whitelist ||
-                  data.eeWhitelistedUsers ||
-                  data.whitelistedUsers ||
-                  data.ee_whitelisted_users ||
-                  data.whitelisted_users ||
-                  data.users ||
-                  data.eeEmails ||
-                  data.ee_emails ||
-                  data.emails || [];
+    if (!data || typeof data !== 'object') return [];
 
-    if (typeof rawList === 'string') rawList = rawList.split(/[\r\n,;]+/);
-    if (!Array.isArray(rawList) && typeof rawList === 'object') rawList = Object.values(rawList);
-    if (!Array.isArray(rawList)) return [];
+    const extractedSet = new Set();
 
-    const parsed = rawList.map(item => {
-        if (!item) return '';
-        const str = typeof item === 'object' ? (item.email || item.value || item.userEmail || item.mail || '') : item.toString();
-        return str.toLowerCase().trim();
-    }).filter(Boolean);
+    function collectEmails(val) {
+        if (!val) return;
+        if (typeof val === 'string') {
+            const tokens = val.split(/[\r\n,;\s]+/);
+            for (let t of tokens) {
+                const cleaned = t.trim().toLowerCase().replace(/^["']|["']$/g, '');
+                if (cleaned.length > 0 && (cleaned.includes('@') || cleaned.includes('.'))) {
+                    extractedSet.add(cleaned);
+                }
+            }
+        } else if (Array.isArray(val)) {
+            for (let item of val) collectEmails(item);
+        } else if (typeof val === 'object') {
+            for (let [k, v] of Object.entries(val)) {
+                const cleanKey = k.trim().toLowerCase();
+                if (cleanKey.includes('@')) {
+                    extractedSet.add(cleanKey);
+                }
+                collectEmails(v);
+            }
+        }
+    }
 
-    // Keep all namespaces in sync
+    // Collect emails across ALL keys in data that match whitelist naming patterns
+    for (const [key, val] of Object.entries(data)) {
+        const lowerKey = key.toLowerCase();
+        if (
+            lowerKey.includes('white') || 
+            lowerKey.includes('email') || 
+            lowerKey.includes('user') || 
+            lowerKey.includes('allow') || 
+            lowerKey.includes('approve')
+        ) {
+            collectEmails(val);
+        }
+    }
+
+    const parsed = Array.from(extractedSet);
+
     window.whitelistedEmails = parsed;
     if (window.FUSEE) window.FUSEE.whitelistedEmails = parsed;
+
     return parsed;
 }
 
@@ -96,15 +113,15 @@ function checkIsWhitelisted(email) {
     const cleanEmail = email.toLowerCase().trim();
     const list = window.whitelistedEmails || window.FUSEE?.whitelistedEmails || [];
     if (!Array.isArray(list) || list.length === 0) return false;
-    
-    return list.some(e => {
-        if (!e) return false;
-        const str = typeof e === 'object' ? (e.email || e.value || e.userEmail || '') : e.toString();
+
+    return list.some(item => {
+        if (!item) return false;
+        const str = typeof item === 'object' ? (item.email || item.value || item.userEmail || item.mail || '') : item.toString();
         return str.toLowerCase().trim() === cleanEmail;
     });
 }
 
-// Bind utilities to window for external scripts (ui.js / app.js)
+// Bind utilities to window
 window.parseWhitelistData = parseWhitelistData;
 window.checkIsWhitelisted = checkIsWhitelisted;
 
@@ -249,7 +266,7 @@ onAuthStateChanged(auth, async (user) => {
     if (user) {
         const email = user.email || '';
         
-        // Ensure whitelist data is populated from Firestore before checking
+        // Ensure whitelist data is loaded from Firestore
         let list = window.whitelistedEmails || window.FUSEE?.whitelistedEmails || [];
         if (!Array.isArray(list) || list.length === 0) {
             try {
@@ -275,14 +292,13 @@ onAuthStateChanged(auth, async (user) => {
             }
             localStorage.setItem('fusee_user_role', 'EE');
         } else {
-            // Non-whitelisted account attempting EE sign-in:
+            // Unauthorized Account Access -> Fallback to Spectator Mode
             const reason = !isAdDUEmail 
                 ? "Sign-in requires an official @addu.edu.ph email address."
                 : `Your account (${email}) is not listed in the active EE student directory.`;
 
             alert(`Access Restricted: ${reason}\n\nYou will enter the app in Spectator (Guest) mode.`);
 
-            // Downgrade to SPECTATOR role & force Firebase sign-out
             window.currentUser = null;
             window.userRole = 'SPECTATOR';
             if (window.FUSEE) {
@@ -290,27 +306,19 @@ onAuthStateChanged(auth, async (user) => {
                 window.FUSEE.userRole = 'SPECTATOR';
             }
             localStorage.setItem('fusee_user_role', 'SPECTATOR');
-            
             await signOut(auth);
         }
     } else {
         // Unauthenticated session fallback
         window.currentUser = null;
         if (window.FUSEE) window.FUSEE.currentUser = null;
-        
+
         const storedRole = localStorage.getItem('fusee_user_role');
-        
-        if (storedRole === 'EE') {
-            window.userRole = 'SPECTATOR';
-            if (window.FUSEE) window.FUSEE.userRole = 'SPECTATOR';
-            localStorage.setItem('fusee_user_role', 'SPECTATOR');
-        } else {
-            window.userRole = storedRole === 'SPECTATOR' ? 'SPECTATOR' : null;
-            if (window.FUSEE) window.FUSEE.userRole = window.userRole;
-        }
+        // Unauthenticated sessions cannot maintain EE role
+        window.userRole = storedRole === 'SPECTATOR' ? 'SPECTATOR' : null;
+        if (window.FUSEE) window.FUSEE.userRole = window.userRole;
     }
 
-    // Refresh gateway modal & UI components
     window.checkGatewayStatus();
     if (typeof window.initTargetGradeEvents === 'function') window.initTargetGradeEvents();
     if (typeof window.renderLostFoundUI === 'function') window.renderLostFoundUI();

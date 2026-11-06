@@ -1274,6 +1274,7 @@ async function handleStudentTutorSubmit(e) {
     }
 }
 // Helper to verify current user against Firestore whitelist
+// Helper to verify current user against Firestore whitelist
 async function checkUserWhitelisted() {
     const role = window.userRole || window.FUSEE?.userRole || localStorage.getItem('fusee_user_role');
     const user = window.currentUser || window.FUSEE?.currentUser || window.auth?.currentUser;
@@ -1285,7 +1286,7 @@ async function checkUserWhitelisted() {
 
     const userEmail = user.email.toLowerCase().trim();
 
-    // Fallback: If whitelist has not finished loading from Firestore, fetch it on-demand
+    // Fetch fresh whitelist directly if list is empty
     let list = window.whitelistedEmails || window.FUSEE?.whitelistedEmails || [];
     if ((!Array.isArray(list) || list.length === 0) && window.db && window.doc && window.getDoc) {
         try {
