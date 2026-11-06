@@ -4,7 +4,7 @@ import {
     getFirestore, doc, getDoc, onSnapshot, updateDoc, collection, addDoc, serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 import { 
-    getAuth, signInWithRedirect, GoogleAuthProvider, signOut, onAuthStateChanged 
+    getAuth, signInWithPopup, signInWithRedirect, GoogleAuthProvider, signOut, onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
 // --- Firebase Initialization ---
@@ -251,9 +251,17 @@ window.initTargetGradeEvents = function() {
 // --- Auth Action Handlers ---
 window.handleEESignIn = async () => {
     try {
-        await signInWithRedirect(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+        if (result && result.user) {
+            console.log("Logged in successfully as EE Student:", result.user.email);
+        }
     } catch (err) {
-        console.error("Sign-in error:", err);
+        console.warn("Popup sign-in failed or blocked, trying redirect fallback:", err);
+        try {
+            await signInWithRedirect(auth, provider);
+        } catch (redirectErr) {
+            console.error("Sign-in error:", redirectErr);
+        }
     }
 };
 
