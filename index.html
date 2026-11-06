@@ -170,20 +170,35 @@
     </div>
 </header>
 
-        <!-- Live Announcement Ticker Banner (Pause on Hover Enabled) -->
-        <section class="px-4 md:px-6 py-2 bg-gradient-to-r from-fusee-magenta/15 via-fusee-purple/20 to-fusee-cyan/15 border-b border-white/10 flex items-center space-x-2 overflow-hidden">
-            <span class="flex-shrink-0 px-2 py-0.5 rounded text-[10px] font-pixel bg-fusee-yellow text-slate-950 font-bold shadow-sm flex items-center gap-1">
-                <i class="fa-solid fa-bullhorn text-[9px] animate-bounce"></i> Notice
-            </span>
-            <div class="relative overflow-hidden w-full text-xs text-slate-200 font-medium h-5 flex items-center min-w-0">
-                <div id="announcement-text" class="animate-marquee whitespace-nowrap cursor-pointer" onclick="switchTab('notices')" title="Click to view all notices">
-                    ⚡ EE Laboratory: Equipment checkouts close early at 4:30 PM on Fridays • 💻 Computer Lab PC Maintenance scheduled this Saturday • 📢 Always bring your ADDU Student ID for verification
-                </div>
-            </div>
-            <button onclick="switchTab('notices')" class="flex-shrink-0 text-slate-400 hover:text-white text-xs pl-1" title="View all notices">
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
-        </section>
+        <!-- Live Announcement Ticker Banner (High-Contrast & Vibrant Legibility) -->
+<section style="background-color: rgba(11, 8, 30, 0.95) !important; border-bottom: 1px solid rgba(0, 240, 255, 0.3) !important;" 
+         class="px-4 md:px-6 py-2 flex items-center space-x-2.5 overflow-hidden">
+    
+    <!-- Ultra-High Visibility Notice Badge -->
+    <span style="background-color: #FFD700 !important; color: #0B081E !important; font-weight: 900 !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);" 
+          class="flex-shrink-0 px-2.5 py-0.5 rounded-md text-[10px] font-pixel flex items-center gap-1.5 uppercase tracking-wider">
+        <i class="fa-solid fa-bullhorn text-[10px] text-slate-950 animate-bounce"></i> NOTICE
+    </span>
+
+    <!-- Vibrant Marquee Announcement Text -->
+    <div class="relative overflow-hidden w-full text-xs font-semibold h-5 flex items-center min-w-0">
+        <div id="announcement-text" 
+             style="color: #F8FAFC !important;" 
+             class="animate-marquee whitespace-nowrap cursor-pointer hover:underline" 
+             onclick="switchTab('notices')" 
+             title="Click to view all notices">
+            <span style="color: #00F0FF !important; font-weight: 700;">⚡ EE Laboratory:</span> Equipment checkouts close early at 4:30 PM on Fridays <span style="color: #FFD700 !important;">•</span> <span style="color: #FF007A !important; font-weight: 700;">💻 Computer Lab:</span> PC Maintenance scheduled this Saturday <span style="color: #FFD700 !important;">•</span> <span style="color: #00F0FF !important; font-weight: 700;">📢 ID Policy:</span> Always bring your ADDU Student ID for verification
+        </div>
+    </div>
+
+    <!-- Right Chevron Button -->
+    <button onclick="switchTab('notices')" 
+            style="color: #00F0FF !important;" 
+            class="flex-shrink-0 hover:text-white text-xs pl-1 transition-transform hover:translate-x-0.5" 
+            title="View all notices">
+        <i class="fa-solid fa-chevron-right text-sm"></i>
+    </button>
+</section>
 
         <!-- Main Scrollable Content Area -->
         <main class="flex-1 px-4 md:px-6 pt-4">
