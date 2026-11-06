@@ -185,18 +185,9 @@ window.removeTutorListing = async function(itemId) {
         async function handleStudentReportSubmit(e) {
     if (e) e.preventDefault();
 
-    // 1. Require AdDU Google Login before posting
-    if (!window.currentUser || !window.currentUser.email) {
-        alert("Please sign in with your official @addu.edu.ph Google Account to submit a report.");
-        if (typeof window.loginWithAdDU === 'function') {
-            window.loginWithAdDU().then(() => {
-                alert("Sign-in successful! Please click 'Submit Report Notice' again.");
-            }).catch(err => {
-                console.error("Login cancelled or failed:", err);
-            });
-        }
-        return;
-    }
+    // 1. Validate Whitelist & Login
+    const user = await checkUserWhitelisted();
+    if (!user) return;
 
     const typeSelect = document.getElementById('rpt-type');
     const rawType = typeSelect ? typeSelect.value : 'LOST';
@@ -206,9 +197,8 @@ window.removeTutorListing = async function(itemId) {
     const location = document.getElementById('rpt-location')?.value.trim() || 'N/A';
     const date = document.getElementById('rpt-date')?.value || new Date().toISOString().split('T')[0];
     const description = document.getElementById('rpt-desc')?.value.trim() || '';
-    const contact = document.getElementById('rpt-contact')?.value.trim() || window.currentUser.email;
+    const contact = document.getElementById('rpt-contact')?.value.trim() || user.email;
 
-    // 2. Build report object
     const newReport = {
         id: Date.now(),
         type: reportType,
@@ -217,14 +207,19 @@ window.removeTutorListing = async function(itemId) {
         location: location,
         description: description,
         contact: contact,
-        ownerEmail: window.currentUser.email,
+        ownerEmail: user.email,
         date: date
     };
 
+    // Ensure array references stay synchronized
     if (!window.allLostFoundData) window.allLostFoundData = [];
-    window.allLostFoundData.unshift(newReport);
+    if (!window.FUSEE.data.lostFound) window.FUSEE.data.lostFound = window.allLostFoundData;
 
-    // 3. Persist updated array to Cloud Firestore database
+    window.allLostFoundData.unshift(newReport);
+    if (window.FUSEE.data.lostFound !== window.allLostFoundData) {
+        window.FUSEE.data.lostFound.unshift(newReport);
+    }
+
     try {
         const db = window.db;
         const docRef = window.doc(db, "fusee_hub", "landing_content");
@@ -240,7 +235,7 @@ window.removeTutorListing = async function(itemId) {
         if (form) form.reset();
 
         closeModal('report-item-modal');
-        alert("Report submitted successfully and saved! Linked to " + window.currentUser.email);
+        alert("Report submitted successfully! Linked to " + user.email);
     } catch (err) {
         console.error("Error saving Lost & Found report to Firestore:", err);
         alert("Failed to save report to server: " + err.message);
@@ -1195,6 +1190,10 @@ window.deleteTutorListing = async function(index) {
 async function handleStudentTutorSubmit(e) {
     if (e) e.preventDefault();
 
+    // 1. Validate Whitelist & Login
+    const user = await checkUserWhitelisted();
+    if (!user) return;
+
     const type = document.getElementById('tut-post-type')?.value || 'TUTOR';
     const tutorName = document.getElementById('tut-post-name')?.value.trim() || '';
     const yearLevel = document.getElementById('tut-post-year')?.value.trim() || '';
@@ -1203,7 +1202,7 @@ async function handleStudentTutorSubmit(e) {
     const topicFocus = document.getElementById('tut-post-focus')?.value.trim() || '';
     const location = document.getElementById('tut-post-location')?.value.trim() || '';
     const schedule = document.getElementById('tut-post-schedule')?.value.trim() || '';
-    const contact = document.getElementById('tut-post-contact')?.value.trim() || '';
+    const contact = document.getElementById('tut-post-contact')?.value.trim() || user.email;
 
     if (!tutorName || !subject || !contact) {
         alert('Please fill out all required fields.');
@@ -1223,25 +1222,27 @@ async function handleStudentTutorSubmit(e) {
         location,
         schedule,
         contact,
-        ownerEmail: window.FUSEE.currentUser ? window.FUSEE.currentUser.email : contact
+        ownerEmail: user.email
     };
 
-    if (!window.FUSEE.data.peerTutoring) window.FUSEE.data.peerTutoring = [];
-    window.FUSEE.data.peerTutoring.unshift(newListing);
+    // Keep state arrays synchronized across both namespace references
+    if (!window.allPeerTutoringData) window.allPeerTutoringData = [];
+    if (!window.FUSEE.data.peerTutoring) window.FUSEE.data.peerTutoring = window.allPeerTutoringData;
+
+    window.allPeerTutoringData.unshift(newListing);
+    if (window.FUSEE.data.peerTutoring !== window.allPeerTutoringData) {
+        window.FUSEE.data.peerTutoring.unshift(newListing);
+    }
 
     try {
         const db = window.db;
         const docRef = window.doc(db, "fusee_hub", "landing_content");
         await window.updateDoc(docRef, {
-            peerTutoring: window.FUSEE.data.peerTutoring
+            peerTutoring: window.allPeerTutoringData
         });
 
-        if (typeof window.renderPeerTutoringUI === 'function') {
-            window.renderPeerTutoringUI();
-        }
-        if (typeof window.renderTutorManagementUI === 'function') {
-            window.renderTutorManagementUI();
-        }
+        if (typeof window.renderPeerTutoringUI === 'function') window.renderPeerTutoringUI();
+        if (typeof window.renderTutorManagementUI === 'function') window.renderTutorManagementUI();
 
         document.getElementById('student-tutor-form')?.reset();
         closeModal('post-tutor-modal');
