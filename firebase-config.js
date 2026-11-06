@@ -164,16 +164,16 @@ function updateHeaderUserBadge() {
     if (activeRole === 'EE') {
         badgeEl.innerHTML = `
             <button onclick="handleSignOut()" 
-                    style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 2px 8px; border-radius: 8px; background-color: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); color: #f43f5e; font-size: 9px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;">
-                <i class="fa-solid fa-right-from-bracket" style="font-size: 8px;"></i>
+                    class="px-2 py-0.5 lg:px-3 lg:py-1 text-[9px] md:text-[10px] lg:text-xs font-bold rounded-lg lg:rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 hover:bg-rose-500/25 transition flex items-center justify-center gap-1.5 whitespace-nowrap">
+                <i class="fa-solid fa-right-from-bracket text-[8px] lg:text-[10px]"></i>
                 <span>Log Out</span>
             </button>
         `;
     } else {
         badgeEl.innerHTML = `
             <button onclick="resetAccessRole()" 
-                    style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 2px 8px; border-radius: 8px; background-color: rgba(0, 240, 255, 0.15); border: 1px solid rgba(0, 240, 255, 0.3); color: #00F0FF; font-size: 9px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;">
-                <i class="fa-solid fa-right-to-bracket" style="font-size: 8px;"></i>
+                    class="px-2 py-0.5 lg:px-3 lg:py-1 text-[9px] md:text-[10px] lg:text-xs font-bold rounded-lg lg:rounded-xl bg-fusee-cyan/15 border border-fusee-cyan/30 text-fusee-cyan hover:bg-fusee-cyan/25 transition flex items-center justify-center gap-1.5 whitespace-nowrap">
+                <i class="fa-solid fa-right-to-bracket text-[8px] lg:text-[10px]"></i>
                 <span>Sign In</span>
             </button>
         `;
