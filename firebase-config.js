@@ -116,12 +116,18 @@ function updateHeaderUserBadge() {
 
 window.checkEEAccess = function(featureName = "this feature", event = null) {
     const role = window.userRole || window.FUSEE?.userRole || localStorage.getItem('fusee_user_role');
-    if (role === 'EE') return true;
+    const user = window.currentUser || window.FUSEE?.currentUser || auth.currentUser;
+
+    // MUST have role 'EE' AND an active authenticated user session
+    if (role === 'EE' && user && user.email) {
+        return true;
+    }
 
     if (event) {
         event.preventDefault();
         event.stopPropagation();
     }
+
     if (typeof showToast === 'function') {
         showToast(`Access Restricted: ${featureName} is reserved for EE Students.`, "warning");
     } else {
@@ -129,7 +135,6 @@ window.checkEEAccess = function(featureName = "this feature", event = null) {
     }
     return false;
 };
-
 // --- Target Grade Calculation Helpers ---
 window.updateMidtermSubBreakdown = function() {
     const rawScore = parseFloat(document.getElementById('tg-subMT-dept-raw')?.value);
@@ -235,14 +240,13 @@ onAuthStateChanged(auth, async (user) => {
             localStorage.setItem('fusee_user_role', 'EE');
         } else {
             // Non-whitelisted account attempting EE sign-in:
-            // Block EE access, alert user, and automatically downgrade to SPECTATOR (Guest) mode
             const reason = !isAdDUEmail 
                 ? "Sign-in requires an official @addu.edu.ph email address."
                 : `Your account (${email}) is not listed in the active EE student directory.`;
 
             alert(`Access Restricted: ${reason}\n\nYou will enter the app in Spectator (Guest) mode.`);
 
-            // Downgrade to SPECTATOR role
+            // Downgrade to SPECTATOR role & force Firebase sign-out
             window.currentUser = null;
             window.FUSEE.currentUser = null;
             window.userRole = 'SPECTATOR';
@@ -252,12 +256,20 @@ onAuthStateChanged(auth, async (user) => {
             await signOut(auth);
         }
     } else {
-        // Unauthenticated session fallback: maintain SPECTATOR if set
+        // Unauthenticated session fallback:
+        // A signed-out session CANNOT maintain an 'EE' role. Force to SPECTATOR or null.
         window.currentUser = null;
         window.FUSEE.currentUser = null;
         const storedRole = localStorage.getItem('fusee_user_role');
-        window.userRole = storedRole === 'SPECTATOR' ? 'SPECTATOR' : (storedRole === 'EE' ? 'EE' : null);
-        window.FUSEE.userRole = window.userRole;
+        
+        if (storedRole === 'EE') {
+            window.userRole = 'SPECTATOR';
+            window.FUSEE.userRole = 'SPECTATOR';
+            localStorage.setItem('fusee_user_role', 'SPECTATOR');
+        } else {
+            window.userRole = storedRole === 'SPECTATOR' ? 'SPECTATOR' : null;
+            window.FUSEE.userRole = window.userRole;
+        }
     }
 
     // Refresh gateway modal & UI components

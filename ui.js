@@ -656,6 +656,14 @@ window.renderMatrixGrid = function() {
 
         // Bottom Sheet & Modal Controls
 function openModal(modalId) {
+    // EE-Only Feature Guard
+    const eeOnlyModals = ['merch-modal', 'academic-drive-modal', 'post-tutor-modal', 'report-item-modal', 'tutor-dashboard-modal'];
+    if (eeOnlyModals.includes(modalId)) {
+        if (typeof window.checkEEAccess === 'function' && !window.checkEEAccess("EE Feature")) {
+            return;
+        }
+    }
+
     document.querySelectorAll('.bottom-sheet').forEach(sheet => {
         sheet.classList.add('hidden-sheet');
     });
