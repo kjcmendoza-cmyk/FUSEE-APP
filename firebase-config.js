@@ -147,13 +147,13 @@ window.checkIsWhitelisted = checkIsWhitelisted;
 
 // --- Access & UI Visibility Guards ---
 function updateHeaderUserBadge() {
-    const greetingEl = document.getElementById('greeting-display');
-    if (!greetingEl) return;
+    const badgeEl = document.getElementById('user-badge-display');
+    if (!badgeEl) return;
 
     const activeRole = window.userRole || window.FUSEE?.userRole || localStorage.getItem('fusee_user_role');
 
     if (activeRole === 'EE') {
-        greetingEl.innerHTML = `
+        badgeEl.innerHTML = `
             <span class="inline-flex items-center gap-1 bg-slate-900/90 border border-slate-800 px-1.5 py-0.5 rounded text-[9px] md:text-xs">
                 <span class="text-fusee-cyan font-bold">⚡ EE</span>
                 <span class="text-slate-700">|</span>
@@ -164,7 +164,7 @@ function updateHeaderUserBadge() {
             </span>
         `;
     } else {
-        greetingEl.innerHTML = `
+        badgeEl.innerHTML = `
             <span class="inline-flex items-center gap-1 bg-slate-900/90 border border-slate-800 px-1.5 py-0.5 rounded text-[9px] md:text-xs">
                 <span class="text-fusee-yellow font-bold">👁️ Spectator</span>
                 <span class="text-slate-700">|</span>
