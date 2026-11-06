@@ -338,49 +338,54 @@
 </section>
                 
                 <!-- Events & Calendar Grid (Upcoming in FUSEE + Important Events Today) -->
-<section class="grid grid-cols-1 md:grid-cols-2 gap-3">
-    <!-- Left Column: Upcoming in FUSEE -->
-    <div class="glass-card p-4 rounded-2xl border border-fusee-purple/30 space-y-2 flex flex-col justify-between">
+<section class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+    
+    <!-- Left Column: Upcoming in FUSEE (Vibrant Blue Theme) -->
+    <div class="glass-card p-4 rounded-2xl border border-fusee-cyan/40 space-y-2 flex flex-col justify-between shadow-neon-cyan/10">
         <div>
-            <h4 class="text-xs font-bold text-fusee-purple font-techno flex items-center justify-between">
+            <h4 class="text-xs font-black text-fusee-cyan font-techno flex items-center justify-between tracking-wide">
                 <span class="flex items-center gap-1.5">
-                    <i class="fa-solid fa-calendar-day"></i> Upcoming in FUSEE
+                    <i class="fa-solid fa-calendar-day text-fusee-cyan"></i> Upcoming in FUSEE
                 </span>
-                <span class="px-1.5 py-0.5 rounded bg-fusee-purple/20 text-fusee-purple border border-fusee-purple/30 font-pixel text-[8px]">ORG EVENTS</span>
+                <span class="px-2 py-0.5 rounded bg-fusee-cyan/20 text-fusee-cyan border border-fusee-cyan/40 font-pixel text-[8px] uppercase tracking-wider">
+                    ORG EVENTS
+                </span>
             </h4>
-            <div id="events-display-container" class="space-y-2 max-h-[130px] overflow-y-auto pr-1 mt-2">
-                <!-- Dynamic events render here -->
+            <div id="events-display-container" class="space-y-2 max-h-[140px] overflow-y-auto pr-1 mt-2.5">
+                <!-- Dynamic FUSEE events render here with blue styling -->
             </div>
         </div>
     </div>
 
-    <!-- Right Column: Important Events (Daily Auto-Update & Interactive Calendar Trigger) -->
-    <div onclick="openModal('important-events-modal')" class="glass-card p-4 rounded-2xl border border-fusee-yellow/40 space-y-2 hover:border-fusee-yellow transition cursor-pointer group flex flex-col justify-between relative overflow-hidden">
-        <div class="space-y-2">
+    <!-- Right Column: Important Events (Vibrant Yellow Theme) -->
+    <div onclick="openModal('important-events-modal')" 
+         class="glass-card p-4 rounded-2xl border border-fusee-yellow/40 space-y-2 hover:border-fusee-yellow hover:shadow-neon-yellow/20 transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden">
+        <div class="space-y-2.5">
             <div class="flex items-center justify-between">
-                <h4 class="text-xs font-bold text-fusee-yellow font-techno flex items-center gap-1.5">
+                <h4 class="text-xs font-black text-fusee-yellow font-techno flex items-center gap-1.5 tracking-wide">
                     <i class="fa-solid fa-star text-fusee-yellow animate-pulse"></i> Important Events
                 </h4>
-                <span id="today-event-badge" class="px-2 py-0.5 rounded text-[8px] font-bold font-techno bg-fusee-yellow/20 text-fusee-yellow border border-fusee-yellow/30 uppercase">
+                <span id="today-event-badge" class="px-2 py-0.5 rounded text-[8px] font-extrabold font-techno bg-fusee-yellow/20 text-fusee-yellow border border-fusee-yellow/40 uppercase tracking-wider">
                     TODAY'S SCHEDULE
                 </span>
             </div>
 
             <!-- Live Daily Event Banner -->
-            <div id="important-events-today-container" class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+            <div id="important-events-today-container" class="p-3 rounded-xl bg-slate-900/90 border border-fusee-yellow/30 space-y-1">
                 <p class="text-xs font-bold text-white flex items-center gap-1.5">
                     <i class="fa-solid fa-calendar-check text-fusee-yellow"></i>
-                    <span id="today-event-title">No important event today</span>
+                    <span id="today-event-title" class="text-fusee-yellow font-extrabold">No important event today</span>
                 </p>
-                <p id="today-event-desc" class="text-[10px] text-slate-400">Regular academic schedule in effect.</p>
+                <p id="today-event-desc" class="text-[10px] text-slate-300">Regular academic schedule in effect.</p>
             </div>
         </div>
 
-        <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-fusee-yellow font-bold group-hover:underline">
+        <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-fusee-yellow font-bold group-hover:underline">
             <span><i class="fa-solid fa-calendar-days mr-1"></i> View Full Event Calendar</span>
             <i class="fa-solid fa-chevron-right text-[9px] group-hover:translate-x-1 transition-transform"></i>
         </div>
     </div>
+
 </section>
 
                 <!-- Quick Hub Services Grid (Colorful Brand Palette Tiles) -->
