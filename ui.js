@@ -1525,6 +1525,26 @@ window.renderMerchUI = function() {
         const mainImage = item.imageUrl || item.frontImageUrl || item.image || '';
         const backImage = item.backImageUrl || '';
 
+       // Determine if item is marked as sold out (case-insensitive + stock check)
+        const statusUpper = item.status ? item.status.toString().toUpperCase() : '';
+        const badgeUpper = item.badge ? item.badge.toString().toUpperCase() : '';
+
+        const stockVal = (item.stock !== undefined && item.stock !== null) ? item.stock : item.quantity;
+        const hasNoStock = stockVal !== undefined && stockVal !== null && Number(stockVal) <= 0;
+
+        const isSoldOut = item.isSoldOut === true ||
+                          item.soldOut === true ||
+                          hasNoStock ||
+                          statusUpper === 'SOLD_OUT' ||
+                          statusUpper === 'SOLDOUT' ||
+                          statusUpper === 'SOLD OUT' ||
+                          badgeUpper === 'SOLD OUT';
+
+        const badgeText = isSoldOut ? 'SOLD OUT' : (item.badge || 'PRE-ORDER');
+        const badgeClass = isSoldOut 
+            ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' 
+            : 'bg-fusee-magenta/20 text-fusee-magenta border-fusee-magenta/30';
+
         const imageMarkup = mainImage ? `
             <div class="relative w-full aspect-square rounded-xl overflow-hidden border border-slate-800 bg-slate-950 group cursor-pointer"
                  data-showing="front"
@@ -1549,14 +1569,26 @@ window.renderMerchUI = function() {
             </div>
         `;
 
+        const buttonMarkup = isSoldOut ? `
+            <button disabled class="w-full py-2 bg-slate-800 text-slate-500 font-bold rounded-xl text-xs border border-slate-700 cursor-not-allowed flex items-center justify-center gap-1.5 mt-2">
+                <i class="fa-solid fa-ban text-xs"></i>
+                <span>Sold Out</span>
+            </button>
+        ` : `
+            <button onclick="openMerchOrderModal(${index})" class="w-full py-2 bg-gradient-to-r from-fusee-magenta to-pink-600 text-white font-bold rounded-xl text-xs hover:from-pink-500 hover:to-purple-500 transition shadow-neon-pink flex items-center justify-center gap-1.5 mt-2">
+                <i class="fa-solid fa-bag-shopping text-xs"></i>
+                <span>Order Now</span>
+            </button>
+        `;
+
         return `
             <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5 hover:border-fusee-magenta/40 transition flex flex-col justify-between">
                 <div class="space-y-2">
                     ${imageMarkup}
                     
                     <div class="flex items-center justify-between gap-1">
-                        <span class="px-2 py-0.5 rounded-full bg-fusee-magenta/20 text-fusee-magenta text-[8px] font-bold font-techno border border-fusee-magenta/30">
-                            ${item.badge || 'PRE-ORDER'}
+                        <span class="px-2 py-0.5 rounded-full text-[8px] font-bold font-techno border ${badgeClass}">
+                            ${badgeText}
                         </span>
                         <span class="text-xs font-bold text-fusee-magenta font-techno">
                             ${item.price || '₱0.00'}
@@ -1567,10 +1599,7 @@ window.renderMerchUI = function() {
                     ${item.description ? `<p class="text-[10px] text-slate-300 leading-relaxed bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">${item.description}</p>` : ''}
                 </div>
 
-                <button onclick="openMerchOrderModal(${index})" class="w-full py-2 bg-gradient-to-r from-fusee-magenta to-pink-600 text-white font-bold rounded-xl text-xs hover:from-pink-500 hover:to-purple-500 transition shadow-neon-pink flex items-center justify-center gap-1.5 mt-2">
-                    <i class="fa-solid fa-bag-shopping text-xs"></i>
-                    <span>Order Now</span>
-                </button>
+                ${buttonMarkup}
             </div>
         `;
     }).join('');
